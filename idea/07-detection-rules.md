@@ -4,7 +4,7 @@
 
 A detector returns findings, evaluated population, unsupported rows, and explicit exception decisions. Each finding contains source row IDs, field values, the comparator, rule/version, cutoff, family applicability, severity proposal, limitations, and recommended human-review step.
 
-Statuses are `flagged`, `not_flagged`, `unsupported`, and `error`. “Not flagged” means that this detector found no qualifying pattern; it is not proof that the claim is legitimate. A detector cannot transition a case to substantiated or initiate a payer action.
+Statuses are `flagged`, `not_flagged`, `unsupported`, and `error`. “Not flagged” means that this detector found no qualifying pattern; it is not proof that the claim is legitimate. A detector cannot transition a case to substantiated or initiate a payer action..
 
 Rules below are **synthetic demonstration policies**, not universal reimbursement rules. Real NCCI implementation would require program, provider setting, effective date, code pair, and modifier semantics. CMS describes NCCI edits as coding edits rather than a determination of medical necessity. [CMS NCCI FAQ](https://www.cms.gov/medicare/coding-billing/national-correct-coding-initiative-ncci-edits/medicare-ncci-faq-library).
 
