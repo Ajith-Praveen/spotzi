@@ -90,7 +90,9 @@ def snapshot_features(L, T, prov_ids, ties, inv):
     return X
 
 
-def snapshot_dates(end, step=14, first="2024-06-30"):
+def snapshot_dates(end, step=14, first=None):
+    """Bi-weekly anchors over the last ~14 months of data (relative to the data, not the calendar)."""
+    first = pd.Timestamp(first) if first is not None else pd.Timestamp(end) - pd.Timedelta(days=427)
     d, out = pd.Timestamp(end), []
     while d >= pd.Timestamp(first):
         out.append(d); d -= pd.Timedelta(days=step)
@@ -160,7 +162,7 @@ def train_forecasts(panel, prov_family, truth_lines, end, groups=None):
             c = count(pid, T + pd.Timedelta(days=30 * (k - 1)), T + pd.Timedelta(days=30 * k))
             ev.append(int(c >= 2))
         rows.append((i, T, pid, ev))
-    cut = pd.Timestamp("2024-12-15")
+    cut = end - pd.Timedelta(days=259)   # same split as the original calendar (relative to the data end)
     eval_from = cut + pd.Timedelta(days=90)
     def expand(sel):
         r_, y_, g_ = [], [], []
@@ -252,12 +254,14 @@ def anomaly_scores(X_end, prov_family):
             "max_daily_min", "member_growth", "any_share"]
     Z = X_end[cols].copy()
     Z["n90"] = np.log1p(Z.n90); Z["paid90"] = np.log1p(Z.paid90); Z["paid_per_line"] = np.log1p(Z.paid_per_line)
-    fam = pd.Series(prov_family).reindex(Z.index)
-    for f in fam.unique():
-        idx = fam[fam == f].index
-        sub = Z.loc[idx]
-        med = sub.median(); iqr = (sub.quantile(.75) - sub.quantile(.25)).replace(0, np.nan)
-        Z.loc[idx] = ((sub - med) / iqr.fillna(sub.std().replace(0, 1)).fillna(1)).clip(-8, 8)
+    fam = pd.Series(prov_family).reindex(Z.index).fillna("UNK")
+
+    def _norm(col):
+        med = col.median(); spread = col.quantile(.75) - col.quantile(.25)
+        if not spread or pd.isna(spread): spread = col.std()
+        if not spread or pd.isna(spread): spread = 1.0
+        return ((col - med) / spread).clip(-8, 8)
+    Z = Z.astype(float).groupby(fam).transform(_norm)
     Z = Z.fillna(0)
     iso = IsolationForest(n_estimators=300, contamination="auto", random_state=0).fit(Z)
     raw = -iso.decision_function(Z)

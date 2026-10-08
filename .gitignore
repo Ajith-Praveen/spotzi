@@ -9,3 +9,5 @@ spotzi/data/cache/
 spotzi/data/pg/
 spotzi/data/db.env
 spotzi/data/.pg_su
+spotzi/data/external/
+spotzi/data/workspaces/

@@ -28,7 +28,20 @@ RULES = {
     "EXCESS": dict(name="Excessive utilization", severity=.7, weight=.8, desc="A member receives the same service far more often than a typical clinical pathway within a week.",
                    benign=["Intensive outpatient program.", "Acute episode requiring frequent visits."],
                    check="Review treatment plan and medical-necessity documentation; confirm member received the services."),
+    "MUE": dict(name="Units above daily limit", severity=.6, weight=.8, desc="More units of one service billed for a member on one day than is medically plausible (per-code daily unit limit).",
+                benign=["Bilateral or multiple-site procedure documented.", "Units recorded as minutes or miles by mistake."],
+                check="Compare billed units with the documented quantity, sites and time in the record."),
+    "EXCLUDED": dict(name="Billed by an excluded provider", severity=1.0, weight=1.3, desc="Claim with a service date on or after the provider was placed on the exclusion (sanction) list.",
+                     benign=["Exclusion later reversed or reinstated.", "Identity mismatch: a different provider with a similar identifier."],
+                     check="Confirm the exclusion record (identifier, date, reinstatement) against the official list."),
+    "CUSTOM": dict(name="Analyst-defined rule", severity=.5, weight=.7, desc="Matched an active rule written in the Rule studio.",
+                   benign=["Rule may be broader than intended; review its definition and preview."],
+                   check="Open the rule in the Rule studio and review the matching lines."),
 }
+
+# medically-unlikely daily unit limits per member/provider/code/day (illustrative values, tune with coding experts)
+MUE_LIMIT = {"80053": 1, "85025": 1, "83036": 1, "80305": 1, "80307": 1, "A0425": 50, "K0823": 1, "L1832": 2, "E0601": 1, "E1390": 1,
+             "G0299": 3, "G0151": 3, "90837": 1, "90834": 1, "90791": 1, "99283": 1, "99285": 1}
 
 EM_HIGH = {"99215"}
 EM_ALL = {"99212", "99213", "99214", "99215"}
@@ -46,7 +59,7 @@ def _prev_gap(df, keys):
     return df.groupby(keys).service_date.diff().dt.days
 
 
-def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame, providers: pd.DataFrame):
+def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame, providers: pd.DataFrame, exclusions: pd.DataFrame | None = None, custom_rules=None):
     L = lines.copy()
     L["service_date"] = pd.to_datetime(L.service_date)
     L["service_end_date"] = pd.to_datetime(L.service_end_date)
@@ -61,7 +74,8 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
     # ---- DUP ----
     skip = L.code.isin(["A0425", "INP-DAY"]) | (L.family == "HH") | (L.code == "90853")
     keys = ["member_id", "provider_id", "code", "service_date"]
-    d = L[~skip].sort_values(keys + ["line_id"])
+    sort_cols = keys + (["paid_date"] if "paid_date" in L else []) + ["line_id"]
+    d = L[~skip].sort_values(sort_cols)   # the later-paid submission is the duplicate
     dup_idx = d.index[d.duplicated(keys, keep="first")]
     first = d.drop_duplicates(keys, keep="first").set_index(keys).line_id
     r = [f"Repeats {first.get(tuple(L.loc[i, keys]), '?')} (same member, provider, code, date)" for i in dup_idx]
@@ -152,5 +166,67 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
         ex_r += [f"{code}: more than {lim} visits within 7 days" for _ in hit]
     mark("EXCESS", ex_idx, ex_r)
 
+    # ---- MUE: units above daily limit ----
+    mu = L[L.code.isin(MUE_LIMIT.keys())]
+    tot = mu.groupby(["member_id", "provider_id", "code", "service_date"]).units.transform("sum")
+    lim = mu.code.map(MUE_LIMIT)
+    hit = mu[tot > lim]
+    # data-driven limit for every other code: above the 99th percentile of daily units for that code (min 40 observations)
+    other = L[~L.code.isin(MUE_LIMIT.keys())]
+    if len(other):
+        dtot = other.groupby(["member_id", "provider_id", "code", "service_date"]).units.transform("sum")
+        p99 = other.assign(_t=dtot).groupby("code")._t.quantile(.99); cnt = other.code.value_counts()
+        lim2 = other.code.map(p99.where(cnt.reindex(p99.index) >= 40))
+        h2 = other[(dtot > lim2) & (dtot >= 3) & lim2.notna()]
+        mark("MUE", h2.index, [f"{c}: {int(t)} units in one day (data-driven limit {int(l)}: 99th percentile for this code)" for c, t, l in zip(h2.code, dtot[h2.index], lim2[h2.index])])
+    mark("MUE", hit.index, [f"{c}: {int(t)} units in one day (limit {int(l)})" for c, t, l in zip(hit.code, tot[hit.index], lim[hit.index])])
+
+    # ---- EXCLUDED: billing on/after exclusion date ----
+    if exclusions is not None and len(exclusions):
+        ex = exclusions.copy(); ex["excl_date"] = pd.to_datetime(ex.excl_date)
+        if "reinstate_date" in ex: ex["reinstate_date"] = pd.to_datetime(ex.reinstate_date)
+        e = L[["provider_id", "service_date"]].reset_index().merge(ex, on="provider_id")
+        e = e[(e.service_date >= e.excl_date) & (e.reinstate_date.isna() if "reinstate_date" in e else True)]
+        mark("EXCLUDED", e["index"].values, [f"Excluded since {d:%Y-%m-%d} ({src})" for d, src in zip(e.excl_date, e.get("source", pd.Series(["exclusion list"] * len(e))))])
+
+    # ---- CUSTOM: analyst-defined rules (Rule studio) ----
+    for cr in (custom_rules or []):
+        try:
+            m = custom_mask(L, cr["conditions"])
+            idx = L.index[m]
+            mark("CUSTOM", idx, [f"Rule “{cr['name']}”" for _ in idx])
+        except Exception:
+            continue
+
     L["n_flags"] = flags.sum(axis=1)
     return L, flags, detail
+
+
+# ---------------------------------------------------------------------------- Rule studio condition language
+CUSTOM_FIELDS = {"code": "text", "family": "text", "pos": "text", "dx": "text", "units": "number", "paid": "number", "billed": "number",
+                 "duration_min": "number", "weekday": "number", "provider_lines_per_day": "number", "member_lines_per_day": "number",
+                 "member_age": "number", "provider_id": "text"}
+CUSTOM_OPS = {"=", "!=", ">", ">=", "<", "<=", "in", "not in"}
+
+
+def custom_mask(L, conditions, members=None):
+    """conditions: list of {field, op, value}; all must hold (AND)."""
+    m = pd.Series(True, index=L.index)
+    for c in conditions:
+        f, op, v = c["field"], c["op"], c["value"]
+        if f not in CUSTOM_FIELDS or op not in CUSTOM_OPS: raise ValueError(f"bad condition {c}")
+        if f == "weekday": col = L.service_date.dt.dayofweek
+        elif f == "provider_lines_per_day": col = L.groupby(["provider_id", "service_date"]).line_id.transform("size")
+        elif f == "member_lines_per_day": col = L.groupby(["member_id", "service_date"]).line_id.transform("size")
+        elif f == "member_age":
+            if "_age" not in L: continue
+            col = L["_age"]
+        else: col = L[f]
+        if op in ("in", "not in"):
+            vals = [x.strip() for x in (v if isinstance(v, list) else str(v).split(","))]
+            t = col.astype(str).isin(vals); m &= t if op == "in" else ~t
+        else:
+            if CUSTOM_FIELDS[f] == "number": v = float(v); col = pd.to_numeric(col, errors="coerce")
+            else: col = col.astype(str); v = str(v)
+            m &= {"=": col == v, "!=": col != v, ">": col > v, ">=": col >= v, "<": col < v, "<=": col <= v}[op]
+    return m.fillna(False)

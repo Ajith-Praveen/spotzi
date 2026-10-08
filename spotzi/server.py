@@ -161,6 +161,8 @@ def _schema(c):
     NT.schema(c)
     import scope as SC
     SC.schema(c)
+    import ops as OP
+    OP.schema(c)
     c.executescript("""
     CREATE TABLE IF NOT EXISTS case_assign(case_id TEXT PRIMARY KEY, assignee TEXT, assignee_name TEXT, assigned_by TEXT, ts TEXT, due TEXT);
     CREATE TABLE IF NOT EXISTS case_notes(id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, author TEXT, role TEXT, ts TEXT, text TEXT);
@@ -204,7 +206,8 @@ def start_run(seed=None, members=2500, data_dir=None):
 
     def work():
         try:
-            S = PL.run_pipeline(data_dir=data_dir or PL.DATA, seed=seed if data_dir is None else None, n_members=members, progress=lambda s: STATE["status"].update(step=s))
+            S = PL.run_pipeline(data_dir=data_dir or PL.DATA, seed=seed if data_dir is None else None, n_members=members, progress=lambda s: STATE["status"].update(step=s), custom_rules=_active_rules())
+            if data_dir is not None: STATE["data_dir"] = data_dir
             S["run"]["dataset"] = "synthetic" if data_dir is None or Path(data_dir) == PL.DATA else Path(data_dir).name
             STATE["S"] = S
             _ingest(S)
@@ -228,12 +231,20 @@ def boot():
     STATE["status"] = dict(state="running", step="initial analysis", started=time.time(), error=None)
     def first():
         try:
-            STATE["S"] = PL.run_pipeline(progress=lambda s: STATE["status"].update(step=s))
+            STATE["S"] = PL.run_pipeline(progress=lambda s: STATE["status"].update(step=s), custom_rules=_active_rules())
             _ingest(STATE["S"])
             STATE["status"] = dict(state="idle", step="done", started=None, error=None)
         except Exception as e:
             STATE["status"] = dict(state="error", step="failed", started=None, error=str(e))
     threading.Thread(target=first, daemon=True).start()
+
+
+def _active_rules():
+    try:
+        c = db(); rows = [dict(id=r["id"], name=r["name"], conditions=json.loads(r["conditions"])) for r in c.execute("SELECT * FROM custom_rules WHERE active=1").fetchall()]; c.close()
+        return rows
+    except Exception:
+        return []
 
 
 def _ingest(s):
@@ -291,7 +302,7 @@ def overview(horizon: int = 60, capacity: float = 96):
 @app.get("/api/queue")
 def queue(request: Request, horizon: int = 60, capacity: float = 96):
     w = {k[2:]: float(v) for k, v in request.query_params.items() if k.startswith("w_")}
-    q = briefs.rank(S(), weights=w, horizon=horizon, capacity_hours=capacity, statuses=statuses(), brain=brain_now(S())[0], sb=llm.SB.state["results"] if llm.SB.state.get("run_id") == STATE["S"]["run"]["run_id"] else None)
+    q = briefs.rank(S(), weights=w, horizon=horizon, capacity_hours=capacity, statuses=statuses(), brain=brain_now(S())[0])
     q["weight_labels"] = briefs.WEIGHT_LABELS; q["defaults"] = briefs.DEFAULT_WEIGHTS
     c = db(); asg = {r["case_id"]: r["assignee_name"] for r in c.execute("SELECT case_id, assignee_name FROM case_assign").fetchall()}; c.close()
     for r in q["queue"]: r["assignee"] = asg.get(r["case_id"])
@@ -314,9 +325,11 @@ def case(cid: str, horizon: int = 60):
         raise HTTPException(404, "Unknown case")
     c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM decisions WHERE case_id=? ORDER BY id", (cid,)).fetchall()]; c.close()
     d["decisions"] = rows
-    sbr = llm.SB.state["results"] if llm.SB.state.get("run_id") == s["run"]["run_id"] else {}
-    d["second_brain"] = [dict(provider_id=p, name=s["PT"].at[p, "name"], first_brain_risk=float(s["PT"].at[p, "risk"]), **sbr[p]) for p in next(x for x in s["cases"] if x["case_id"] == cid)["providers"] if p in sbr]
     d["status"] = statuses().get(cid, "New")
+    cx = db()
+    d["tips"] = [dict(r) for r in cx.execute("SELECT id, ts, channel, allegation, status FROM tips WHERE case_id=? ORDER BY id", (cid,)).fetchall()]
+    d["documents"] = [dict(r) for r in cx.execute("SELECT id, filename, size, uploaded_by, ts FROM case_documents WHERE case_id=? ORDER BY id", (cid,)).fetchall()]
+    cx.close()
     return J(d)
 
 
@@ -516,34 +529,6 @@ async def ask_case(cid: str, req: Request):
     return J(out)
 
 
-@app.get("/api/secondbrain")
-def sb_state():
-    s = S(); st = llm.SB.state; cur = st.get("run_id") == s["run"]["run_id"]
-    res = st["results"] if cur else {}
-    return J(dict(available=llm.available(), model=llm.model_name(), status=st["status"] if cur else "idle", done=st["done"] if cur else 0, total=st["total"] if cur else 0,
-                  error=st["error"] if cur else None, failed=st["failed"] if cur else {}, rows=llm.compare(s, res), scorecard=llm.scorecard(s, res) if res else None))
-
-
-@app.post("/api/secondbrain/run")
-async def sb_run(req: Request):
-    need(req, "run_models")
-    _llm_guard(); s = S()
-    b = await body(req)
-    ok = llm.SB.start(s, limit=int(b.get("limit", 45)))
-    if ok: audit("analyst", "analyst", "second_brain_run", s["run"]["run_id"], f"model={llm.model_name()} limit={b.get('limit', 45)}")
-    return J(dict(started=ok))
-
-
-@app.get("/api/secondbrain/{pid}")
-def sb_provider(pid: str):
-    s = S(); st = llm.SB.state
-    if st.get("run_id") != s["run"]["run_id"] or pid not in st["results"]: raise HTTPException(404, "No second-brain review for this provider yet")
-    r = st["results"][pid]; PT = s["PT"]
-    first = dict(risk=float(PT.at[pid, "risk"]), rule_score=float(PT.at[pid, "rule_score"]), anomaly_pct=float(PT.at[pid, "anomaly_pct"]), graph_score=float(PT.at[pid, "graph_score"]),
-                 rules={k: int(PT.at[pid, f"n_{k}"]) for k in RULES})
-    return J(dict(provider_id=pid, name=PT.at[pid, "name"], family=PT.at[pid, "family"], review=r, first_brain=first, dossier=llm.dossier(s, pid)))
-
-
 # ---------------------------------------------------------------- Evidence Challenge Lab (doc 21)
 import lab
 import precedents as PR
@@ -727,7 +712,7 @@ def brain_api():
         tp = s["L"][s["L"]._truth].groupby("provider_id").size(); truth = set(tp[tp >= 20].index); y = [int(p in truth) for p in PT.index]
         auc = {lbl: float(roc_auc_score(y, PT[col].fillna(0))) for k, col, lbl, _ in BR.DETECTORS if col in PT}
         auc["Nexus Brain (fused)"] = float(roc_auc_score(y, sc.reindex(PT.index)))
-        held = [p for p in PT.index if s["L"][(s["L"].provider_id == p) & s["L"]._scenario.str.startswith("S9")].shape[0] >= 20]
+        held = [p for p in PT.index if s["L"][(s["L"].provider_id == p) & s["L"]._scenario.str.startswith(("S9", "influx"))].shape[0] >= 20]
         auc_held = [dict(provider=PT.at[p, "name"], rules=float(PT.at[p, "rule_score"]), brain=float(sc[p]), brain_rank=int((sc > sc[p]).sum() + 1), risk=float(PT.at[p, "risk"]), case_id=case_of.get(p)) for p in held]
     else:
         auc_held = []
@@ -1257,6 +1242,250 @@ def graph_inspect(id: str):
 def graph_path(a: str, b: str):
     s, lg = _lg(); out = LGM.path(s, lg, a, b)
     if out is None: raise HTTPException(404, "Unknown entity")
+    return J(out)
+
+
+# ---------------------------------------------------------------- operations: pre-payment, outcomes, rules, documents, tips
+import ops as OP
+from fastapi import UploadFile as _UF, File as _File
+
+
+def _ix():
+    s = S()
+    if s.get("_ix_run") != s["run"]["run_id"]: s["_ix"] = OP.prepay_index(s); s["_ix_run"] = s["run"]["run_id"]
+    return s, s["_ix"]
+
+
+@app.get("/api/prepay/examples")
+def prepay_examples():
+    s = S(); return J(OP.examples(s))
+
+
+@app.post("/api/prepay/score")
+async def prepay_score(req: Request):
+    u = me(req); s, ix = _ix(); b = json.loads(await req.body() or b"{}")
+    if not b.get("lines"): raise HTTPException(400, "Add at least one claim line")
+    try: out = OP.prepay_score(s, ix, b)
+    except Exception as e: raise HTTPException(400, f"Could not score claim: {e}")
+    c = db(); cur = c.execute("INSERT INTO prepay_log(ts,user_name,claim,recommendation,score,reasons,amount,status) VALUES(?,?,?,?,?,?,?,?)",
+                              (time.strftime("%Y-%m-%d %H:%M:%S"), u["name"], json.dumps(b), out["recommendation"], out["score"], json.dumps(out["reasons"]), out["expected_paid"],
+                               "pending" if out["recommendation"] == "PEND" else "paid"))
+    out["id"] = cur.lastrowid; c.commit(); c.close()
+    audit(u["name"], u["role"], "prepay_check", str(out["id"]), out["recommendation"])
+    return J(out)
+
+
+@app.get("/api/prepay")
+def prepay_log(limit: int = 50):
+    c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM prepay_log ORDER BY id DESC LIMIT ?", (limit,)).fetchall()]; c.close()
+    for r in rows: r["claim"] = json.loads(r["claim"]); r["reasons"] = json.loads(r["reasons"])
+    return J(rows)
+
+
+@app.post("/api/prepay/{pid}/resolve")
+async def prepay_resolve(pid: int, req: Request):
+    u = need(req, "investigate"); b = json.loads(await req.body() or b"{}")
+    res, note = b.get("resolution"), (b.get("note") or "").strip()
+    if res not in ("Released for payment", "Adjusted", "Denied by reviewer"): raise HTTPException(400, "Unknown resolution")
+    if len(note) < 10: raise HTTPException(400, "Write a short rationale (10+ characters)")
+    c = db(); r = c.execute("SELECT * FROM prepay_log WHERE id=?", (pid,)).fetchone()
+    if not r or r["status"] != "pending": c.close(); raise HTTPException(409, "Not a pending claim")
+    avoided = 0.0 if res == "Released for payment" else float(b.get("avoided") if b.get("avoided") is not None else r["amount"] or 0)
+    c.execute("UPDATE prepay_log SET status='resolved', resolved_by=?, resolution=?, avoided=?, resolved_ts=? WHERE id=?", (u["name"], f"{res}: {note}", avoided, time.strftime("%Y-%m-%d %H:%M:%S"), pid))
+    c.commit(); c.close(); audit(u["name"], u["role"], "prepay_resolved", str(pid), f"{res} avoided={avoided:.2f}")
+    return J(dict(ok=True, avoided=avoided))
+
+
+@app.get("/api/cases/{cid}/recovery")
+def recovery_get(cid: str):
+    c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM recoveries WHERE case_id=? ORDER BY id", (cid,)).fetchall()]; c.close()
+    return J(dict(history=rows, stages=OP.STAGES))
+
+
+@app.post("/api/cases/{cid}/recovery")
+async def recovery_add(cid: str, req: Request):
+    u = need(req, "assign"); b = json.loads(await req.body() or b"{}")
+    if b.get("stage") not in OP.STAGES: raise HTTPException(400, "Unknown stage")
+    try: ident, recv = float(b.get("identified") or 0), float(b.get("recovered") or 0)
+    except ValueError: raise HTTPException(400, "Amounts must be numbers")
+    if recv > ident: raise HTTPException(400, "Recovered cannot exceed identified")
+    c = db(); c.execute("INSERT INTO recoveries(case_id,stage,identified,recovered,note,user_name,ts) VALUES(?,?,?,?,?,?,?)", (cid, b["stage"], ident, recv, (b.get("note") or "")[:500], u["name"], time.strftime("%Y-%m-%d %H:%M:%S")))
+    c.commit(); c.close(); audit(u["name"], u["role"], "recovery_update", cid, f"{b['stage']} identified={ident} recovered={recv}")
+    return J(dict(ok=True))
+
+
+@app.get("/api/outcomes")
+def outcomes_api(rate: float = 65, frm: str = "", to: str = ""):
+    s = S(); c = db(); out = OP.outcomes(c, s, rate, frm or None, to or None); c.close(); return J(out)
+
+
+@app.get("/api/reports/siu.csv")
+def siu_csv(req: Request, rate: float = 65, frm: str = "", to: str = ""):
+    s = S(); c = db(); o = OP.outcomes(c, s, rate, frm or None, to or None); c.close()
+    q = {r["case_id"]: r for r in briefs.rank(s, statuses=statuses())["queue"]}
+    st = statuses()
+    rows = [dict(case_id=cid, title=r["title"], type=r["type"], status=st.get(cid, "New"), priority=r["priority"], risk=r["risk"], exposure=r["exposure"], members=r["members"],
+                 identified=next((x["identified"] for x in o["recoveries"] if x["case_id"] == cid), 0), recovered=next((x["recovered"] for x in o["recoveries"] if x["case_id"] == cid), 0)) for cid, r in q.items()]
+    u = me(req); audit(u["name"], u["role"], "report_export", "siu.csv")
+    return PlainTextResponse(pd.DataFrame(rows).to_csv(index=False), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=spotzi-siu-report.csv"})
+
+
+@app.get("/api/rules/custom")
+def rules_list():
+    c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM custom_rules ORDER BY id DESC").fetchall()]; c.close()
+    for r in rows: r["conditions"] = json.loads(r["conditions"])
+    from rules import CUSTOM_FIELDS, CUSTOM_OPS
+    return J(dict(rules=rows, fields=CUSTOM_FIELDS, ops=sorted(CUSTOM_OPS)))
+
+
+@app.post("/api/rules/preview")
+async def rules_preview(req: Request):
+    need(req, "run_models"); s = S(); b = json.loads(await req.body() or b"{}")
+    from rules import custom_mask
+    L = s["L"].assign(_age=s["L"].member_id.map(s["T"]["members"].set_index("member_id").age))
+    try: m = custom_mask(L, b.get("conditions") or [])
+    except Exception as e: raise HTTPException(400, str(e))
+    if not (b.get("conditions")): raise HTTPException(400, "Add at least one condition")
+    hit = L[m]
+    in_case = {p for c_ in s["cases"] for p in c_["primary"]}
+    top = hit.groupby("provider_id").agg(lines=("line_id", "size"), paid=("paid", "sum")).sort_values("lines", ascending=False).head(8)
+    out = dict(lines=int(len(hit)), share=float(len(hit) / len(L)), providers=int(hit.provider_id.nunique()), members=int(hit.member_id.nunique()), paid=float(hit.paid.sum()),
+               already_flagged=float(hit.any_flag.mean()) if len(hit) else 0.0, in_cases=float(hit.provider_id.isin(in_case).mean()) if len(hit) else 0.0,
+               top=[dict(provider_id=p, name=s["PT"].at[p, "name"], lines=int(r.lines), paid=float(r.paid)) for p, r in top.iterrows()],
+               sample=[dict(line_id=r.line_id, date=str(r.service_date.date()), provider=r.provider_id, code=r.code, units=int(r.units), paid=float(r.paid)) for r in hit.head(8).itertuples()])
+    out["warning"] = "Very broad: this rule would flag more than 5% of all claim lines." if out["share"] > .05 else None
+    return J(out)
+
+
+@app.post("/api/rules/custom")
+async def rules_save(req: Request):
+    u = need(req, "run_models"); b = json.loads(await req.body() or b"{}")
+    name = (b.get("name") or "").strip()
+    if len(name) < 4 or not b.get("conditions"): raise HTTPException(400, "Give the rule a name and at least one condition")
+    c = db(); c.execute("INSERT INTO custom_rules(name,conditions,active,author,ts,note) VALUES(?,?,?,?,?,?)", (name, json.dumps(b["conditions"]), 0, u["name"], time.strftime("%Y-%m-%d %H:%M:%S"), (b.get("note") or "")[:300]))
+    c.commit(); c.close(); audit(u["name"], u["role"], "custom_rule_saved", name, json.dumps(b["conditions"])[:200])
+    return J(dict(ok=True))
+
+
+@app.post("/api/rules/custom/{rid}/toggle")
+def rules_toggle(rid: int, req: Request):
+    u = need(req, "run_models"); c = db(); r = c.execute("SELECT * FROM custom_rules WHERE id=?", (rid,)).fetchone()
+    if not r: c.close(); raise HTTPException(404)
+    c.execute("UPDATE custom_rules SET active=? WHERE id=?", (0 if r["active"] else 1, rid)); c.commit(); c.close()
+    audit(u["name"], u["role"], "custom_rule_" + ("deactivated" if r["active"] else "activated"), r["name"])
+    return J(dict(ok=True, active=not r["active"]))
+
+
+@app.post("/api/rules/apply")
+def rules_apply(req: Request):
+    u = need(req, "run_models"); ok = start_run(data_dir=STATE.get("data_dir"))
+    audit(u["name"], u["role"], "custom_rules_applied", ""); return J(dict(started=ok))
+
+
+@app.post("/api/cases/{cid}/documents")
+async def doc_upload(cid: str, req: Request, files: list[_UF] = _File(...)):
+    u = need(req, "investigate")
+    if not _case_obj(S(), cid): raise HTTPException(404)
+    out = []
+    for f in files:
+        data = await f.read()
+        try: mime, sha = OP.check_upload(f.filename, data)
+        except ValueError as e: raise HTTPException(400, f"{f.filename}: {e}")
+        d = ROOT / "data" / "documents" / OP.safe_name(cid); d.mkdir(parents=True, exist_ok=True)
+        c = db(); cur = c.execute("INSERT INTO case_documents(case_id,filename,mime,size,path,sha256,uploaded_by,ts,note) VALUES(?,?,?,?,?,?,?,?,?)",
+                                  (cid, OP.safe_name(f.filename), mime, len(data), "", sha, u["name"], time.strftime("%Y-%m-%d %H:%M:%S"), ""))
+        did = cur.lastrowid; p = d / f"{did}_{OP.safe_name(f.filename)}"; p.write_bytes(data)
+        c.execute("UPDATE case_documents SET path=? WHERE id=?", (str(p.relative_to(ROOT)), did)); c.commit(); c.close()
+        audit(u["name"], u["role"], "document_uploaded", cid, f"{OP.safe_name(f.filename)} sha256={sha[:12]}")
+        out.append(dict(id=did, filename=OP.safe_name(f.filename)))
+    return J(dict(ok=True, files=out))
+
+
+@app.get("/api/cases/{cid}/documents")
+def doc_list(cid: str):
+    c = db(); rows = [dict(r) for r in c.execute("SELECT id, filename, mime, size, sha256, uploaded_by, ts FROM case_documents WHERE case_id=? ORDER BY id", (cid,)).fetchall()]; c.close()
+    return J(rows)
+
+
+@app.get("/api/documents/{did}")
+def doc_download(did: int, req: Request):
+    u = me(req); c = db(); r = c.execute("SELECT * FROM case_documents WHERE id=?", (did,)).fetchone(); c.close()
+    if not r: raise HTTPException(404)
+    audit(u["name"], u["role"], "document_downloaded", r["case_id"], r["filename"])
+    return FileResponse(ROOT / r["path"], media_type=r["mime"], filename=r["filename"], headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"})
+
+
+@app.post("/api/tips")
+async def tip_create(req: Request):
+    u = me(req); b = json.loads(await req.body() or b"{}")
+    if b.get("channel") not in ("Hotline", "Member", "Employee", "Provider", "Law enforcement", "Other"): raise HTTPException(400, "Choose a channel")
+    if len((b.get("allegation") or "").strip()) < 15: raise HTTPException(400, "Describe the allegation (15+ characters)")
+    c = db(); cur = c.execute("INSERT INTO tips(ts,channel,subject_type,subject_id,allegation,received_by,status) VALUES(?,?,?,?,?,?,?)",
+                              (time.strftime("%Y-%m-%d %H:%M:%S"), b["channel"], b.get("subject_type") or "provider", (b.get("subject_id") or "").strip(), b["allegation"].strip()[:4000], u["name"], "new"))
+    tid = cur.lastrowid
+    sups = [r["username"] for r in c.execute("SELECT username FROM users WHERE role IN ('supervisor','admin') AND active=1").fetchall()]; c.commit(); c.close()
+    for su in sups: notify(su, "tip", f"New tip #{tid} received ({b['channel']})", "tips")
+    audit(u["name"], u["role"], "tip_received", str(tid), b["channel"])
+    return J(dict(ok=True, id=tid))
+
+
+@app.get("/api/tips")
+def tip_list():
+    s = S(); c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM tips ORDER BY id DESC").fetchall()]; c.close()
+    case_of = {p: c_["case_id"] for c_ in s["cases"] for p in c_["providers"]}
+    for r in rows:
+        sid = r["subject_id"]
+        r["subject_name"] = s["PT"].at[sid, "name"] if sid in s["PT"].index else sid
+        r["suggested_case"] = case_of.get(sid)
+        r["subject_risk"] = float(s["PT"].at[sid, "risk"]) if sid in s["PT"].index else None
+    return J(rows)
+
+
+@app.post("/api/tips/{tid}/triage")
+async def tip_triage(tid: int, req: Request):
+    u = need(req, "assign"); b = json.loads(await req.body() or b"{}")
+    act, note = b.get("action"), (b.get("note") or "").strip()
+    if act not in ("link", "close", "watch") or len(note) < 5: raise HTTPException(400, "Choose an action and add a note")
+    cid = b.get("case_id") if act == "link" else None
+    if act == "link" and not _case_obj(S(), cid or ""): raise HTTPException(400, "Pick an existing case to link")
+    c = db(); c.execute("UPDATE tips SET status=?, case_id=?, triaged_by=?, triage_note=? WHERE id=?", ({"link": "linked", "close": "closed", "watch": "watchlist"}[act], cid, u["name"], note, tid)); c.commit(); c.close()
+    audit(u["name"], u["role"], "tip_triaged", str(tid), f"{act} {cid or ''}")
+    return J(dict(ok=True))
+
+
+@app.get("/api/data/public")
+def public_list():
+    ext = ROOT / "data" / "external"
+    return J(dict(current=(STATE["S"] or {}).get("run", {}).get("dataset", "synthetic"), datasets=[
+        dict(key="synpuf", name="CMS DE-SynPUF Sample 1", detail="Synthetic Medicare claims 2008–2010 · hospitals & outpatient facilities ↔ patients ↔ admissions (doctor IDs are scrambled by CMS, so not used)",
+             available=(ext / "synpuf").exists() and any((ext / "synpuf").glob("*Inpatient*.csv"))),
+        dict(key="synthea", name="Synthea sample", detail="Synthetic patient records · clinicians ↔ patients ↔ organisations · 108 patients",
+             available=(ext / "synthea" / "patients.csv").exists())]))
+
+
+@app.post("/api/data/public")
+async def public_load(req: Request):
+    u = need(req, "run_models"); b = json.loads(await req.body() or b"{}")
+    import importers as IM
+    key = b.get("dataset"); ext = ROOT / "data" / "external"; ws = ROOT / "data" / "workspaces" / f"{key}-sample"
+    try:
+        if key == "synpuf": rep = IM.synpuf(ext / "synpuf", ws, n_benes=max(500, min(int(b.get("patients", 4000)), 20000)))
+        elif key == "synthea": rep = IM.synthea(ext / "synthea", ws)
+        else: raise HTTPException(400, "Unknown dataset")
+    except FileNotFoundError: raise HTTPException(409, "Dataset files are not downloaded on this server")
+    ok = start_run(data_dir=ws)
+    audit(u["name"], u["role"], "dataset_switch", key, json.dumps(rep)[:300])
+    return J(dict(started=ok, report=rep))
+
+
+@app.get("/api/evaluation")
+def evaluation_reports():
+    d = ROOT / "data" / "evaluation"
+    out = []
+    for f in sorted(d.glob("*.json")) if d.exists() else []:
+        try:
+            r = json.loads(f.read_text()); r.pop("per_provider", None); out.append(r)
+        except Exception: pass
     return J(out)
 
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")

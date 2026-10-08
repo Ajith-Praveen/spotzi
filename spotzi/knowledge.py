@@ -143,7 +143,7 @@ Related: """ + " ".join(f"[[rule/{k.lower()}]]" for k in c["rules"]) + f" [[sche
 
 def _scheme_for(c):
     if not c["rules"] or c.get("brain_lead"): return "behaviour-shift"
-    return {"DUP": "dup", "REPEAT": "repeat", "UNBUNDLE": "unbundle", "UPCODE": "upcode", "PHANTOM": "phantom", "TIMING": "timing", "EXCESS": "excess"}[c["rules"][0]]
+    return {"DUP": "dup", "REPEAT": "repeat", "UNBUNDLE": "unbundle", "UPCODE": "upcode", "PHANTOM": "phantom", "TIMING": "timing", "EXCESS": "excess", "MUE": "excess", "EXCLUDED": "phantom", "CUSTOM": "dup"}.get(c["rules"][0], "dup")
 
 
 def decision_page(c, d):

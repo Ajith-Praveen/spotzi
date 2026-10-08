@@ -1,0 +1,290 @@
+{
+ "dataset": "synthea",
+ "import_report": {
+  "dataset": "Synthea sample",
+  "lines": 8502,
+  "claims": 3022,
+  "members": 108,
+  "providers": 200,
+  "organisations": 200,
+  "period": "2023-08-18 \u2192 2026-08-16"
+ },
+ "injection": {
+  "bad_providers": 12,
+  "benign_providers": 3,
+  "injected_lines": 1015,
+  "labelled_fraud_lines": 1170,
+  "schemes": {
+   "dup": 2,
+   "units": 2,
+   "repeat": 2,
+   "upcode": 2,
+   "deceased": 2,
+   "influx": 2
+  }
+ },
+ "seconds": 10.0,
+ "providers": 200,
+ "lines": 9517,
+ "cases": 12,
+ "bad_caught": 8,
+ "bad_total": 12,
+ "benign_escalated": 0,
+ "benign_total": 0,
+ "precision_at_5": 1.0,
+ "precision_at_10": 0.7,
+ "case_precision": 0.6666666666666666,
+ "line_precision": 0.19562043795620437,
+ "line_recall": 0.11452991452991453,
+ "detector_auc": {
+  "Rules": 0.7138741134751774,
+  "Isolation Forest": 0.8395390070921986,
+  "Case-mix twin": 0.5390070921985817,
+  "Care pathway": 0.6728723404255319,
+  "Change-point": 0.9126773049645389,
+  "Code mix": 0.8608156028368795,
+  "Nexus Brain": 0.9445921985815603,
+  "Combined risk": 0.8612588652482269
+ },
+ "detector_ap": {
+  "Nexus Brain": 0.7463664478796058,
+  "Combined risk": 0.5427275865020963
+ },
+ "forecast": {
+  "30": {
+   "test_rows": 247,
+   "positives": 34,
+   "base_rate": 0.13765182186234817,
+   "train_anchors": 12,
+   "eval_anchors": 6,
+   "logistic": {
+    "auc": 0.9212924606462303,
+    "ap": 0.8959013488919001,
+    "brier": 0.058286836959228865,
+    "ece": 0.0754858189784371
+   },
+   "gboost": {
+    "auc": 0.9203949185307925,
+    "ap": 0.8645945851701642,
+    "brier": 0.076145725234009,
+    "ece": 0.09489091732718655
+   },
+   "baseline_auc_flag_share": 0.5934134217067109,
+   "auc": 0.9203949185307925,
+   "ap": 0.8645945851701642,
+   "brier": 0.076145725234009,
+   "ece": 0.09489091732718655,
+   "chosen": "gboost"
+  },
+  "60": {
+   "test_rows": 247,
+   "positives": 38,
+   "base_rate": 0.15384615384615385,
+   "train_anchors": 12,
+   "eval_anchors": 6,
+   "logistic": {
+    "auc": 0.9154495089398136,
+    "ap": 0.8622621148746974,
+    "brier": 0.058419920408750735,
+    "ece": 0.052232409643884876
+   },
+   "gboost": {
+    "auc": 0.9080206497104004,
+    "ap": 0.8280964484998741,
+    "brier": 0.0679182130037636,
+    "ece": 0.06967868849018458
+   },
+   "baseline_auc_flag_share": 0.5567237471669604,
+   "auc": 0.9080206497104004,
+   "ap": 0.8280964484998741,
+   "brier": 0.0679182130037636,
+   "ece": 0.06967868849018458,
+   "chosen": "gboost"
+  },
+  "90": {
+   "test_rows": 247,
+   "positives": 38,
+   "base_rate": 0.15384615384615385,
+   "train_anchors": 12,
+   "eval_anchors": 6,
+   "logistic": {
+    "auc": 0.9131830773105011,
+    "ap": 0.8610850715379864,
+    "brier": 0.05349668922143942,
+    "ece": 0.04638137818626048
+   },
+   "gboost": {
+    "auc": 0.9105389070763031,
+    "ap": 0.831190680703646,
+    "brier": 0.060595942284172394,
+    "ece": 0.05801966903657038
+   },
+   "baseline_auc_flag_share": 0.5567237471669604,
+   "auc": 0.9105389070763031,
+   "ap": 0.831190680703646,
+   "brier": 0.060595942284172394,
+   "ece": 0.05801966903657038,
+   "chosen": "gboost"
+  }
+ },
+ "forecast_model": {
+  "chosen": "gboost",
+  "cv_logloss": {
+   "logistic": 0.10277277732389246,
+   "gboost": 0.07248513377535906
+  },
+  "train_anchors": 12,
+  "eval_anchors": 6,
+  "cut": "2025-11-30",
+  "eval_from": "2026-02-28"
+ },
+ "per_scheme": [
+  {
+   "scheme": "deceased",
+   "providers": 2,
+   "caught": 2,
+   "median_brain_rank": 4.0
+  },
+  {
+   "scheme": "dup",
+   "providers": 2,
+   "caught": 1,
+   "median_brain_rank": 52.0
+  },
+  {
+   "scheme": "influx",
+   "providers": 2,
+   "caught": 1,
+   "median_brain_rank": 10.5
+  },
+  {
+   "scheme": "repeat",
+   "providers": 2,
+   "caught": 1,
+   "median_brain_rank": 10.0
+  },
+  {
+   "scheme": "units",
+   "providers": 2,
+   "caught": 2,
+   "median_brain_rank": 13.0
+  },
+  {
+   "scheme": "upcode",
+   "providers": 2,
+   "caught": 1,
+   "median_brain_rank": 12.0
+  }
+ ],
+ "per_provider": [
+  {
+   "scheme": "dup",
+   "provider": "PR-0225",
+   "in_case": false,
+   "risk": 0.0,
+   "rules": 0.0,
+   "brain": 0.13,
+   "brain_rank": 100
+  },
+  {
+   "scheme": "dup",
+   "provider": "PR-0236",
+   "in_case": true,
+   "risk": 70.0,
+   "rules": 0.92,
+   "brain": 0.99,
+   "brain_rank": 4
+  },
+  {
+   "scheme": "units",
+   "provider": "PR-0019",
+   "in_case": true,
+   "risk": 55.3,
+   "rules": 0.6,
+   "brain": 1.0,
+   "brain_rank": 2
+  },
+  {
+   "scheme": "units",
+   "provider": "PR-0174",
+   "in_case": true,
+   "risk": 38.5,
+   "rules": 0.56,
+   "brain": 0.65,
+   "brain_rank": 24
+  },
+  {
+   "scheme": "repeat",
+   "provider": "PR-0097",
+   "in_case": true,
+   "risk": 67.8,
+   "rules": 0.8,
+   "brain": 1.0,
+   "brain_rank": 1
+  },
+  {
+   "scheme": "repeat",
+   "provider": "PR-0107",
+   "in_case": false,
+   "risk": 2.7,
+   "rules": 0.0,
+   "brain": 0.71,
+   "brain_rank": 19
+  },
+  {
+   "scheme": "upcode",
+   "provider": "PR-0238",
+   "in_case": true,
+   "risk": 15.1,
+   "rules": 0.0,
+   "brain": 0.96,
+   "brain_rank": 11
+  },
+  {
+   "scheme": "upcode",
+   "provider": "PR-0234",
+   "in_case": false,
+   "risk": 12.2,
+   "rules": 0.0,
+   "brain": 0.9,
+   "brain_rank": 13
+  },
+  {
+   "scheme": "deceased",
+   "provider": "PR-0239",
+   "in_case": true,
+   "risk": 55.0,
+   "rules": 0.8,
+   "brain": 1.0,
+   "brain_rank": 3
+  },
+  {
+   "scheme": "deceased",
+   "provider": "PR-0249",
+   "in_case": true,
+   "risk": 54.7,
+   "rules": 0.8,
+   "brain": 0.99,
+   "brain_rank": 5
+  },
+  {
+   "scheme": "influx",
+   "provider": "PR-0001",
+   "in_case": true,
+   "risk": 15.9,
+   "rules": 0.0,
+   "brain": 0.99,
+   "brain_rank": 6
+  },
+  {
+   "scheme": "influx",
+   "provider": "PR-0230",
+   "in_case": false,
+   "risk": 15.6,
+   "rules": 0.02,
+   "brain": 0.86,
+   "brain_rank": 15
+  }
+ ],
+ "method": "Background claims are unmodified public synthetic data; labelled schemes and benign look-alikes were injected; labels used only for scoring."
+}

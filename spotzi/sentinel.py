@@ -60,7 +60,8 @@ def case_mix_twin(L, M, end, lookback=180):
     P["shrunk"] = (P.r_paid * .6 + P.r_lines * .4) * P.n_members / (P.n_members + k)
     P["oe_paid"] = P.obs_paid / P.exp_paid.clip(lower=1)
     P["unexplained_paid"] = (P.obs_paid - P.exp_paid).clip(lower=0)
-    fit = dict(r2_paid=float(1 - np.var(y_paid - e_paid) / np.var(y_paid)), r2_lines=float(1 - np.var(y_lines - e_lines) / np.var(y_lines)), rows=int(len(X)))
+    r2 = lambda y, e: float(1 - np.var(y - e) / np.var(y)) if np.var(y) > 0 else 0.0
+    fit = dict(r2_paid=r2(y_paid, e_paid), r2_lines=r2(y_lines, e_lines), rows=int(len(X)))
     return P, fit
 
 

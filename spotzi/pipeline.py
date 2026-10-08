@@ -49,7 +49,7 @@ def _opt(d, name, **kw):
 def load_tables(data_dir=DATA):
     d = Path(data_dir)
     t = {}
-    L = pd.read_csv(d / "claim_lines.csv", dtype={"code": str, "pos": str, "modifier": str})
+    L = pd.read_csv(d / "claim_lines.csv", dtype={"code": str, "pos": str, "modifier": str, "dx": str, "facility_id": str, "referring_provider_id": str}, low_memory=False)
     for k, v in LINE_DEFAULTS.items():
         if k not in L: L[k] = v
     L["service_date"] = pd.to_datetime(L.service_date)
@@ -79,7 +79,10 @@ def load_tables(data_dir=DATA):
     t["stays"] = _opt(d, "inpatient_stays", parse_dates=["admit_date", "discharge_date"])
     t["stays"]["admit_date"] = pd.to_datetime(t["stays"].admit_date); t["stays"]["discharge_date"] = pd.to_datetime(t["stays"].discharge_date)
     t["facilities"] = _opt(d, "facilities")
-    tp = d.parent / "hidden" / "scenario_truth.csv"
+    ex = d / "exclusions.csv"
+    t["exclusions"] = pd.read_csv(ex) if ex.exists() else pd.DataFrame(columns=["provider_id", "excl_date", "reinstate_date", "source"])
+    tp = d / "hidden" / "scenario_truth.csv"            # per-workspace labels (injected evaluation scenarios)
+    if not tp.exists(): tp = d.parent / "hidden" / "scenario_truth.csv"   # built-in synthetic dataset
     t["truth"] = pd.read_csv(tp) if tp.exists() else None
     return t
 
@@ -120,7 +123,8 @@ def case_type(rules, fams, network):
     if {"DME", "HH"} & set(fams) and "PHANTOM" in r and network: return "Equipment / home-health services not plausibly rendered"
     return {"PHANTOM": "Services not plausibly rendered", "TIMING": "Impossible timing and excessive utilization",
             "UPCODE": "Upcoding / level mismatch", "DUP": "Duplicate billing", "REPEAT": "Repeat services / early refills",
-            "UNBUNDLE": "Unbundling", "EXCESS": "Excessive utilization"}[rules[0]]
+            "UNBUNDLE": "Unbundling", "EXCESS": "Excessive utilization", "MUE": "Units above daily limits", "EXCLUDED": "Billing by an excluded provider",
+            "CUSTOM": "Analyst-defined rule matches"}[rules[0]]
 
 
 ACTIONS = {
@@ -131,10 +135,13 @@ ACTIONS = {
     "UPCODE": "Pull a sample of charts and compare documented complexity and time with the billed level.",
     "DUP": "Compare submission timestamps and remittance records for paired lines; check for corrected-claim resubmissions.",
     "EXCESS": "Review treatment plans and medical-necessity documentation; confirm member received services.",
+    "MUE": "Compare billed units with documented quantity, sites and time.",
+    "EXCLUDED": "Confirm the exclusion record; payments to excluded providers are generally not allowed — escalate to compliance (human decision).",
+    "CUSTOM": "Review the analyst-defined rule and its matching lines.",
 }
 
 
-def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
+def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom_rules=None):
     log = []
     t0 = time.time()
 
@@ -155,7 +162,8 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
     prov_family = P.set_index("provider_id").family.to_dict()
 
     # ---- detect (rules) ----
-    L, F, detail = apply_rules(T["lines"], M, T["stays"], P)
+    Lm = T["lines"].assign(_age=T["lines"].member_id.map(M.set_index("member_id").age))
+    L, F, detail = apply_rules(Lm, M, T["stays"], P, T.get("exclusions"), custom_rules)
     L = A.prepare_flags(L, F)
     L["claim_anomaly"] = A.claim_anomaly(L)
     step("Rules + claim anomaly", f"{int(L.any_flag.sum()):,} flagged lines of {len(L):,}; ruleset {RULESET_VERSION}")
@@ -343,12 +351,13 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         flagged_lines = int(sub.any_flag.sum()) if brain_lead else int(len(sub))
         effort = float(np.round(8 + 7 * len(prim) + 1.4 * np.sqrt(flagged_lines) + 0.09 * members, 1))
         top_prov = max(prim, key=lambda p: PT.at[p, "risk"])
-        pid_num = min(int(p.split("-")[1]) for p in prim)
+        suffixes = sorted(p.split("-", 1)[-1] for p in prim)
+        nums = [int(x) for x in suffixes if x.isdigit()]
         net = len(comp) > 1
         title = PT.at[top_prov, "name"] + (f" + {len(comp) - 1} linked" if net else "")
         rules_sorted = [] if brain_lead else sorted(rule_counts, key=lambda k: -rule_paid[k])  # stray hits do not steer a learned-detector lead
         ctype = case_type(rules_sorted, fam, net) if not brain_lead else "Behaviour shift found by learned detectors (no rule fired)"
-        cid = forced_id or f"CS-{pid_num:04d}"
+        cid = forced_id or (f"CS-{min(nums):04d}" if nums else f"CS-{suffixes[0][:12]}")
         lane = "Investigate"
         if brain_lead: lane = "Brain lead"
         elif ev < 35: lane = "Needs more data"

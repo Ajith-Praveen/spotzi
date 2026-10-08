@@ -85,6 +85,30 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 
 **Users & roles** (admin): create users, change roles, deactivate (ends all sessions), reset passwords; users can change their own password.
 
+## Operations (added to close gaps with enterprise FWA platforms)
+
+| Capability | What it does |
+|---|---|
+| **Claim check (pre-payment)** | Scores a claim *before* it is paid in ~2 ms: eligibility and death, inpatient-stay overlap, excluded providers, duplicates against paid history, repeat intervals, unbundling, daily unit limits, impossible hours, excessive visits, level-5 patterns, and whether the provider is already under review. Recommends **Pay**, **Pay + monitor** or **Pend for human review** with reasons — it never denies. Reviewers release, adjust or deny pended claims with a written reason; avoided amounts feed Outcomes. API: `POST /api/prepay/score`. |
+| **Unit-limit edits** | New rule: more units of a service per member per day than is medically plausible (per-code limit table, illustrative values to tune with coding experts). |
+| **Excluded-provider screening** | New rule: claims on or after a provider's exclusion date. Loads `exclusions.csv` (synthetic list in the demo; same columns as an official list export). |
+| **Rule studio** | Analysts build rules from conditions (code, family, place of service, units, paid, weekday, provider/member lines per day, member age…), preview exactly what would be flagged (lines, providers, paid, overlap with existing rules, share already in cases, warning if too broad), save as draft, activate, and re-run. Active rules flow into cases, the Brain and briefs. |
+| **Recoveries & ROI** | Per case: identified → demand letter → repayment plan → recovered / written off. Outcomes page totals identified, recovered and avoided-before-payment money against review hours × hourly cost. Gross flagged exposure is never counted as savings. |
+| **SIU report** | Outcomes summary (decisions, referrals, recoveries by scheme, pre-payment results) with CSV export and print layout. |
+| **Case documents** | Upload records to a case (PDF, images, text, CSV, Word, Excel; ≤20 MB; content checked against extension; SHA-256 recorded); downloads require sign-in and are audited. |
+| **Tips intake** | Log hotline / member / employee / provider / law-enforcement tips; supervisors are notified, triage each tip (link to case, watchlist, close) with a note; SpotZⁱ suggests the matching open case; linked tips appear on the case brief. |
+
+## Public datasets
+
+Downloaded to `spotzi/data/external/` (git-ignored) and importable from **Data & pipeline → Public synthetic datasets**:
+
+| Dataset | Source | What SpotZⁱ imports | Notes |
+|---|---|---|---|
+| **CMS DE-SynPUF Sample 1** (2008–2010 synthetic Medicare claims) | cms.gov / downloads.cms.gov — beneficiary summary 2008 & 2009, inpatient, outpatient, carrier 1A (~158 MB zipped) | Patients (age, sex, state, death date), **hospitals and outpatient facilities** (CCN), inpatient stays, outpatient services (repeated codes on a claim become units; claim payment allocated across lines) | CMS deliberately scrambles physician NPIs and tax IDs, so doctor-level networks would be noise and are not imported. Default sample 4,000 patients (~144k lines, ~70 s analysis). |
+| **Synthea sample** | synthetichealth.github.io (~6 MB) | Patients (age, sex, county only — no names, SSNs or addresses), clinicians, organisations (as shared-ownership links), charges with payments; last 3 years | Small (108 patients) and thin network. |
+
+Neither has fraud labels: detection, the Brain, link analysis, briefs and the decision chain run; forecasts show "unavailable" and accuracy is not measured. The SpotZⁱ synthetic dataset remains the reference demo for doctor networks and seeded schemes.
+
 ## 4. Data layer
 
 | Table | Contents |
@@ -151,7 +175,6 @@ Detector weights start at expert priors and update from every recorded decision 
 | Model | Status |
 |---|---|
 | **Own model trained on Kaggle provider-fraud data** (`kaggle_model/`) | Code ready; transfers relative provider behaviour from public Medicare-style claims. Needs your Kaggle token to train. |
-| **Second-brain LLM** (blind dossier review) | Code ready; uses Anthropic or any local OpenAI-compatible server. Citation-checked; not required. |
 | **AI narrative & copilot** | Code ready; grounded in the case evidence package, citation-verified. Not required. |
 
 ---
@@ -254,7 +277,6 @@ Helps the investigator test legitimate against suspicious explanations before de
 - **Knowledge** — search, approved pages by kind, review queue with lint, version history, page view with backlinks.
 - **Network explorer** — whole-portfolio graph tiled by component, risk filter, search, Louvain communities.
 - **Providers & claims** — provider table (risk, rules, anomaly, graph, Sentinel, own model, forecast), provider page (scores, rule hits, anomaly drivers, monthly chart, top codes, relationships), claims explorer with filters, member timeline against inpatient stays.
-- **Second brain (LLM)** — optional blind LLM review with agreement quadrant (requires a model).
 - **Data & pipeline** — validation results, step-by-step run log, table schemas, code reference, regenerate with any seed and size.
 - **Governance** — principles, limitations, synthetic self-evaluation, forecast model card with calibration plots, Sentinel model card, own-model card, rule catalogue (benign explanations + distinguishing checks), decision log, audit trail.
 
@@ -297,10 +319,10 @@ server.py (FastAPI) ─┬─ briefs.py      (ranking, case detail, Markdown bri
                      ├─ dbcompat.py    (one SQL API over PostgreSQL / SQLite)
                      └─ PostgreSQL: decisions, audit, users, sessions, lab events, blueprints, wiki, precedents, notes, outbox, scope edits
 static/ (vanilla JS single-page app, no build step)
-tests/test_spotzi.py (28 product-guarantee tests, standard-library unittest)
+tests/test_spotzi.py (34 product-guarantee tests, standard-library unittest)
 ```
 
-**Main API groups:** `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/secondbrain` · `/api/llm/status`.
+**Main API groups:** `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/llm/status`.
 
 ---
 

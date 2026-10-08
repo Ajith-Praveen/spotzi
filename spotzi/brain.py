@@ -61,7 +61,10 @@ def change_points(L, M, providers):
             if mg.lines.iloc[t:].sum() < 15: continue
             dz = (b.mean() - a.mean()) / (a.std().fillna(0) + .15 * a.mean().abs() + .1)
             js = _js(cm.iloc[:t].sum().values, cm.iloc[t:].sum().values)
-            score = float(np.sqrt((dz ** 2).mean()) + 6 * js) * min(1.0, (n - t) / 4)
+            volume = float(np.sqrt((dz[["volume", "members", "new members"]] ** 2).mean()))
+            composition = 6 * js + abs(float(dz["out-of-region share"])) + .5 * abs(float(dz["paid per line"]))
+            # who is treated and how changes matters more than raw growth (legitimate expansion grows volume, keeps its mix)
+            score = float(composition + .35 * volume + .25 * volume * min(1.0, composition)) * min(1.0, (n - t) / 4)
             if score > best[0]: best = (score, t, (dz, js, a.mean(), b.mean()))
         if best[1] is None:
             out[pid] = dict(score=0.0); continue

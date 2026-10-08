@@ -32,6 +32,12 @@ CATALOG = {
         ("No treatment plan supporting frequency", [.70, .05, .20]), ("Intensive program documented", [.10, .82, .15]), ("Records unavailable", [.20, .13, .65])]),
     "DRIFT": dict(name="Sample onset-month encounters and verify member acquisition", minutes=35, outcomes=[
         ("Members recruited or paid to attend; encounters templated", [.70, .04, .15]), ("Documented expansion / new programme", [.08, .80, .15]), ("Records unavailable", [.22, .16, .70])]),
+    "MUE": dict(name="Compare billed units with documented quantity", minutes=15, outcomes=[
+        ("Documentation supports fewer units", [.75, .06, .20]), ("Multiple sites / quantities documented", [.08, .80, .15]), ("Records unavailable", [.17, .14, .65])]),
+    "EXCLUDED": dict(name="Confirm the exclusion record", minutes=10, outcomes=[
+        ("Exclusion confirmed, no reinstatement", [.90, .03, .10]), ("Reinstated or identity mismatch", [.04, .90, .20]), ("Cannot confirm", [.06, .07, .70])]),
+    "CUSTOM": dict(name="Review analyst rule matches", minutes=20, outcomes=[
+        ("Matches reflect the intended pattern", [.70, .10, .25]), ("Rule too broad for this provider", [.10, .75, .20]), ("Unclear", [.20, .15, .55])]),
     "GRAPH": dict(name="Verify ownership / relationship between linked providers", minutes=20, outcomes=[
         ("Undisclosed common control confirmed", [.55, .10, .20]), ("Routine relationship (e.g. chain, shared landlord)", [.15, .70, .30]), ("Cannot verify", [.30, .20, .50])]),
 }

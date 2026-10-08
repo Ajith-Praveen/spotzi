@@ -343,3 +343,70 @@ class HardeningApiTests(unittest.TestCase):
         admin.post("/api/security", json={"mfa_required_roles": []})
         uid = next(u["id"] for u in admin.get("/api/users").json() if u["username"] == "sam")
         admin.post(f"/api/users/{uid}/mfa-reset")
+
+
+# ============================================================================ round 4: competitor-gap features
+class NewRuleTests(unittest.TestCase):
+    def test_mue_and_excluded_rules(self):
+        S = run_once(); L = S["L"]
+        self.assertGreater(int(L.f_MUE.sum()), 0)
+        ex = S["T"]["exclusions"]
+        if len(ex):
+            pid, d = ex.provider_id.iloc[0], pd.Timestamp(ex.excl_date.iloc[0])
+            sub = L[L.provider_id == pid]
+            self.assertTrue(sub[sub.service_date >= d].f_EXCLUDED.all())
+            self.assertFalse(sub[sub.service_date < d].f_EXCLUDED.any())
+
+    def test_custom_rule_language(self):
+        from rules import custom_mask
+        S = run_once(); L = S["L"]
+        m = custom_mask(L, [{"field": "code", "op": "in", "value": "RX-COMP"}, {"field": "paid", "op": ">", "value": "500"}])
+        self.assertTrue(((L[m].code == "RX-COMP") & (L[m].paid > 500)).all())
+        with self.assertRaises(ValueError): custom_mask(L, [{"field": "__class__", "op": "=", "value": "x"}])
+
+
+class PrepayTests(unittest.TestCase):
+    def test_recommendations(self):
+        import ops as OP
+        S = run_once(); ix = OP.prepay_index(S); ex = {e["title"]: e["claim"] for e in OP.examples(S)}
+        stay = OP.prepay_score(S, ix, ex["Wheelchair while the patient is in hospital"])
+        self.assertEqual(stay["recommendation"], "PEND"); self.assertTrue(any(r["rule"] == "PHANTOM" for r in stay["reasons"]))
+        clean = OP.prepay_score(S, ix, ex["Routine office visit"])
+        self.assertEqual(clean["recommendation"], "PAY")
+        unknown = OP.prepay_score(S, ix, dict(member_id="M-99999", provider_id="P-9999", service_date="2025-06-01", lines=[{"code": "99213", "units": 1}]))
+        self.assertEqual(unknown["recommendation"], "PEND")
+        self.assertNotIn("DENY", json.dumps(stay))   # never auto-denies
+
+    def test_upload_checks(self):
+        import ops as OP
+        OP.check_upload("a.pdf", b"%PDF-1.4 x")
+        for name, data in (("a.pdf", b"MZ\x90"), ("a.exe", b"MZ"), ("a.html", b"<script>")):
+            with self.assertRaises(ValueError): OP.check_upload(name, data)
+        self.assertEqual(OP.safe_name("../../etc/passwd"), "passwd")
+
+
+# ============================================================================ public datasets
+EXT = ROOT / "data" / "external"
+
+
+@unittest.skipUnless((EXT / "synthea" / "patients.csv").exists(), "Synthea sample not downloaded")
+class SyntheaImportTests(unittest.TestCase):
+    def test_import_and_analyse_without_labels(self):
+        import importers as IM
+        ws = TMP / "synthea"; rep = IM.synthea(EXT / "synthea", ws)
+        self.assertGreater(rep["lines"], 1000)
+        members = pd.read_csv(ws / "members.csv")
+        self.assertFalse({"FIRST", "LAST", "SSN", "ADDRESS"} & set(members.columns), "no direct identifiers imported")
+        S2 = PL.run_pipeline(data_dir=ws)
+        self.assertEqual(S2["run"]["evaluation"], {}); self.assertEqual(S2["run"]["model_choice"]["chosen"], "unavailable")
+
+
+@unittest.skipUnless(any((EXT / "synpuf").glob("*Inpatient*.csv")) if (EXT / "synpuf").exists() else False, "DE-SynPUF not downloaded")
+class SynpufImportTests(unittest.TestCase):
+    def test_import_institutions_and_units(self):
+        import importers as IM
+        ws = TMP / "synpuf"; rep = IM.synpuf(EXT / "synpuf", ws, n_benes=500)
+        L = pd.read_csv(ws / "claim_lines.csv", dtype={"code": str})
+        self.assertTrue(L.provider_id.str.startswith("INST-").all(), "scrambled physician IDs must not become providers")
+        self.assertFalse(L.duplicated(["claim_id", "code"]).any(), "repeated HCPCS on a claim become units, not duplicate lines")
+        self.assertGreater(rep["stays"], 0)
