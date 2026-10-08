@@ -6,7 +6,7 @@
    "fraudulent": 16,
    "cases": 13,
    "claim": {
-    "precision": 0.812,
+    "precision": 0.817,
     "recall": 0.739
    },
    "provider_detectors": {
@@ -202,37 +202,37 @@
    "fraudulent": 15,
    "cases": 12,
    "claim": {
-    "precision": 0.809,
+    "precision": 0.818,
     "recall": 0.747
    },
    "provider_detectors": {
     "risk": {
-     "auc": 0.997,
-     "ap": 0.975
+     "auc": 0.998,
+     "ap": 0.983
     },
     "brain": {
-     "auc": 0.994,
-     "ap": 0.962
+     "auc": 0.995,
+     "ap": 0.965
     },
     "p_fraud": {
      "auc": 0.964,
-     "ap": 0.915
+     "ap": 0.918
     },
     "outcome_p": {
      "auc": 1.0,
      "ap": 1.0
     },
     "rule_score": {
-     "auc": 0.959,
-     "ap": 0.893
+     "auc": 0.963,
+     "ap": 0.922
     },
     "anomaly_pct": {
-     "auc": 0.975,
-     "ap": 0.762
+     "auc": 0.974,
+     "ap": 0.76
     },
     "temporal_pct": {
      "auc": 0.974,
-     "ap": 0.888
+     "ap": 0.89
     },
     "peer_pct": {
      "auc": 0.768,
@@ -319,7 +319,7 @@
      "escalated": 0,
      "stage": {
       "Normal": 2,
-      "Sustained anomaly": 1
+      "Emerging anomaly": 1
      },
      "consensus": {
       "Low": 2,
@@ -377,8 +377,8 @@
      "precision": 1.0
     },
     "Moderate": {
-     "cases": 5,
-     "precision": 0.8
+     "cases": 4,
+     "precision": 1.0
     }
    }
   },
@@ -677,8 +677,8 @@
   },
   {
    "dataset": "held-out world 201",
-   "brier": 0.0193,
-   "ece": 0.0154,
+   "brier": 0.0174,
+   "ece": 0.0125,
    "reliability": [
     {
      "mean_predicted": 0.005,
@@ -721,7 +721,7 @@
      "n": 13
     },
     {
-     "mean_predicted": 0.184,
+     "mean_predicted": 0.154,
      "observed": 0.154,
      "n": 13
     },
@@ -762,15 +762,15 @@
      "recall": 0.8
     },
     "balanced (F1)": {
-     "review_top_k": 16,
+     "review_top_k": 15,
      "threshold": 0.5,
-     "precision": 0.875,
+     "precision": 0.933,
      "recall": 0.933
     },
     "high capacity (F2)": {
-     "review_top_k": 16,
+     "review_top_k": 15,
      "threshold": 0.5,
-     "precision": 0.875,
+     "precision": 0.933,
      "recall": 0.933
     }
    }
@@ -984,7 +984,7 @@
   "dq_dropped": true,
   "legit_risk_inflated": 1
  },
- "generated": "2026-10-09 01:35:40",
+ "generated": "2026-10-09 02:00:12",
  "gap": {
   "reference_providers": 738,
   "datasets": {
@@ -1937,7 +1937,7 @@
   },
   {
    "attack": "scheme intensity 25%",
-   "detected": 12,
+   "detected": 11,
    "of": 16,
    "by_type": {
     "duplicate": "1/1",
@@ -1945,7 +1945,7 @@
     "excluded_provider": "1/1",
     "impossible_timing": "1/1",
     "phantom": "3/4",
-    "recruitment": "1/2",
+    "recruitment": "0/2",
     "unbundling": "1/2",
     "upcoding": "3/3"
    }
@@ -1967,15 +1967,16 @@
   },
   {
    "attack": "mimicry: upcode to level 4 instead of 5",
-   "detected": 1,
+   "detected": 2,
    "of": 2,
    "note": "Level-5 rule no longer fires; learned detectors must carry it"
   },
   {
    "attack": "split billing across a second identity (shared owner/address/bank)",
-   "detected": 14,
+   "detected": 16,
    "of": 16,
-   "both_identities_in_one_case": 15
+   "both_identities_in_one_case": 16,
+   "note": "entity resolution merges identities sharing owner, address and bank account"
   }
  ],
  "delay": {
@@ -2019,8 +2020,8 @@
     "provider_id": "P-0009",
     "fraud_type": "recruitment",
     "fraud_start": "2025-03-03",
-    "first_case_cutoff": "2025-04-30",
-    "days_to_case": 58,
+    "first_case_cutoff": "2025-06-30",
+    "days_to_case": 119,
     "first_stage_cutoff": "2024-12-31",
     "days_to_early_warning": -62
    },
@@ -2180,7 +2181,7 @@
    "held-out world 201": {
     "base": {
      "brain_auc": 0.994,
-     "brain_ap": 0.959,
+     "brain_ap": 0.963,
      "cases": 12,
      "caught": 15,
      "of": 15,
@@ -2188,8 +2189,8 @@
      "legit_escalated": 0
     },
     "+temporal": {
-     "brain_auc": 0.994,
-     "brain_ap": 0.962,
+     "brain_auc": 0.995,
+     "brain_ap": 0.965,
      "cases": 12,
      "caught": 15,
      "of": 15,
@@ -2255,8 +2256,8 @@
    }
   },
   "mean_brain_ap": {
-   "base": 0.964,
-   "+temporal": 0.965,
+   "base": 0.966,
+   "+temporal": 0.966,
    "+peer": 0.95,
    "+temporal+peer": 0.951
   },
@@ -2272,7 +2273,7 @@
    "+peer": 46,
    "+temporal+peer": 46
   },
-  "chosen": "+temporal",
+  "chosen": "base",
   "rule": "Choose the variant with the most fraud caught minus false leads across datasets; ties \u2192 higher mean AP."
  }
 }

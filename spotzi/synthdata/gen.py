@@ -733,6 +733,8 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     relationships.to_csv(out / "relationships.csv", index=False)
     inv.to_csv(out / "investigations.csv", index=False)
     stay_out.to_csv(out / "inpatient_stays.csv", index=False)
+    # exclusion list (synthetic, like a sanctions/exclusion database): one provider keeps billing after its exclusion date
+    pd.DataFrame([dict(provider_id=P("DME", 5), npi=prov.loc[prov.provider_id == P("DME", 5), "npi"].iat[0], excl_date="2025-05-01", reinstate_date=None, source="synthetic exclusion list")]).to_csv(out / "exclusions.csv", index=False)
     pe = pd.DataFrame(events); pe.insert(0, "event_id", [f"EVT-{i + 1:04d}" for i in range(len(pe))])
     pe.to_csv(out / "provider_events.csv", index=False)
     hid = out.parent / "hidden"; hid.mkdir(parents=True, exist_ok=True)
