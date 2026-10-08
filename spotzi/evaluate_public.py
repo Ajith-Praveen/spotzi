@@ -45,7 +45,7 @@ def run(dataset, patients=4000, seed=21):
                         brain=round(float(PT.at[p, "brain"]), 2), brain_rank=int((PT.brain > PT.at[p, "brain"]).sum() + 1)))
     per = pd.DataFrame(per)
     scheme = per[per.scheme != "benign-growth"].groupby("scheme").agg(providers=("provider", "size"), caught=("in_case", "sum"), median_brain_rank=("brain_rank", "median")).reset_index()
-    out = dict(dataset=dataset, import_report=rep, injection=inj, seconds=round(secs, 1), providers=int(len(PT)), lines=int(len(L)),
+    out = dict(dataset=dataset, seed=seed, import_report=rep, injection=inj, seconds=round(secs, 1), providers=int(len(PT)), lines=int(len(L)),
                cases=len(S["cases"]), bad_caught=int(per[per.scheme != "benign-growth"].in_case.sum()), bad_total=int((per.scheme != "benign-growth").sum()),
                benign_escalated=int(per[per.scheme == "benign-growth"].in_case.sum()), benign_total=int((per.scheme == "benign-growth").sum()),
                precision_at_5=float(np.mean(hits[:5])) if hits else 0, precision_at_10=float(np.mean(hits[:10])) if hits else 0,
@@ -59,8 +59,10 @@ def run(dataset, patients=4000, seed=21):
 
 
 if __name__ == "__main__":
-    for ds in (sys.argv[1:] or ["synthea", "synpuf"]):
-        o = run(ds)
+    args = [a for a in sys.argv[1:] if not a.startswith("--seed=")]
+    seed = int(next((a.split("=")[1] for a in sys.argv[1:] if a.startswith("--seed=")), 99))
+    for ds in (args or ["synthea", "synpuf"]):
+        o = run(ds, seed=seed)
         print(f"\n=== {ds}: {o['lines']:,} lines · {o['providers']} providers · {o['cases']} cases · {o['seconds']} s")
         print(f"caught {o['bad_caught']}/{o['bad_total']} injected bad providers · benign look-alikes escalated {o['benign_escalated']}/{o['benign_total']}")
         print(f"queue precision@5 {o['precision_at_5']:.2f} @10 {o['precision_at_10']:.2f} all {o['case_precision']:.2f} · line precision {o['line_precision']} recall {o['line_recall']}")

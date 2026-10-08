@@ -143,6 +143,10 @@ def synthea(src: Path, out: Path):
                       "billed": pd.to_numeric(ch.AMOUNT, errors="coerce").fillna(0), "paid": pd.to_numeric(ch.paid_amt, errors="coerce").fillna(0), "pos": "11", "dx": None,
                       "modifier": "", "family": "PRO"}).dropna(subset=["member_id", "provider_id"])
     L = L[L.service_date > L.service_date.max() - pd.Timedelta(days=3 * 365)]   # recent three years, not whole lifetimes
+    # the same code charged several times on one claim = units of one service (not duplicate submissions)
+    L = (L.groupby(["claim_id", "member_id", "provider_id", "service_date", "service_end_date", "code", "pos", "modifier", "family"], dropna=False)
+          .agg(units=("units", "sum"), billed=("billed", "sum"), paid=("paid", "sum")).reset_index())
+    L["dx"] = None
     L["line_no"] = L.groupby("claim_id").cumcount() + 1
     L["line_id"] = L.claim_id + "-" + L.line_no.astype(str)
     L["paid_date"] = L.service_end_date + pd.Timedelta(days=21); L["duration_min"] = 0; L["start_min"] = 540; L["referring_provider_id"] = None; L["facility_id"] = None

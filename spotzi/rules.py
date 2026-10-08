@@ -118,6 +118,16 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
         .merge(flag_pm.reset_index()[["provider_id", "ym"]].assign(_f=1), on=["provider_id", "ym"], how="left")
     em = em[em._f == 1]
     mark("UPCODE", em["index"].values, [f"Level-5 visit in a month where {int(flag_pm.loc[(p, y), 'hi'] * 100)}% of the provider's visits were level 5 (peer {peer_hi * 100:.0f}%)" for p, y in zip(em.provider_id, em.ym)])
+    # quarterly view for low-volume providers: >= 8 office visits in a 90-day bin, level-5 share >= max(50%, 3x peer)
+    em_all = L[L.code.isin(EM_ALL) & (L.pos.isin(["11", "22"]))].copy()
+    if len(em_all):
+        em_all["q"] = (em_all.service_date - em_all.service_date.min()).dt.days // 90
+        gq = em_all.groupby(["provider_id", "q"]).agg(n=("code", "size"), hi=("code", lambda s: (s.isin(EM_HIGH)).mean()))
+        fq = gq[(gq.n >= 8) & (gq.hi >= max(.5, 3 * peer_hi))]
+        if len(fq):
+            eq = em_all[em_all.code.isin(EM_HIGH)].reset_index().merge(fq.reset_index()[["provider_id", "q", "hi", "n"]], on=["provider_id", "q"])
+            eq = eq[~eq["index"].isin(flags.index[flags.UPCODE])]
+            mark("UPCODE", eq["index"].values, [f"Level-5 visit: {h:.0%} of the provider's {int(n)} visits in this quarter were level 5 (peer {peer_hi:.0%})" for h, n in zip(eq.hi, eq.n)])
     t = L[(L.code == "90837") & (L.duration_min < 53) & (L.duration_min > 0)]
     mark("UPCODE", t.index, [f"90837 requires ≥53 min; documented {int(x)} min" for x in t.duration_min])
     # ambulance ALS share

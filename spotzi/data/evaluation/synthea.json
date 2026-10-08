@@ -1,8 +1,9 @@
 {
  "dataset": "synthea",
+ "seed": 99,
  "import_report": {
   "dataset": "Synthea sample",
-  "lines": 8502,
+  "lines": 8261,
   "claims": 3022,
   "members": 108,
   "providers": 200,
@@ -12,8 +13,8 @@
  "injection": {
   "bad_providers": 12,
   "benign_providers": 3,
-  "injected_lines": 1015,
-  "labelled_fraud_lines": 1170,
+  "injected_lines": 1092,
+  "labelled_fraud_lines": 1110,
   "schemes": {
    "dup": 2,
    "units": 2,
@@ -23,115 +24,115 @@
    "influx": 2
   }
  },
- "seconds": 10.0,
+ "seconds": 9.6,
  "providers": 200,
- "lines": 9517,
- "cases": 12,
- "bad_caught": 8,
+ "lines": 9353,
+ "cases": 9,
+ "bad_caught": 7,
  "bad_total": 12,
  "benign_escalated": 0,
  "benign_total": 0,
  "precision_at_5": 1.0,
- "precision_at_10": 0.7,
- "case_precision": 0.6666666666666666,
- "line_precision": 0.19562043795620437,
- "line_recall": 0.11452991452991453,
+ "precision_at_10": 0.7777777777777778,
+ "case_precision": 0.7777777777777778,
+ "line_precision": 0.6366459627329193,
+ "line_recall": 0.18468468468468469,
  "detector_auc": {
-  "Rules": 0.7138741134751774,
-  "Isolation Forest": 0.8395390070921986,
-  "Case-mix twin": 0.5390070921985817,
-  "Care pathway": 0.6728723404255319,
-  "Change-point": 0.9126773049645389,
-  "Code mix": 0.8608156028368795,
-  "Nexus Brain": 0.9445921985815603,
-  "Combined risk": 0.8612588652482269
+  "Rules": 0.8311170212765957,
+  "Isolation Forest": 0.8687943262411348,
+  "Case-mix twin": 0.5456560283687943,
+  "Care pathway": 0.7433510638297872,
+  "Change-point": 0.9055851063829787,
+  "Code mix": 0.860372340425532,
+  "Nexus Brain": 0.9496897163120567,
+  "Combined risk": 0.9015957446808509
  },
  "detector_ap": {
-  "Nexus Brain": 0.7463664478796058,
-  "Combined risk": 0.5427275865020963
+  "Nexus Brain": 0.7605648851778883,
+  "Combined risk": 0.764899237472767
  },
  "forecast": {
   "30": {
-   "test_rows": 247,
-   "positives": 34,
-   "base_rate": 0.13765182186234817,
+   "test_rows": 249,
+   "positives": 47,
+   "base_rate": 0.18875502008032127,
    "train_anchors": 12,
    "eval_anchors": 6,
    "logistic": {
-    "auc": 0.9212924606462303,
-    "ap": 0.8959013488919001,
-    "brier": 0.058286836959228865,
-    "ece": 0.0754858189784371
+    "auc": 0.9643459026753739,
+    "ap": 0.8690804160752335,
+    "brier": 0.08365454648195071,
+    "ece": 0.1087975745547707
    },
    "gboost": {
-    "auc": 0.9203949185307925,
-    "ap": 0.8645945851701642,
-    "brier": 0.076145725234009,
-    "ece": 0.09489091732718655
+    "auc": 0.9525489783020856,
+    "ap": 0.851447107770539,
+    "brier": 0.10605105180867805,
+    "ece": 0.11157463886683765
    },
-   "baseline_auc_flag_share": 0.5934134217067109,
-   "auc": 0.9203949185307925,
-   "ap": 0.8645945851701642,
-   "brier": 0.076145725234009,
-   "ece": 0.09489091732718655,
+   "baseline_auc_flag_share": 0.8218875078997261,
+   "auc": 0.9525489783020856,
+   "ap": 0.851447107770539,
+   "brier": 0.10605105180867805,
+   "ece": 0.11157463886683765,
    "chosen": "gboost"
   },
   "60": {
-   "test_rows": 247,
-   "positives": 38,
-   "base_rate": 0.15384615384615385,
+   "test_rows": 249,
+   "positives": 54,
+   "base_rate": 0.21686746987951808,
    "train_anchors": 12,
    "eval_anchors": 6,
    "logistic": {
-    "auc": 0.9154495089398136,
-    "ap": 0.8622621148746974,
-    "brier": 0.058419920408750735,
-    "ece": 0.052232409643884876
+    "auc": 0.9751187084520418,
+    "ap": 0.9294683519546829,
+    "brier": 0.06494891879693308,
+    "ece": 0.09804210287465816
    },
    "gboost": {
-    "auc": 0.9080206497104004,
-    "ap": 0.8280964484998741,
-    "brier": 0.0679182130037636,
-    "ece": 0.06967868849018458
+    "auc": 0.9697056030389364,
+    "ap": 0.9162890264754199,
+    "brier": 0.07837131616154037,
+    "ece": 0.08907240249501382
    },
-   "baseline_auc_flag_share": 0.5567237471669604,
-   "auc": 0.9080206497104004,
-   "ap": 0.8280964484998741,
-   "brier": 0.0679182130037636,
-   "ece": 0.06967868849018458,
+   "baseline_auc_flag_share": 0.8353276353276354,
+   "auc": 0.9697056030389364,
+   "ap": 0.9162890264754199,
+   "brier": 0.07837131616154037,
+   "ece": 0.08907240249501382,
    "chosen": "gboost"
   },
   "90": {
-   "test_rows": 247,
-   "positives": 38,
-   "base_rate": 0.15384615384615385,
+   "test_rows": 249,
+   "positives": 55,
+   "base_rate": 0.22088353413654618,
    "train_anchors": 12,
    "eval_anchors": 6,
    "logistic": {
-    "auc": 0.9131830773105011,
-    "ap": 0.8610850715379864,
-    "brier": 0.05349668922143942,
-    "ece": 0.04638137818626048
+    "auc": 0.9764761012183693,
+    "ap": 0.9339427650139455,
+    "brier": 0.05692379855179439,
+    "ece": 0.08234930072168646
    },
    "gboost": {
-    "auc": 0.9105389070763031,
-    "ap": 0.831190680703646,
-    "brier": 0.060595942284172394,
-    "ece": 0.05801966903657038
+    "auc": 0.9677600749765698,
+    "ap": 0.9127542068776765,
+    "brier": 0.06684443135161543,
+    "ece": 0.07672205487220343
    },
-   "baseline_auc_flag_share": 0.5567237471669604,
-   "auc": 0.9105389070763031,
-   "ap": 0.831190680703646,
-   "brier": 0.060595942284172394,
-   "ece": 0.05801966903657038,
+   "baseline_auc_flag_share": 0.8414245548266167,
+   "auc": 0.9677600749765698,
+   "ap": 0.9127542068776765,
+   "brier": 0.06684443135161543,
+   "ece": 0.07672205487220343,
    "chosen": "gboost"
   }
  },
  "forecast_model": {
   "chosen": "gboost",
   "cv_logloss": {
-   "logistic": 0.10277277732389246,
-   "gboost": 0.07248513377535906
+   "logistic": 0.1240324345118388,
+   "gboost": 0.10157932424898881
   },
   "train_anchors": 12,
   "eval_anchors": 6,
@@ -143,147 +144,147 @@
    "scheme": "deceased",
    "providers": 2,
    "caught": 2,
-   "median_brain_rank": 4.0
+   "median_brain_rank": 6.5
   },
   {
    "scheme": "dup",
-   "providers": 2,
-   "caught": 1,
-   "median_brain_rank": 52.0
-  },
-  {
-   "scheme": "influx",
-   "providers": 2,
-   "caught": 1,
-   "median_brain_rank": 10.5
-  },
-  {
-   "scheme": "repeat",
    "providers": 2,
    "caught": 1,
    "median_brain_rank": 10.0
   },
   {
+   "scheme": "influx",
+   "providers": 2,
+   "caught": 0,
+   "median_brain_rank": 14.0
+  },
+  {
+   "scheme": "repeat",
+   "providers": 2,
+   "caught": 1,
+   "median_brain_rank": 7.5
+  },
+  {
    "scheme": "units",
    "providers": 2,
-   "caught": 2,
-   "median_brain_rank": 13.0
+   "caught": 1,
+   "median_brain_rank": 56.0
   },
   {
    "scheme": "upcode",
    "providers": 2,
-   "caught": 1,
-   "median_brain_rank": 12.0
+   "caught": 2,
+   "median_brain_rank": 1.5
   }
  ],
  "per_provider": [
   {
    "scheme": "dup",
-   "provider": "PR-0225",
-   "in_case": false,
-   "risk": 0.0,
-   "rules": 0.0,
-   "brain": 0.13,
-   "brain_rank": 100
-  },
-  {
-   "scheme": "dup",
-   "provider": "PR-0236",
-   "in_case": true,
-   "risk": 70.0,
-   "rules": 0.92,
-   "brain": 0.99,
-   "brain_rank": 4
-  },
-  {
-   "scheme": "units",
-   "provider": "PR-0019",
-   "in_case": true,
-   "risk": 55.3,
-   "rules": 0.6,
-   "brain": 1.0,
-   "brain_rank": 2
-  },
-  {
-   "scheme": "units",
-   "provider": "PR-0174",
-   "in_case": true,
-   "risk": 38.5,
-   "rules": 0.56,
-   "brain": 0.65,
-   "brain_rank": 24
-  },
-  {
-   "scheme": "repeat",
-   "provider": "PR-0097",
-   "in_case": true,
-   "risk": 67.8,
-   "rules": 0.8,
-   "brain": 1.0,
-   "brain_rank": 1
-  },
-  {
-   "scheme": "repeat",
-   "provider": "PR-0107",
-   "in_case": false,
-   "risk": 2.7,
-   "rules": 0.0,
-   "brain": 0.71,
-   "brain_rank": 19
-  },
-  {
-   "scheme": "upcode",
    "provider": "PR-0238",
    "in_case": true,
-   "risk": 15.1,
-   "rules": 0.0,
-   "brain": 0.96,
-   "brain_rank": 11
-  },
-  {
-   "scheme": "upcode",
-   "provider": "PR-0234",
-   "in_case": false,
-   "risk": 12.2,
-   "rules": 0.0,
-   "brain": 0.9,
-   "brain_rank": 13
-  },
-  {
-   "scheme": "deceased",
-   "provider": "PR-0239",
-   "in_case": true,
-   "risk": 55.0,
-   "rules": 0.8,
+   "risk": 56.6,
+   "rules": 0.6,
    "brain": 1.0,
    "brain_rank": 3
   },
   {
-   "scheme": "deceased",
-   "provider": "PR-0249",
-   "in_case": true,
-   "risk": 54.7,
-   "rules": 0.8,
-   "brain": 0.99,
-   "brain_rank": 5
+   "scheme": "dup",
+   "provider": "PR-0239",
+   "in_case": false,
+   "risk": 2.8,
+   "rules": 0.0,
+   "brain": 0.77,
+   "brain_rank": 17
   },
   {
-   "scheme": "influx",
-   "provider": "PR-0001",
-   "in_case": true,
-   "risk": 15.9,
+   "scheme": "units",
+   "provider": "PR-0207",
+   "in_case": false,
+   "risk": 0.0,
    "rules": 0.0,
+   "brain": 0.12,
+   "brain_rank": 98
+  },
+  {
+   "scheme": "units",
+   "provider": "PR-0177",
+   "in_case": true,
+   "risk": 23.1,
+   "rules": 0.64,
+   "brain": 0.87,
+   "brain_rank": 14
+  },
+  {
+   "scheme": "repeat",
+   "provider": "PR-0234",
+   "in_case": true,
+   "risk": 53.3,
+   "rules": 0.53,
+   "brain": 1.0,
+   "brain_rank": 4
+  },
+  {
+   "scheme": "repeat",
+   "provider": "PR-0240",
+   "in_case": false,
+   "risk": 24.3,
+   "rules": 0.0,
+   "brain": 0.9,
+   "brain_rank": 11
+  },
+  {
+   "scheme": "upcode",
+   "provider": "PR-0142",
+   "in_case": true,
+   "risk": 71.2,
+   "rules": 0.93,
+   "brain": 1.0,
+   "brain_rank": 1
+  },
+  {
+   "scheme": "upcode",
+   "provider": "PR-0206",
+   "in_case": true,
+   "risk": 67.6,
+   "rules": 0.9,
+   "brain": 1.0,
+   "brain_rank": 2
+  },
+  {
+   "scheme": "deceased",
+   "provider": "PR-0020",
+   "in_case": true,
+   "risk": 54.9,
+   "rules": 0.8,
+   "brain": 0.97,
+   "brain_rank": 7
+  },
+  {
+   "scheme": "deceased",
+   "provider": "PR-0107",
+   "in_case": true,
+   "risk": 54.5,
+   "rules": 0.8,
    "brain": 0.99,
    "brain_rank": 6
   },
   {
    "scheme": "influx",
-   "provider": "PR-0230",
+   "provider": "PR-0236",
    "in_case": false,
-   "risk": 15.6,
-   "rules": 0.02,
-   "brain": 0.86,
-   "brain_rank": 15
+   "risk": 17.0,
+   "rules": 0.05,
+   "brain": 0.75,
+   "brain_rank": 19
+  },
+  {
+   "scheme": "influx",
+   "provider": "PR-0205",
+   "in_case": false,
+   "risk": 14.2,
+   "rules": 0.0,
+   "brain": 0.94,
+   "brain_rank": 9
   }
  ],
  "method": "Background claims are unmodified public synthetic data; labelled schemes and benign look-alikes were injected; labels used only for scoring."

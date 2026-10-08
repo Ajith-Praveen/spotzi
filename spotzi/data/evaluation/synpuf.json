@@ -1,5 +1,6 @@
 {
  "dataset": "synpuf",
+ "seed": 99,
  "import_report": {
   "dataset": "DE-SynPUF Sample 1",
   "lines": 144491,
@@ -13,8 +14,8 @@
  "injection": {
   "bad_providers": 18,
   "benign_providers": 4,
-  "injected_lines": 4268,
-  "labelled_fraud_lines": 1585,
+  "injected_lines": 4936,
+  "labelled_fraud_lines": 1735,
   "schemes": {
    "dup": 3,
    "units": 3,
@@ -24,115 +25,115 @@
    "influx": 3
   }
  },
- "seconds": 89.1,
+ "seconds": 89.0,
  "providers": 4332,
- "lines": 148759,
- "cases": 39,
- "bad_caught": 13,
+ "lines": 149427,
+ "cases": 19,
+ "bad_caught": 16,
  "bad_total": 18,
- "benign_escalated": 2,
+ "benign_escalated": 0,
  "benign_total": 4,
  "precision_at_5": 1.0,
  "precision_at_10": 1.0,
- "case_precision": 0.3333333333333333,
- "line_precision": 0.08808456117873158,
- "line_recall": 0.17350157728706625,
+ "case_precision": 0.8421052631578947,
+ "line_precision": 0.12456964006259781,
+ "line_recall": 0.22939481268011527,
  "detector_auc": {
-  "Rules": 0.8533907690722712,
-  "Isolation Forest": 0.9695500437850925,
-  "Case-mix twin": 0.7481970844279607,
-  "Care pathway": 0.752794519136661,
-  "Change-point": 0.7674496471436666,
-  "Code mix": 0.9618425797146242,
-  "Nexus Brain": 0.9721320764436203,
-  "Combined risk": 0.9802323185494257
+  "Rules": 0.9393705249059908,
+  "Isolation Forest": 0.9875985164580436,
+  "Case-mix twin": 0.7601864729820224,
+  "Care pathway": 0.7855431927059187,
+  "Change-point": 0.8089167053005718,
+  "Code mix": 0.9936125276876321,
+  "Nexus Brain": 0.9975660639777469,
+  "Combined risk": 0.9961881213619739
  },
  "detector_ap": {
-  "Nexus Brain": 0.5003083966078302,
-  "Combined risk": 0.5120470915430851
+  "Nexus Brain": 0.7868993058471043,
+  "Combined risk": 0.8399302885062615
  },
  "forecast": {
   "30": {
-   "test_rows": 2800,
-   "positives": 60,
-   "base_rate": 0.02142857142857143,
+   "test_rows": 2886,
+   "positives": 70,
+   "base_rate": 0.024255024255024255,
    "train_anchors": 12,
    "eval_anchors": 6,
    "logistic": {
-    "auc": 0.9680991484184915,
-    "ap": 0.4857583059812612,
-    "brier": 0.015028742121416812,
-    "ece": 0.006967502016717697
+    "auc": 0.9542765827922077,
+    "ap": 0.79164922389355,
+    "brier": 0.010239452039499134,
+    "ece": 0.0074387708034984994
    },
    "gboost": {
-    "auc": 0.9678619221411192,
-    "ap": 0.5505383503835686,
-    "brier": 0.014724894589511798,
-    "ece": 0.011215504810251456
+    "auc": 0.9514432832792208,
+    "ap": 0.5991673283190482,
+    "brier": 0.01828577081953948,
+    "ece": 0.01755369182381991
    },
-   "baseline_auc_flag_share": 0.6838929440389295,
-   "auc": 0.9678619221411192,
-   "ap": 0.5505383503835686,
-   "brier": 0.014724894589511798,
-   "ece": 0.011215504810251456,
+   "baseline_auc_flag_share": 0.8329215706168831,
+   "auc": 0.9514432832792208,
+   "ap": 0.5991673283190482,
+   "brier": 0.01828577081953948,
+   "ece": 0.01755369182381991,
    "chosen": "gboost"
   },
   "60": {
-   "test_rows": 2800,
-   "positives": 71,
-   "base_rate": 0.025357142857142856,
+   "test_rows": 2886,
+   "positives": 82,
+   "base_rate": 0.028413028413028413,
    "train_anchors": 12,
    "eval_anchors": 6,
    "logistic": {
-    "auc": 0.9713871355653156,
-    "ap": 0.5580477077483881,
-    "brier": 0.015262534121668584,
-    "ece": 0.006458720806393998
+    "auc": 0.9395941338158033,
+    "ap": 0.7622544007857452,
+    "brier": 0.01173649532526082,
+    "ece": 0.00415705120562009
    },
    "gboost": {
-    "auc": 0.9707213600400497,
-    "ap": 0.6083821628494726,
-    "brier": 0.015569224185920352,
-    "ece": 0.009464498569462094
+    "auc": 0.9508019901882327,
+    "ap": 0.623622908204227,
+    "brier": 0.019213724627687712,
+    "ece": 0.017276783579195876
    },
-   "baseline_auc_flag_share": 0.7175382820927029,
-   "auc": 0.9707213600400497,
-   "ap": 0.6083821628494726,
-   "brier": 0.015569224185920352,
-   "ece": 0.009464498569462094,
+   "baseline_auc_flag_share": 0.8373990988483351,
+   "auc": 0.9508019901882327,
+   "ap": 0.623622908204227,
+   "brier": 0.019213724627687712,
+   "ece": 0.017276783579195876,
    "chosen": "gboost"
   },
   "90": {
-   "test_rows": 2800,
-   "positives": 76,
-   "base_rate": 0.027142857142857142,
+   "test_rows": 2886,
+   "positives": 87,
+   "base_rate": 0.030145530145530147,
    "train_anchors": 12,
    "eval_anchors": 6,
    "logistic": {
-    "auc": 0.9736938712419816,
-    "ap": 0.6377092637916422,
-    "brier": 0.013988790966406577,
-    "ece": 0.006372227754592427
+    "auc": 0.9431714117932102,
+    "ap": 0.7781570568119476,
+    "brier": 0.011601622493707667,
+    "ece": 0.0016940337791607307
    },
    "gboost": {
-    "auc": 0.9733460854780123,
-    "ap": 0.6592816573771688,
-    "brier": 0.014482116548838391,
-    "ece": 0.007100669002207177
+    "auc": 0.9422720758234674,
+    "ap": 0.6105284223584388,
+    "brier": 0.018967717843874358,
+    "ece": 0.013517019883128234
    },
-   "baseline_auc_flag_share": 0.7339269843109977,
-   "auc": 0.9733460854780123,
-   "ap": 0.6592816573771688,
-   "brier": 0.014482116548838391,
-   "ece": 0.007100669002207177,
+   "baseline_auc_flag_share": 0.8455688197344701,
+   "auc": 0.9422720758234674,
+   "ap": 0.6105284223584388,
+   "brier": 0.018967717843874358,
+   "ece": 0.013517019883128234,
    "chosen": "gboost"
   }
  },
  "forecast_model": {
   "chosen": "gboost",
   "cv_logloss": {
-   "logistic": 0.01904023108767674,
-   "gboost": 0.010697833856194005
+   "logistic": 0.022933393729106008,
+   "gboost": 0.01695838782313358
   },
   "train_anchors": 12,
   "eval_anchors": 6,
@@ -144,237 +145,237 @@
    "scheme": "deceased",
    "providers": 3,
    "caught": 3,
-   "median_brain_rank": 11.0
+   "median_brain_rank": 19.0
   },
   {
    "scheme": "dup",
    "providers": 3,
-   "caught": 2,
-   "median_brain_rank": 40.0
+   "caught": 3,
+   "median_brain_rank": 6.0
   },
   {
    "scheme": "influx",
    "providers": 3,
-   "caught": 3,
-   "median_brain_rank": 12.0
+   "caught": 2,
+   "median_brain_rank": 13.0
   },
   {
    "scheme": "repeat",
    "providers": 3,
-   "caught": 3,
-   "median_brain_rank": 8.0
+   "caught": 2,
+   "median_brain_rank": 18.0
   },
   {
    "scheme": "units",
    "providers": 3,
-   "caught": 1,
-   "median_brain_rank": 22.0
+   "caught": 3,
+   "median_brain_rank": 3.0
   },
   {
    "scheme": "upcode",
    "providers": 3,
-   "caught": 1,
-   "median_brain_rank": 192.0
+   "caught": 3,
+   "median_brain_rank": 15.0
   }
  ],
  "per_provider": [
   {
    "scheme": "dup",
-   "provider": "INST-1000AH",
+   "provider": "INST-4504KP",
    "in_case": true,
-   "risk": 65.3,
+   "risk": 62.4,
+   "rules": 0.79,
+   "brain": 0.99,
+   "brain_rank": 14
+  },
+  {
+   "scheme": "dup",
+   "provider": "INST-2200VV",
+   "in_case": true,
+   "risk": 67.3,
+   "rules": 0.79,
+   "brain": 1.0,
+   "brain_rank": 2
+  },
+  {
+   "scheme": "dup",
+   "provider": "INST-0720MA",
+   "in_case": true,
+   "risk": 68.7,
    "rules": 0.86,
+   "brain": 0.99,
+   "brain_rank": 6
+  },
+  {
+   "scheme": "units",
+   "provider": "INST-10018S",
+   "in_case": true,
+   "risk": 56.1,
+   "rules": 0.64,
+   "brain": 1.0,
+   "brain_rank": 3
+  },
+  {
+   "scheme": "units",
+   "provider": "INST-2100UA",
+   "in_case": true,
+   "risk": 57.9,
+   "rules": 0.64,
    "brain": 0.99,
    "brain_rank": 9
   },
   {
-   "scheme": "dup",
-   "provider": "INST-1401XB",
-   "in_case": true,
-   "risk": 55.0,
-   "rules": 0.73,
-   "brain": 0.95,
-   "brain_rank": 40
-  },
-  {
-   "scheme": "dup",
-   "provider": "INST-16006A",
-   "in_case": false,
-   "risk": 10.7,
-   "rules": 0.15,
-   "brain": 0.58,
-   "brain_rank": 488
-  },
-  {
    "scheme": "units",
-   "provider": "INST-22008H",
-   "in_case": false,
-   "risk": 14.4,
-   "rules": 0.24,
-   "brain": 0.71,
-   "brain_rank": 321
-  },
-  {
-   "scheme": "units",
-   "provider": "INST-2400JM",
-   "in_case": false,
-   "risk": 22.8,
-   "rules": 0.48,
-   "brain": 0.97,
-   "brain_rank": 22
-  },
-  {
-   "scheme": "units",
-   "provider": "INST-2400DG",
+   "provider": "INST-4500CN",
    "in_case": true,
-   "risk": 60.0,
-   "rules": 0.7,
-   "brain": 0.99,
-   "brain_rank": 4
-  },
-  {
-   "scheme": "repeat",
-   "provider": "INST-05036H",
-   "in_case": true,
-   "risk": 59.4,
-   "rules": 0.68,
-   "brain": 0.99,
-   "brain_rank": 8
-  },
-  {
-   "scheme": "repeat",
-   "provider": "INST-4502QU",
-   "in_case": true,
-   "risk": 33.9,
-   "rules": 0.17,
-   "brain": 0.97,
-   "brain_rank": 20
-  },
-  {
-   "scheme": "repeat",
-   "provider": "INST-1001CG",
-   "in_case": true,
-   "risk": 68.4,
-   "rules": 0.94,
+   "risk": 56.6,
+   "rules": 0.64,
    "brain": 1.0,
    "brain_rank": 1
   },
   {
-   "scheme": "upcode",
-   "provider": "INST-2600QH",
-   "in_case": false,
-   "risk": 5.6,
-   "rules": 0.0,
-   "brain": 0.28,
-   "brain_rank": 1124
-  },
-  {
-   "scheme": "upcode",
-   "provider": "INST-3303NG",
-   "in_case": false,
-   "risk": 19.4,
-   "rules": 0.0,
-   "brain": 0.82,
-   "brain_rank": 192
-  },
-  {
-   "scheme": "upcode",
-   "provider": "INST-1700JJ",
+   "scheme": "repeat",
+   "provider": "INST-3600QA",
    "in_case": true,
-   "risk": 26.0,
-   "rules": 0.0,
-   "brain": 0.96,
-   "brain_rank": 33
+   "risk": 29.0,
+   "rules": 0.04,
+   "brain": 0.98,
+   "brain_rank": 18
+  },
+  {
+   "scheme": "repeat",
+   "provider": "INST-4503XA",
+   "in_case": false,
+   "risk": 30.2,
+   "rules": 0.24,
+   "brain": 0.86,
+   "brain_rank": 136
+  },
+  {
+   "scheme": "repeat",
+   "provider": "INST-2800HP",
+   "in_case": true,
+   "risk": 58.0,
+   "rules": 0.6,
+   "brain": 0.99,
+   "brain_rank": 4
+  },
+  {
+   "scheme": "upcode",
+   "provider": "INST-4900XD",
+   "in_case": true,
+   "risk": 53.5,
+   "rules": 0.66,
+   "brain": 0.98,
+   "brain_rank": 16
+  },
+  {
+   "scheme": "upcode",
+   "provider": "INST-4400XJ",
+   "in_case": true,
+   "risk": 56.4,
+   "rules": 0.73,
+   "brain": 0.98,
+   "brain_rank": 15
+  },
+  {
+   "scheme": "upcode",
+   "provider": "INST-4600BC",
+   "in_case": true,
+   "risk": 57.3,
+   "rules": 0.69,
+   "brain": 0.99,
+   "brain_rank": 11
   },
   {
    "scheme": "deceased",
    "provider": "INST-35006N",
    "in_case": true,
-   "risk": 55.5,
-   "rules": 0.81,
-   "brain": 0.99,
-   "brain_rank": 6
-  },
-  {
-   "scheme": "deceased",
-   "provider": "INST-1000VH",
-   "in_case": true,
-   "risk": 55.0,
+   "risk": 61.2,
    "rules": 0.8,
-   "brain": 0.97,
-   "brain_rank": 28
+   "brain": 0.99,
+   "brain_rank": 5
   },
   {
    "scheme": "deceased",
-   "provider": "INST-1000KS",
+   "provider": "INST-1500WS",
    "in_case": true,
-   "risk": 64.6,
-   "rules": 0.82,
-   "brain": 0.99,
-   "brain_rank": 11
-  },
-  {
-   "scheme": "influx",
-   "provider": "INST-4201CB",
-   "in_case": true,
-   "risk": 15.2,
-   "rules": 0.0,
+   "risk": 54.9,
+   "rules": 0.8,
    "brain": 0.98,
-   "brain_rank": 14
+   "brain_rank": 19
+  },
+  {
+   "scheme": "deceased",
+   "provider": "INST-4508JR",
+   "in_case": true,
+   "risk": 58.1,
+   "rules": 0.86,
+   "brain": 0.98,
+   "brain_rank": 22
   },
   {
    "scheme": "influx",
-   "provider": "INST-3302QH",
+   "provider": "INST-0503WB",
    "in_case": true,
-   "risk": 25.5,
+   "risk": 14.8,
    "rules": 0.0,
    "brain": 0.99,
-   "brain_rank": 2
+   "brain_rank": 13
   },
   {
    "scheme": "influx",
-   "provider": "INST-4501JQ",
+   "provider": "INST-0502NA",
+   "in_case": false,
+   "risk": 14.9,
+   "rules": 0.0,
+   "brain": 0.94,
+   "brain_rank": 54
+  },
+  {
+   "scheme": "influx",
+   "provider": "INST-3301UP",
    "in_case": true,
-   "risk": 15.1,
-   "rules": 0.01,
-   "brain": 0.98,
+   "risk": 23.5,
+   "rules": 0.0,
+   "brain": 0.99,
    "brain_rank": 12
   },
   {
    "scheme": "benign-growth",
-   "provider": "INST-2100UA",
+   "provider": "INST-3902UU",
    "in_case": false,
-   "risk": 17.4,
-   "rules": 0.05,
-   "brain": 0.83,
-   "brain_rank": 177
+   "risk": 19.4,
+   "rules": 0.04,
+   "brain": 0.78,
+   "brain_rank": 219
   },
   {
    "scheme": "benign-growth",
-   "provider": "INST-21008S",
-   "in_case": true,
-   "risk": 63.4,
-   "rules": 0.57,
-   "brain": 0.98,
-   "brain_rank": 17
-  },
-  {
-   "scheme": "benign-growth",
-   "provider": "INST-0600VR",
+   "provider": "INST-4201CB",
    "in_case": false,
-   "risk": 14.8,
-   "rules": 0.0,
-   "brain": 0.84,
-   "brain_rank": 170
+   "risk": 18.5,
+   "rules": 0.08,
+   "brain": 0.67,
+   "brain_rank": 370
   },
   {
    "scheme": "benign-growth",
-   "provider": "INST-21006R",
-   "in_case": true,
-   "risk": 47.4,
-   "rules": 0.35,
-   "brain": 0.89,
-   "brain_rank": 102
+   "provider": "INST-0505TK",
+   "in_case": false,
+   "risk": 17.8,
+   "rules": 0.06,
+   "brain": 0.65,
+   "brain_rank": 388
+  },
+  {
+   "scheme": "benign-growth",
+   "provider": "INST-2600BA",
+   "in_case": false,
+   "risk": 25.0,
+   "rules": 0.2,
+   "brain": 0.86,
+   "brain_rank": 131
   }
  ],
  "method": "Background claims are unmodified public synthetic data; labelled schemes and benign look-alikes were injected; labels used only for scoring."

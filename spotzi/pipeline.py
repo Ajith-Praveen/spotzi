@@ -22,6 +22,7 @@ ROOT = Path(__file__).parent
 DATA = ROOT / "data" / "synthetic"
 LOOKBACK = 180
 PRIMARY_RISK = 35
+BRAIN_LEAD = .97   # a lead with no rule finding needs near-unanimous detector consensus (0.90 produced too many leads in large portfolios)
 MODEL_VERSION = "nexus-models-1.0"
 
 
@@ -294,7 +295,10 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
 # ---------------------------------------------------------------- case construction
 def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
     W = L[L.service_date > END - pd.Timedelta(days=LOOKBACK)]
-    primary = set(PT.index[(PT.risk >= PRIMARY_RISK) | ((PT.brain >= .9) & (PT.n_lines >= 30))])
+    # concentrated findings: most of a (possibly small) provider's recent billing is flagged by a material rule
+    concentrated = (PT.flagged_lines >= 5) & (PT.any_share >= .4)
+    primary = set(PT.index[(PT.risk >= PRIMARY_RISK) | ((PT.brain >= BRAIN_LEAD) & (PT.n_lines >= 30)) | concentrated])
+    conc_set = set(PT.index[concentrated])
     groups, seen = [], set()
     for comp in nx.connected_components(H):
         pr = comp & primary
@@ -311,7 +315,7 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         groups = [(pr, cp, None) for pr, cp in groups]
     for prim, comp, forced_id in groups:
         sub = W[W.provider_id.isin(prim) & W.any_flag]
-        brain_lead = all(PT.at[p, "risk"] < PRIMARY_RISK for p in prim)
+        brain_lead = all(PT.at[p, "risk"] < PRIMARY_RISK and p not in conc_set for p in prim)
         if sub.empty and not brain_lead and forced_id is None: continue
         fam = sorted({PT.at[p, "family"] for p in prim})
         rule_counts = {k: int(sub[f"f_{k}"].sum()) for k in RULES if sub[f"f_{k}"].sum() > 0}

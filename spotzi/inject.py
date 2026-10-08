@@ -77,15 +77,20 @@ def inject(ws: Path, seed=21, n_per_scheme=3, n_benign=4, min_lines=200):
             if len(em) >= 30:
                 idx = em.sample(frac=.8, random_state=4).index
                 L.loc[idx, "code"] = "99215"; L.loc[idx, "paid"] = L.loc[idx, "paid"] * 1.9; L.loc[idx, "truth"] = True; L.loc[idx, "scenario"] = "upcode"
-            else:  # practice without office visits: add level-5 visits for its own patients
-                pts = mine.member_id.unique()
+            else:  # practice with few office visits: its patients now get level-5 visits throughout the scheme period
+                pts = L[L.provider_id == pid].member_id.unique()
                 if len(pts):
-                    v = mine.drop_duplicates("member_id").head(80).copy(); v["code"] = "99215"; v["units"] = 1; v["paid"] = 140.0
-                    v = pd.concat([v, v.assign(service_date=v.service_date + pd.Timedelta(days=35))]); v = v[v.service_date <= end]
+                    n_v = 60
+                    v = L[L.provider_id == pid].sample(n_v, replace=True, random_state=4).copy()
+                    v["member_id"] = rng.choice(pts, n_v); v["code"] = "99215"; v["units"] = 1; v["paid"] = 140.0; v["pos"] = "22"
+                    v["service_date"] = t0 + pd.to_timedelta(rng.integers(0, max(1, (end - t0).days), n_v), unit="D"); v["service_end_date"] = v.service_date
                     add(v, "upcode")
         elif s == "deceased":
             t0 = end - pd.Timedelta(days=int(rng.integers(90, 160)))       # inside the review window
-            pool = M[M.death_date.isna()].sample(12, random_state=5)          # patients given a (synthetic) death date
+            last_seen = L.groupby("member_id").service_date.max()
+            quiet = last_seen[last_seen < t0 - pd.Timedelta(days=45)].index        # no genuine care after the synthetic death
+            cand = M[M.death_date.isna() & M.member_id.isin(quiet)]
+            pool = cand.sample(min(12, len(cand)), random_state=5) if len(cand) else M.sample(0)
             tmpl = L[L.provider_id == pid].sample(min(40, int(vol[pid])), random_state=6).copy()
             pts = pool.sample(min(len(pool), 12), random_state=7, replace=False)
             rows = []
