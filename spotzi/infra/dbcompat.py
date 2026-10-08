@@ -16,7 +16,7 @@ import sqlite3
 
 UPSERT_KEYS = {"wiki_pages": "slug", "precedent_quality": "case_id", "case_assign": "case_id", "settings": "key"}
 SERIAL_TABLES = {"decisions", "audit", "lab_events", "blueprints", "blueprint_items", "wiki_history", "wiki_proposals", "case_notes",
-                 "notifications", "outbox", "case_scope", "users", "prepay_log", "recoveries", "custom_rules", "case_documents", "tips", "chart_reviews"}
+                 "notifications", "outbox", "case_scope", "users", "prepay_log", "recoveries", "custom_rules", "case_documents", "tips", "chart_reviews", "prediction_log"}
 
 
 class Row(dict):

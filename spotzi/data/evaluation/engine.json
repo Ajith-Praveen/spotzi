@@ -1,0 +1,2272 @@
+{
+ "truth": [
+  {
+   "dataset": "demo world",
+   "providers": 132,
+   "fraudulent": 16,
+   "cases": 13,
+   "claim": {
+    "precision": 0.804,
+    "recall": 0.726
+   },
+   "provider_detectors": {
+    "risk": {
+     "auc": 0.995,
+     "ap": 0.971
+    },
+    "brain": {
+     "auc": 0.989,
+     "ap": 0.942
+    },
+    "p_fraud": {
+     "auc": 0.958,
+     "ap": 0.88
+    },
+    "outcome_p": {
+     "auc": 0.999,
+     "ap": 0.993
+    },
+    "rule_score": {
+     "auc": 0.947,
+     "ap": 0.897
+    },
+    "anomaly_pct": {
+     "auc": 0.953,
+     "ap": 0.71
+    },
+    "temporal_pct": {
+     "auc": 0.957,
+     "ap": 0.733
+    },
+    "peer_pct": {
+     "auc": 0.763,
+     "ap": 0.56
+    },
+    "drift_pct": {
+     "auc": 0.898,
+     "ap": 0.57
+    },
+    "panel_pct": {
+     "auc": 0.712,
+     "ap": 0.606
+    }
+   },
+   "queue": {
+    "@5": {
+     "precision": 1.0,
+     "recall": 0.562
+    },
+    "@10": {
+     "precision": 1.0,
+     "recall": 0.875
+    },
+    "@20": {
+     "precision": 0.917,
+     "recall": 0.938
+    }
+   },
+   "rings": {
+    "S1": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    },
+    "S2": {
+     "members": 3,
+     "in_cases": 3,
+     "largest_together": 3
+    },
+    "S5": {
+     "members": 2,
+     "in_cases": 1,
+     "largest_together": 2
+    },
+    "S9": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    }
+   },
+   "fraud_types": {
+    "duplicate": {
+     "n": 1,
+     "caught": 1
+    },
+    "excessive_services": {
+     "n": 2,
+     "caught": 1
+    },
+    "excluded_provider": {
+     "n": 1,
+     "caught": 1
+    },
+    "impossible_timing": {
+     "n": 1,
+     "caught": 1
+    },
+    "phantom": {
+     "n": 4,
+     "caught": 4
+    },
+    "recruitment": {
+     "n": 2,
+     "caught": 2
+    },
+    "unbundling": {
+     "n": 2,
+     "caught": 2
+    },
+    "upcoding": {
+     "n": 3,
+     "caught": 3
+    }
+   },
+   "by_true_state": {
+    "decoy": {
+     "n": 3,
+     "escalated": 1,
+     "stage": {
+      "Normal": 3
+     },
+     "consensus": {
+      "Low": 2,
+      "High": 1
+     },
+     "mean_independent_families": 2.0
+    },
+    "fraudulent": {
+     "n": 16,
+     "escalated": 15,
+     "stage": {
+      "Established pattern": 12,
+      "Sustained anomaly": 3,
+      "Behavioural deviation": 1
+     },
+     "consensus": {
+      "High": 9,
+      "Moderate": 6,
+      "Low": 1
+     },
+     "mean_independent_families": 4.31
+    },
+    "legitimate": {
+     "n": 109,
+     "escalated": 0,
+     "stage": {
+      "Normal": 68,
+      "Behavioural deviation": 29,
+      "Emerging anomaly": 9,
+      "Established pattern": 2,
+      "Sustained anomaly": 1
+     },
+     "consensus": {
+      "Low": 106,
+      "Moderate": 3
+     },
+     "mean_independent_families": 0.23
+    },
+    "legitimate_anomaly": {
+     "n": 4,
+     "escalated": 0,
+     "stage": {
+      "Emerging anomaly": 2,
+      "Behavioural deviation": 1,
+      "Sustained anomaly": 1
+     },
+     "consensus": {
+      "Low": 2,
+      "High": 1,
+      "Moderate": 1
+     },
+     "mean_independent_families": 1.75
+    }
+   },
+   "case_precision_by_consensus": {
+    "High": {
+     "cases": 7,
+     "precision": 0.857
+    },
+    "Moderate": {
+     "cases": 4,
+     "precision": 1.0
+    },
+    "Low": {
+     "cases": 1,
+     "precision": 1.0
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 201",
+   "providers": 132,
+   "fraudulent": 14,
+   "cases": 12,
+   "claim": {
+    "precision": 0.819,
+    "recall": 0.714
+   },
+   "provider_detectors": {
+    "risk": {
+     "auc": 0.988,
+     "ap": 0.844
+    },
+    "brain": {
+     "auc": 0.982,
+     "ap": 0.815
+    },
+    "p_fraud": {
+     "auc": 0.983,
+     "ap": 0.804
+    },
+    "outcome_p": {
+     "auc": 0.993,
+     "ap": 0.912
+    },
+    "rule_score": {
+     "auc": 0.948,
+     "ap": 0.861
+    },
+    "anomaly_pct": {
+     "auc": 0.953,
+     "ap": 0.684
+    },
+    "temporal_pct": {
+     "auc": 0.967,
+     "ap": 0.834
+    },
+    "peer_pct": {
+     "auc": 0.746,
+     "ap": 0.464
+    },
+    "drift_pct": {
+     "auc": 0.937,
+     "ap": 0.57
+    },
+    "panel_pct": {
+     "auc": 0.71,
+     "ap": 0.485
+    }
+   },
+   "queue": {
+    "@5": {
+     "precision": 1.0,
+     "recall": 0.5
+    },
+    "@10": {
+     "precision": 0.9,
+     "recall": 0.857
+    },
+    "@20": {
+     "precision": 0.833,
+     "recall": 0.929
+    }
+   },
+   "rings": {
+    "S1": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    },
+    "S2": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    },
+    "S5": {
+     "members": 2,
+     "in_cases": 1,
+     "largest_together": 2
+    },
+    "S9": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    }
+   },
+   "fraud_types": {
+    "duplicate": {
+     "n": 1,
+     "caught": 1
+    },
+    "excessive_services": {
+     "n": 2,
+     "caught": 1
+    },
+    "impossible_timing": {
+     "n": 1,
+     "caught": 1
+    },
+    "phantom": {
+     "n": 3,
+     "caught": 3
+    },
+    "recruitment": {
+     "n": 2,
+     "caught": 2
+    },
+    "unbundling": {
+     "n": 2,
+     "caught": 2
+    },
+    "upcoding": {
+     "n": 3,
+     "caught": 3
+    }
+   },
+   "by_true_state": {
+    "decoy": {
+     "n": 3,
+     "escalated": 0,
+     "stage": {
+      "Normal": 2,
+      "Emerging anomaly": 1
+     },
+     "consensus": {
+      "Low": 2,
+      "Moderate": 1
+     },
+     "mean_independent_families": 1.0
+    },
+    "fraudulent": {
+     "n": 14,
+     "escalated": 13,
+     "stage": {
+      "Established pattern": 11,
+      "Behavioural deviation": 2,
+      "Sustained anomaly": 1
+     },
+     "consensus": {
+      "High": 7,
+      "Moderate": 7
+     },
+     "mean_independent_families": 4.21
+    },
+    "legitimate": {
+     "n": 111,
+     "escalated": 1,
+     "stage": {
+      "Normal": 71,
+      "Behavioural deviation": 28,
+      "Emerging anomaly": 9,
+      "Sustained anomaly": 2,
+      "Established pattern": 1
+     },
+     "consensus": {
+      "Low": 107,
+      "Moderate": 3,
+      "High": 1
+     },
+     "mean_independent_families": 0.25
+    },
+    "legitimate_anomaly": {
+     "n": 4,
+     "escalated": 1,
+     "stage": {
+      "Established pattern": 2,
+      "Behavioural deviation": 1,
+      "Normal": 1
+     },
+     "consensus": {
+      "Low": 2,
+      "High": 1,
+      "Moderate": 1
+     },
+     "mean_independent_families": 1.75
+    }
+   },
+   "case_precision_by_consensus": {
+    "High": {
+     "cases": 7,
+     "precision": 0.857
+    },
+    "Moderate": {
+     "cases": 4,
+     "precision": 1.0
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 202",
+   "providers": 132,
+   "fraudulent": 15,
+   "cases": 12,
+   "claim": {
+    "precision": 0.811,
+    "recall": 0.712
+   },
+   "provider_detectors": {
+    "risk": {
+     "auc": 0.997,
+     "ap": 0.974
+    },
+    "brain": {
+     "auc": 0.995,
+     "ap": 0.963
+    },
+    "p_fraud": {
+     "auc": 0.995,
+     "ap": 0.942
+    },
+    "outcome_p": {
+     "auc": 0.999,
+     "ap": 0.996
+    },
+    "rule_score": {
+     "auc": 0.978,
+     "ap": 0.905
+    },
+    "anomaly_pct": {
+     "auc": 0.958,
+     "ap": 0.722
+    },
+    "temporal_pct": {
+     "auc": 0.91,
+     "ap": 0.627
+    },
+    "peer_pct": {
+     "auc": 0.777,
+     "ap": 0.535
+    },
+    "drift_pct": {
+     "auc": 0.944,
+     "ap": 0.655
+    },
+    "panel_pct": {
+     "auc": 0.798,
+     "ap": 0.599
+    }
+   },
+   "queue": {
+    "@5": {
+     "precision": 1.0,
+     "recall": 0.6
+    },
+    "@10": {
+     "precision": 1.0,
+     "recall": 0.933
+    },
+    "@20": {
+     "precision": 0.909,
+     "recall": 0.933
+    }
+   },
+   "rings": {
+    "S1": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    },
+    "S2": {
+     "members": 3,
+     "in_cases": 3,
+     "largest_together": 3
+    },
+    "S5": {
+     "members": 2,
+     "in_cases": 1,
+     "largest_together": 2
+    },
+    "S9": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    }
+   },
+   "fraud_types": {
+    "duplicate": {
+     "n": 1,
+     "caught": 1
+    },
+    "excessive_services": {
+     "n": 2,
+     "caught": 1
+    },
+    "impossible_timing": {
+     "n": 1,
+     "caught": 1
+    },
+    "phantom": {
+     "n": 4,
+     "caught": 4
+    },
+    "recruitment": {
+     "n": 2,
+     "caught": 2
+    },
+    "unbundling": {
+     "n": 2,
+     "caught": 2
+    },
+    "upcoding": {
+     "n": 3,
+     "caught": 3
+    }
+   },
+   "by_true_state": {
+    "decoy": {
+     "n": 3,
+     "escalated": 1,
+     "stage": {
+      "Normal": 2,
+      "Behavioural deviation": 1
+     },
+     "consensus": {
+      "High": 1,
+      "Low": 1,
+      "Moderate": 1
+     },
+     "mean_independent_families": 2.0
+    },
+    "fraudulent": {
+     "n": 15,
+     "escalated": 14,
+     "stage": {
+      "Established pattern": 10,
+      "Sustained anomaly": 2,
+      "Behavioural deviation": 1,
+      "Emerging anomaly": 1,
+      "Normal": 1
+     },
+     "consensus": {
+      "High": 9,
+      "Moderate": 6
+     },
+     "mean_independent_families": 4.33
+    },
+    "legitimate": {
+     "n": 110,
+     "escalated": 0,
+     "stage": {
+      "Normal": 65,
+      "Behavioural deviation": 31,
+      "Emerging anomaly": 8,
+      "Sustained anomaly": 5,
+      "Established pattern": 1
+     },
+     "consensus": {
+      "Low": 105,
+      "Moderate": 4,
+      "High": 1
+     },
+     "mean_independent_families": 0.25
+    },
+    "legitimate_anomaly": {
+     "n": 4,
+     "escalated": 0,
+     "stage": {
+      "Sustained anomaly": 2,
+      "Established pattern": 1,
+      "Normal": 1
+     },
+     "consensus": {
+      "Low": 2,
+      "High": 1,
+      "Moderate": 1
+     },
+     "mean_independent_families": 2.0
+    }
+   },
+   "case_precision_by_consensus": {
+    "High": {
+     "cases": 7,
+     "precision": 0.857
+    },
+    "Moderate": {
+     "cases": 4,
+     "precision": 1.0
+    }
+   }
+  }
+ ],
+ "calibration": [
+  {
+   "dataset": "demo world",
+   "brier": 0.0297,
+   "ece": 0.0199,
+   "reliability": [
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.077,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.168,
+     "observed": 0.231,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.892,
+     "observed": 0.923,
+     "n": 13
+    }
+   ],
+   "tiers": {
+    "Critical (top 1%)": {
+     "providers": 1,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.062,
+     "false_positive_rate": 0.0
+    },
+    "High (top 5%)": {
+     "providers": 7,
+     "threshold": 0.929,
+     "precision": 1.0,
+     "recall": 0.438,
+     "false_positive_rate": 0.0
+    },
+    "Review (top 15%)": {
+     "providers": 20,
+     "threshold": 0.143,
+     "precision": 0.7,
+     "recall": 0.875,
+     "false_positive_rate": 0.0517
+    }
+   },
+   "operating_points": {
+    "low capacity (F0.5)": {
+     "review_top_k": 12,
+     "threshold": 0.774,
+     "precision": 1.0,
+     "recall": 0.75
+    },
+    "balanced (F1)": {
+     "review_top_k": 16,
+     "threshold": 0.143,
+     "precision": 0.875,
+     "recall": 0.875
+    },
+    "high capacity (F2)": {
+     "review_top_k": 16,
+     "threshold": 0.143,
+     "precision": 0.875,
+     "recall": 0.875
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 201",
+   "brier": 0.0278,
+   "ece": 0.0159,
+   "reliability": [
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.18,
+     "observed": 0.231,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.916,
+     "observed": 0.846,
+     "n": 13
+    }
+   ],
+   "tiers": {
+    "Critical (top 1%)": {
+     "providers": 1,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.071,
+     "false_positive_rate": 0.0
+    },
+    "High (top 5%)": {
+     "providers": 7,
+     "threshold": 0.929,
+     "precision": 0.857,
+     "recall": 0.429,
+     "false_positive_rate": 0.0085
+    },
+    "Review (top 15%)": {
+     "providers": 20,
+     "threshold": 0.143,
+     "precision": 0.65,
+     "recall": 0.929,
+     "false_positive_rate": 0.0593
+    }
+   },
+   "operating_points": {
+    "low capacity (F0.5)": {
+     "review_top_k": 12,
+     "threshold": 0.774,
+     "precision": 0.917,
+     "recall": 0.786
+    },
+    "balanced (F1)": {
+     "review_top_k": 14,
+     "threshold": 0.632,
+     "precision": 0.857,
+     "recall": 0.857
+    },
+    "high capacity (F2)": {
+     "review_top_k": 18,
+     "threshold": 0.143,
+     "precision": 0.722,
+     "recall": 0.929
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 202",
+   "brier": 0.0146,
+   "ece": 0.0065,
+   "reliability": [
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.211,
+     "observed": 0.231,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.928,
+     "observed": 0.923,
+     "n": 13
+    }
+   ],
+   "tiers": {
+    "Critical (top 1%)": {
+     "providers": 1,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.067,
+     "false_positive_rate": 0.0
+    },
+    "High (top 5%)": {
+     "providers": 7,
+     "threshold": 0.929,
+     "precision": 1.0,
+     "recall": 0.467,
+     "false_positive_rate": 0.0
+    },
+    "Review (top 15%)": {
+     "providers": 20,
+     "threshold": 0.143,
+     "precision": 0.75,
+     "recall": 1.0,
+     "false_positive_rate": 0.0427
+    }
+   },
+   "operating_points": {
+    "low capacity (F0.5)": {
+     "review_top_k": 15,
+     "threshold": 0.774,
+     "precision": 0.933,
+     "recall": 0.933
+    },
+    "balanced (F1)": {
+     "review_top_k": 15,
+     "threshold": 0.774,
+     "precision": 0.933,
+     "recall": 0.933
+    },
+    "high capacity (F2)": {
+     "review_top_k": 18,
+     "threshold": 0.143,
+     "precision": 0.833,
+     "recall": 1.0
+    }
+   }
+  }
+ ],
+ "quality": {
+  "corrupted_providers": 10,
+  "rows": [
+   {
+    "provider": "P-0001",
+    "true_state": "fraudulent",
+    "dq_before": 0.962,
+    "dq_after": 0.45,
+    "consensus_before": "High",
+    "consensus_after": "Low",
+    "risk_before": 61.4,
+    "risk_after": 62.7
+   },
+   {
+    "provider": "P-0004",
+    "true_state": "fraudulent",
+    "dq_before": 0.961,
+    "dq_after": 0.484,
+    "consensus_before": "Moderate",
+    "consensus_after": "Low",
+    "risk_before": 56.1,
+    "risk_after": 57.0
+   },
+   {
+    "provider": "P-0005",
+    "true_state": "fraudulent",
+    "dq_before": 0.95,
+    "dq_after": 0.463,
+    "consensus_before": "Moderate",
+    "consensus_after": "Low",
+    "risk_before": 53.7,
+    "risk_after": 56.6
+   },
+   {
+    "provider": "P-0009",
+    "true_state": "fraudulent",
+    "dq_before": 1.0,
+    "dq_after": 0.528,
+    "consensus_before": "Moderate",
+    "consensus_after": "Low",
+    "risk_before": 49.4,
+    "risk_after": 11.3
+   },
+   {
+    "provider": "P-0034",
+    "true_state": "legitimate",
+    "dq_before": 0.952,
+    "dq_after": 0.514,
+    "consensus_before": "Low",
+    "consensus_after": "Low",
+    "risk_before": 2.1,
+    "risk_after": 6.9
+   },
+   {
+    "provider": "P-0074",
+    "true_state": "legitimate",
+    "dq_before": 0.992,
+    "dq_after": 0.516,
+    "consensus_before": "Low",
+    "consensus_after": "Low",
+    "risk_before": 4.0,
+    "risk_after": 10.0
+   },
+   {
+    "provider": "P-0025",
+    "true_state": "legitimate",
+    "dq_before": 0.986,
+    "dq_after": 0.454,
+    "consensus_before": "Low",
+    "consensus_after": "Low",
+    "risk_before": 0.9,
+    "risk_after": 2.3
+   },
+   {
+    "provider": "P-0029",
+    "true_state": "legitimate",
+    "dq_before": 0.971,
+    "dq_after": 0.488,
+    "consensus_before": "Low",
+    "consensus_after": "Low",
+    "risk_before": 1.0,
+    "risk_after": 1.0
+   },
+   {
+    "provider": "P-0035",
+    "true_state": "legitimate",
+    "dq_before": 0.973,
+    "dq_after": 0.479,
+    "consensus_before": "Low",
+    "consensus_after": "Low",
+    "risk_before": 5.8,
+    "risk_after": 9.4
+   },
+   {
+    "provider": "P-0105",
+    "true_state": "legitimate",
+    "dq_before": 0.99,
+    "dq_after": 0.484,
+    "consensus_before": "Low",
+    "consensus_after": "Low",
+    "risk_before": 10.7,
+    "risk_after": 22.0
+   }
+  ],
+  "confidence_never_high": true,
+  "dq_dropped": true,
+  "legit_risk_inflated": 1
+ },
+ "generated": "2026-10-09 01:07:22",
+ "gap": {
+  "reference_providers": 738,
+  "datasets": {
+   "demo world": {
+    "psi_vs_demo": {
+     "lines_per_member": 0,
+     "paid_per_member": 0,
+     "paid_per_line": 0,
+     "hi_em_share": 0,
+     "units_per_line": 0,
+     "new_share": 0,
+     "codes_per_member": 0
+    },
+    "shifted_features": [],
+    "ood_rate": 0.045,
+    "drift_vs_training": {
+     "psi": {
+      "lines_per_member": 0.067,
+      "paid_per_member": 0.069,
+      "paid_per_line": 0.045,
+      "hi_em_share": 0.032,
+      "units_per_line": 0.0,
+      "new_share": 0.161,
+      "codes_per_member": 0.115
+     },
+     "max_psi": 0.161,
+     "status": "watch",
+     "shifted": [],
+     "note": "PSI \u2265 0.25 = significant shift: review / recalibrate models; 0.1\u20130.25 = monitor."
+    }
+   },
+   "held-out world 201": {
+    "psi_vs_demo": {
+     "lines_per_member": 0.101,
+     "paid_per_member": 0.114,
+     "paid_per_line": 0.078,
+     "hi_em_share": 0.268,
+     "units_per_line": 0.015,
+     "new_share": 0.062,
+     "codes_per_member": 0.032
+    },
+    "shifted_features": [
+     "level-5 visit share"
+    ],
+    "ood_rate": 0.038,
+    "drift_vs_training": {
+     "psi": {
+      "lines_per_member": 0.06,
+      "paid_per_member": 0.109,
+      "paid_per_line": 0.026,
+      "hi_em_share": 0.002,
+      "units_per_line": 0.007,
+      "new_share": 0.052,
+      "codes_per_member": 0.089
+     },
+     "max_psi": 0.109,
+     "status": "watch",
+     "shifted": [],
+     "note": "PSI \u2265 0.25 = significant shift: review / recalibrate models; 0.1\u20130.25 = monitor."
+    }
+   },
+   "held-out world 202": {
+    "psi_vs_demo": {
+     "lines_per_member": 0.049,
+     "paid_per_member": 0.072,
+     "paid_per_line": 0.04,
+     "hi_em_share": 0.383,
+     "units_per_line": 0.001,
+     "new_share": 0.082,
+     "codes_per_member": 0.084
+    },
+    "shifted_features": [
+     "level-5 visit share"
+    ],
+    "ood_rate": 0.053,
+    "drift_vs_training": {
+     "psi": {
+      "lines_per_member": 0.028,
+      "paid_per_member": 0.058,
+      "paid_per_line": 0.038,
+      "hi_em_share": 0.029,
+      "units_per_line": 0.0,
+      "new_share": 0.068,
+      "codes_per_member": 0.076
+     },
+     "max_psi": 0.076,
+     "status": "stable",
+     "shifted": [],
+     "note": "PSI \u2265 0.25 = significant shift: review / recalibrate models; 0.1\u20130.25 = monitor."
+    }
+   }
+  },
+  "reading": "Features with PSI \u2265 0.25 are synthetic assumptions that do not hold on the other data; models relying on them need re-validation there. OOD rate = share of providers the models have never seen anything like (confidence is capped for them)."
+ },
+ "counterfactual": {
+  "summary": {
+   "remove_fraud_lines": {
+    "passed": 14,
+    "total": 15
+   },
+   "inject_duplicates": {
+    "passed": 8,
+    "total": 8
+   },
+   "revert_upcoding": {
+    "passed": 2,
+    "total": 2
+   },
+   "add_fake_event": {
+    "passed": 31,
+    "total": 31
+   },
+   "remove_context": {
+    "passed": 5,
+    "total": 5
+   },
+   "cut_network_links": {
+    "passed": 9,
+    "total": 9
+   },
+   "double_clean_volume": {
+    "passed": 8,
+    "total": 8
+   }
+  },
+  "pass_rate": 0.987,
+  "tests": [
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0001",
+    "metric": "risk",
+    "expected": "down",
+    "before": 61.448,
+    "after": 12.182,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0004",
+    "metric": "risk",
+    "expected": "down",
+    "before": 56.137,
+    "after": 8.864,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0005",
+    "metric": "risk",
+    "expected": "down",
+    "before": 53.747,
+    "after": 11.818,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0009",
+    "metric": "risk",
+    "expected": "down",
+    "before": 49.429,
+    "after": 11.364,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0047",
+    "metric": "risk",
+    "expected": "down",
+    "before": 94.441,
+    "after": 36.46,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0052",
+    "metric": "risk",
+    "expected": "down",
+    "before": 28.856,
+    "after": 4.064,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0063",
+    "metric": "risk",
+    "expected": "down",
+    "before": 65.859,
+    "after": 9.545,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0071",
+    "metric": "risk",
+    "expected": "down",
+    "before": 68.781,
+    "after": 17.636,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0072",
+    "metric": "risk",
+    "expected": "down",
+    "before": 22.04,
+    "after": 4.0,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0085",
+    "metric": "risk",
+    "expected": "down",
+    "before": 78.687,
+    "after": 45.995,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0093",
+    "metric": "risk",
+    "expected": "down",
+    "before": 69.503,
+    "after": 18.455,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0107",
+    "metric": "risk",
+    "expected": "down",
+    "before": 68.405,
+    "after": 2.0,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0108",
+    "metric": "risk",
+    "expected": "down",
+    "before": 57.212,
+    "after": 70.601,
+    "passed": false
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0119",
+    "metric": "risk",
+    "expected": "down",
+    "before": 87.535,
+    "after": 37.049,
+    "passed": true
+   },
+   {
+    "test": "remove_fraud_lines",
+    "change": "drop the scheme's labelled lines",
+    "provider": "P-0120",
+    "metric": "risk",
+    "expected": "down",
+    "before": 72.278,
+    "after": 33.23,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0029",
+    "metric": "risk",
+    "expected": "up",
+    "before": 0.96,
+    "after": 40.048,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0096",
+    "metric": "risk",
+    "expected": "up",
+    "before": 4.128,
+    "after": 51.389,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0081",
+    "metric": "risk",
+    "expected": "up",
+    "before": 5.059,
+    "after": 49.5,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0104",
+    "metric": "risk",
+    "expected": "up",
+    "before": 2.619,
+    "after": 48.185,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0025",
+    "metric": "risk",
+    "expected": "up",
+    "before": 0.909,
+    "after": 40.461,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0018",
+    "metric": "risk",
+    "expected": "up",
+    "before": 0.0,
+    "after": 39.539,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0059",
+    "metric": "risk",
+    "expected": "up",
+    "before": 2.39,
+    "after": 51.694,
+    "passed": true
+   },
+   {
+    "test": "inject_duplicates",
+    "change": "resubmit 20% of a clean provider's claims",
+    "provider": "P-0078",
+    "metric": "risk",
+    "expected": "up",
+    "before": 1.034,
+    "after": 50.182,
+    "passed": true
+   },
+   {
+    "test": "revert_upcoding",
+    "change": "bill the true visit level",
+    "provider": "P-0004",
+    "metric": "rule_score",
+    "expected": "down",
+    "before": 0.654,
+    "after": 0.038,
+    "passed": true
+   },
+   {
+    "test": "revert_upcoding",
+    "change": "bill the true visit level",
+    "provider": "P-0005",
+    "metric": "rule_score",
+    "expected": "down",
+    "before": 0.7,
+    "after": 0.166,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0001",
+    "metric": "risk",
+    "expected": "same",
+    "before": 61.448,
+    "after": 61.448,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0004",
+    "metric": "risk",
+    "expected": "same",
+    "before": 56.137,
+    "after": 56.137,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0005",
+    "metric": "risk",
+    "expected": "same",
+    "before": 53.747,
+    "after": 53.747,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0009",
+    "metric": "risk",
+    "expected": "same",
+    "before": 49.429,
+    "after": 49.429,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0047",
+    "metric": "risk",
+    "expected": "same",
+    "before": 94.441,
+    "after": 94.441,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0052",
+    "metric": "risk",
+    "expected": "same",
+    "before": 28.856,
+    "after": 28.856,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0063",
+    "metric": "risk",
+    "expected": "same",
+    "before": 65.859,
+    "after": 65.859,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0071",
+    "metric": "risk",
+    "expected": "same",
+    "before": 68.781,
+    "after": 68.781,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0072",
+    "metric": "risk",
+    "expected": "same",
+    "before": 22.04,
+    "after": 22.04,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0085",
+    "metric": "risk",
+    "expected": "same",
+    "before": 78.687,
+    "after": 78.687,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0093",
+    "metric": "risk",
+    "expected": "same",
+    "before": 69.503,
+    "after": 69.503,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0107",
+    "metric": "risk",
+    "expected": "same",
+    "before": 68.405,
+    "after": 68.405,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0108",
+    "metric": "risk",
+    "expected": "same",
+    "before": 57.212,
+    "after": 57.212,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0119",
+    "metric": "risk",
+    "expected": "same",
+    "before": 87.535,
+    "after": 87.535,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0120",
+    "metric": "risk",
+    "expected": "same",
+    "before": 72.278,
+    "after": 72.278,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "a business event coincides with the scheme",
+    "provider": "P-0124",
+    "metric": "risk",
+    "expected": "same",
+    "before": 53.417,
+    "after": 53.417,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0001",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0004",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0005",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0009",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0047",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0052",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0063",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0071",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0085",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0093",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0107",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0108",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0119",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0120",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0124",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "remove_context",
+    "change": "remove the recorded legitimate event",
+    "provider": "P-0010",
+    "metric": "brain",
+    "expected": "same",
+    "before": 0.806,
+    "after": 0.806,
+    "passed": true
+   },
+   {
+    "test": "remove_context",
+    "change": "remove the recorded legitimate event",
+    "provider": "P-0011",
+    "metric": "brain",
+    "expected": "same",
+    "before": 0.916,
+    "after": 0.916,
+    "passed": true
+   },
+   {
+    "test": "remove_context",
+    "change": "remove the recorded legitimate event",
+    "provider": "P-0012",
+    "metric": "brain",
+    "expected": "same",
+    "before": 0.753,
+    "after": 0.753,
+    "passed": true
+   },
+   {
+    "test": "remove_context",
+    "change": "remove the recorded legitimate event",
+    "provider": "P-0013",
+    "metric": "brain",
+    "expected": "same",
+    "before": 0.146,
+    "after": 0.146,
+    "passed": true
+   },
+   {
+    "test": "remove_context",
+    "change": "context removed \u2192 no longer 'Explained by context'",
+    "provider": "P-0011",
+    "metric": "lane",
+    "expected": "up",
+    "before": "Explained by context",
+    "after": "escalated",
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0001",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.9,
+    "after": 0.6,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0009",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.25,
+    "after": 0.25,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0047",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.9,
+    "after": 0.6,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0052",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.7,
+    "after": 0.7,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0071",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.4,
+    "after": 0.4,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0072",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.9,
+    "after": 0.06,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0107",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.9,
+    "after": 0.25,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0119",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.9,
+    "after": 0.4,
+    "passed": true
+   },
+   {
+    "test": "cut_network_links",
+    "change": "remove shared ownership / address / bank links",
+    "provider": "P-0120",
+    "metric": "graph_score",
+    "expected": "down",
+    "before": 0.9,
+    "after": 0.233,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0029",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.019,
+    "after": 0.01,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0096",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.018,
+    "after": 0.009,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0081",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.0,
+    "after": 0.0,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0104",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.0,
+    "after": 0.0,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0025",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.0,
+    "after": 0.0,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0018",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.0,
+    "after": 0.0,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0059",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.0,
+    "after": 0.0,
+    "passed": true
+   },
+   {
+    "test": "double_clean_volume",
+    "change": "double a clean provider's volume with the same mix",
+    "provider": "P-0078",
+    "metric": "rule_score",
+    "expected": "same",
+    "before": 0.0,
+    "after": 0.0,
+    "passed": true
+   }
+  ]
+ },
+ "adversarial": [
+  {
+   "attack": "scheme intensity 100%",
+   "detected": 15,
+   "of": 16,
+   "by_type": {
+    "duplicate": "1/1",
+    "excessive_services": "1/2",
+    "excluded_provider": "1/1",
+    "impossible_timing": "1/1",
+    "phantom": "4/4",
+    "recruitment": "2/2",
+    "unbundling": "2/2",
+    "upcoding": "3/3"
+   }
+  },
+  {
+   "attack": "scheme intensity 50%",
+   "detected": 13,
+   "of": 16,
+   "by_type": {
+    "duplicate": "1/1",
+    "excessive_services": "1/2",
+    "excluded_provider": "1/1",
+    "impossible_timing": "1/1",
+    "phantom": "4/4",
+    "recruitment": "0/2",
+    "unbundling": "2/2",
+    "upcoding": "3/3"
+   }
+  },
+  {
+   "attack": "scheme intensity 25%",
+   "detected": 11,
+   "of": 16,
+   "by_type": {
+    "duplicate": "1/1",
+    "excessive_services": "1/2",
+    "excluded_provider": "1/1",
+    "impossible_timing": "1/1",
+    "phantom": "3/4",
+    "recruitment": "0/2",
+    "unbundling": "1/2",
+    "upcoding": "3/3"
+   }
+  },
+  {
+   "attack": "scheme intensity 10%",
+   "detected": 9,
+   "of": 16,
+   "by_type": {
+    "duplicate": "0/1",
+    "excessive_services": "1/2",
+    "excluded_provider": "1/1",
+    "impossible_timing": "1/1",
+    "phantom": "3/4",
+    "recruitment": "0/2",
+    "unbundling": "1/2",
+    "upcoding": "2/3"
+   }
+  },
+  {
+   "attack": "mimicry: upcode to level 4 instead of 5",
+   "detected": 0,
+   "of": 2,
+   "note": "Level-5 rule no longer fires; learned detectors must carry it"
+  },
+  {
+   "attack": "split billing across a second identity (shared owner/address/bank)",
+   "detected": 13,
+   "of": 16,
+   "both_identities_in_one_case": 13
+  }
+ ],
+ "delay": {
+  "cutoffs": [
+   "2024-10-31",
+   "2024-12-31",
+   "2025-02-28",
+   "2025-04-30",
+   "2025-06-30",
+   "2025-08-31"
+  ],
+  "providers": [
+   {
+    "provider_id": "P-0001",
+    "fraud_type": "unbundling",
+    "fraud_start": "2024-11-01",
+    "first_case_cutoff": "2024-10-31",
+    "days_to_case": -1,
+    "first_stage_cutoff": "2024-12-31",
+    "days_to_early_warning": 60
+   },
+   {
+    "provider_id": "P-0004",
+    "fraud_type": "upcoding",
+    "fraud_start": "2024-08-02",
+    "first_case_cutoff": "2024-10-31",
+    "days_to_case": 90,
+    "first_stage_cutoff": "2024-10-31",
+    "days_to_early_warning": 90
+   },
+   {
+    "provider_id": "P-0005",
+    "fraud_type": "upcoding",
+    "fraud_start": "2025-02-05",
+    "first_case_cutoff": "2025-02-28",
+    "days_to_case": 23,
+    "first_stage_cutoff": "2025-02-28",
+    "days_to_early_warning": 23
+   },
+   {
+    "provider_id": "P-0009",
+    "fraud_type": "recruitment",
+    "fraud_start": "2025-03-03",
+    "first_case_cutoff": "2025-04-30",
+    "days_to_case": 58,
+    "first_stage_cutoff": "2024-12-31",
+    "days_to_early_warning": -62
+   },
+   {
+    "provider_id": "P-0047",
+    "fraud_type": "unbundling",
+    "fraud_start": "2024-09-17",
+    "first_case_cutoff": "2024-10-31",
+    "days_to_case": 44,
+    "first_stage_cutoff": "2024-10-31",
+    "days_to_early_warning": 44
+   },
+   {
+    "provider_id": "P-0052",
+    "fraud_type": "recruitment",
+    "fraud_start": "2025-03-03",
+    "first_case_cutoff": "2025-06-30",
+    "days_to_case": 119,
+    "first_stage_cutoff": "2025-04-30",
+    "days_to_early_warning": 58
+   },
+   {
+    "provider_id": "P-0063",
+    "fraud_type": "duplicate",
+    "fraud_start": "2025-03-03",
+    "first_case_cutoff": "2025-04-30",
+    "days_to_case": 58,
+    "first_stage_cutoff": "2024-10-31",
+    "days_to_early_warning": -123
+   },
+   {
+    "provider_id": "P-0071",
+    "fraud_type": "excessive_services",
+    "fraud_start": "2025-02-03",
+    "first_case_cutoff": "2025-04-30",
+    "days_to_case": 86,
+    "first_stage_cutoff": "2025-02-28",
+    "days_to_early_warning": 25
+   },
+   {
+    "provider_id": "P-0072",
+    "fraud_type": "excessive_services",
+    "fraud_start": "2025-03-05",
+    "first_case_cutoff": null,
+    "days_to_case": null,
+    "first_stage_cutoff": "2025-04-30",
+    "days_to_early_warning": 56
+   },
+   {
+    "provider_id": "P-0085",
+    "fraud_type": "upcoding",
+    "fraud_start": "2024-04-24",
+    "first_case_cutoff": "2024-10-31",
+    "days_to_case": 190,
+    "first_stage_cutoff": "2025-02-28",
+    "days_to_early_warning": 310
+   },
+   {
+    "provider_id": "P-0093",
+    "fraud_type": "impossible_timing",
+    "fraud_start": "2024-06-12",
+    "first_case_cutoff": "2024-10-31",
+    "days_to_case": 141,
+    "first_stage_cutoff": "2024-10-31",
+    "days_to_early_warning": 141
+   },
+   {
+    "provider_id": "P-0107",
+    "fraud_type": "phantom",
+    "fraud_start": "2025-01-06",
+    "first_case_cutoff": "2025-02-28",
+    "days_to_case": 53,
+    "first_stage_cutoff": "2025-06-30",
+    "days_to_early_warning": 175
+   },
+   {
+    "provider_id": "P-0108",
+    "fraud_type": "phantom",
+    "fraud_start": "2025-04-03",
+    "first_case_cutoff": "2025-04-30",
+    "days_to_case": 27,
+    "first_stage_cutoff": "2025-06-30",
+    "days_to_early_warning": 88
+   },
+   {
+    "provider_id": "P-0119",
+    "fraud_type": "phantom",
+    "fraud_start": "2025-01-26",
+    "first_case_cutoff": "2025-02-28",
+    "days_to_case": 33,
+    "first_stage_cutoff": "2024-12-31",
+    "days_to_early_warning": -26
+   },
+   {
+    "provider_id": "P-0120",
+    "fraud_type": "phantom",
+    "fraud_start": "2025-01-06",
+    "first_case_cutoff": "2025-02-28",
+    "days_to_case": 53,
+    "first_stage_cutoff": "2024-12-31",
+    "days_to_early_warning": -6
+   },
+   {
+    "provider_id": "P-0124",
+    "fraud_type": "excluded_provider",
+    "fraud_start": "2025-05-01",
+    "first_case_cutoff": "2025-06-30",
+    "days_to_case": 60,
+    "first_stage_cutoff": "2024-12-31",
+    "days_to_early_warning": -121
+   }
+  ],
+  "median_days_to_case": 58.0,
+  "median_days_to_early_warning": 50.0,
+  "note": "Cutoffs are every ~2 months, so delays are upper bounds with 2-month resolution. 'Early warning' = temporal stage \u2265 Emerging anomaly."
+ },
+ "ablation": {
+  "results": {
+   "demo world": {
+    "base": {
+     "brain_auc": 0.989,
+     "brain_ap": 0.942,
+     "cases": 13,
+     "caught": 15,
+     "of": 16,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+temporal": {
+     "brain_auc": 0.991,
+     "brain_ap": 0.954,
+     "cases": 13,
+     "caught": 15,
+     "of": 16,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+peer": {
+     "brain_auc": 0.985,
+     "brain_ap": 0.934,
+     "cases": 13,
+     "caught": 15,
+     "of": 16,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+temporal+peer": {
+     "brain_auc": 0.988,
+     "brain_ap": 0.941,
+     "cases": 13,
+     "caught": 15,
+     "of": 16,
+     "false_leads": 0,
+     "legit_escalated": 1
+    }
+   },
+   "held-out world 201": {
+    "base": {
+     "brain_auc": 0.982,
+     "brain_ap": 0.815,
+     "cases": 12,
+     "caught": 13,
+     "of": 14,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+temporal": {
+     "brain_auc": 0.984,
+     "brain_ap": 0.818,
+     "cases": 12,
+     "caught": 13,
+     "of": 14,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+peer": {
+     "brain_auc": 0.979,
+     "brain_ap": 0.802,
+     "cases": 12,
+     "caught": 13,
+     "of": 14,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+temporal+peer": {
+     "brain_auc": 0.982,
+     "brain_ap": 0.813,
+     "cases": 13,
+     "caught": 13,
+     "of": 14,
+     "false_leads": 1,
+     "legit_escalated": 2
+    }
+   },
+   "held-out world 202": {
+    "base": {
+     "brain_auc": 0.995,
+     "brain_ap": 0.963,
+     "cases": 12,
+     "caught": 14,
+     "of": 15,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+temporal": {
+     "brain_auc": 0.997,
+     "brain_ap": 0.972,
+     "cases": 12,
+     "caught": 14,
+     "of": 15,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+peer": {
+     "brain_auc": 0.993,
+     "brain_ap": 0.943,
+     "cases": 12,
+     "caught": 14,
+     "of": 15,
+     "false_leads": 0,
+     "legit_escalated": 1
+    },
+    "+temporal+peer": {
+     "brain_auc": 0.994,
+     "brain_ap": 0.949,
+     "cases": 13,
+     "caught": 14,
+     "of": 15,
+     "false_leads": 1,
+     "legit_escalated": 2
+    }
+   }
+  },
+  "mean_brain_ap": {
+   "base": 0.907,
+   "+temporal": 0.915,
+   "+peer": 0.893,
+   "+temporal+peer": 0.901
+  },
+  "total_false_leads": {
+   "base": 0,
+   "+temporal": 0,
+   "+peer": 0,
+   "+temporal+peer": 2
+  },
+  "total_caught": {
+   "base": 42,
+   "+temporal": 42,
+   "+peer": 42,
+   "+temporal+peer": 42
+  },
+  "chosen": "+temporal",
+  "rule": "Choose the variant with the most fraud caught minus false leads across datasets; ties \u2192 higher mean AP."
+ }
+}

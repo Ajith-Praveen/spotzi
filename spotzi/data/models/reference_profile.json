@@ -1,0 +1,15 @@
+{
+ "task": "Reference population (OOD + drift)",
+ "process": "Out-of-distribution checks and drift monitoring",
+ "kind": "Log-space mean / covariance of provider behaviour profiles",
+ "trained_on": "738 providers from training worlds",
+ "held_out": {},
+ "use": "Backend: flags providers unlike anything the models were trained on; drift monitoring compares each run with it.",
+ "limitations": [
+  "Built from synthetic worlds: real data will look out-of-distribution until the reference is rebuilt from real history."
+ ],
+ "name": "reference_profile",
+ "trained": "2026-10-09 00:54:44",
+ "artifact": "reference_profile.joblib",
+ "sha256": "20230d3083a3f118"
+}

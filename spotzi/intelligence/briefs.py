@@ -193,9 +193,17 @@ def case_detail(S, cid, horizon=60):
     if ev >= 70 and not c["benign_context"]: conf = "High"
     elif ev >= 45: conf = "Moderate"
     else: conf = "Low"
+    cons = c.get("consensus") or {}
+    order = ["Low", "Moderate", "High"]
+    if cons.get("consensus") in order and order.index(cons["consensus"]) < order.index(conf):
+        conf = cons["consensus"]          # evidence diversity / data quality / OOD can only lower confidence, never raise it
     rationale = [f"{c['signals']} of 5 independent signal families agree (rules, anomaly, graph, escalation, Sentinel)." if c["signals"] >= 2 else "Only one signal family supports this case.",
                  f"{len(c['rules'])} distinct rule type(s) fired on {c['flagged_lines']} lines.",
                  ("Benign context present: " + c["benign_context"][0]) if c["benign_context"] else "No benign context recorded in provider master data."]
+    if cons.get("consensus_text"): rationale.append("Consensus: " + cons["consensus_text"] + ".")
+    tmp = c.get("temporal") or {}
+    if tmp.get("stage"): rationale.append(f"Behaviour over time: {tmp['stage'].lower()}, trend {tmp.get('trend_label', 'stable')}" + (f", sustained since {tmp['onset']}" if tmp.get("onset") else "") + ".")
+    if c.get("scheme_types"): rationale.append("Most likely scheme types: " + ", ".join(f"{x['type'].replace('_', ' ')} {x['p'] * 100:.0f}%" for x in c["scheme_types"][:3]) + ".")
     limits = ["Synthetic data: results show the method, not real-world accuracy.",
               "A flag is a pattern for human review, not a finding of fraud. Exposure is gross flagged dollars, not an expected recovery.",
               "Peer baselines are family-level; specialty or panel mix can explain differences.",

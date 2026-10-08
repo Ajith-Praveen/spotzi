@@ -16,10 +16,10 @@
  ],
  "held_out": {
   "test_tips": 800,
-  "scheme_accuracy": 0.938,
-  "scheme_macro_f1": 0.943,
-  "tfidf_only_accuracy": 0.895,
-  "v1_accuracy": 0.535,
+  "scheme_accuracy": 0.932,
+  "scheme_macro_f1": 0.939,
+  "tfidf_only_accuracy": 0.89,
+  "v1_accuracy": 0.542,
   "keyword_baseline_scheme_accuracy": 0.197,
   "encoder_used": true,
   "note": "Test tips use sentence templates and provider names never seen in training."
@@ -31,7 +31,7 @@
   "Never decides anything \u2014 a tip is an allegation, not evidence."
  ],
  "name": "tip_triage",
- "trained": "2026-10-08 23:14:39",
+ "trained": "2026-10-09 00:55:57",
  "artifact": "tip_triage.joblib",
- "sha256": "816ba2f179e93401"
+ "sha256": "372362d70f6da679"
 }

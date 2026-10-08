@@ -166,7 +166,9 @@ def _schema(c):
     from operations import ops as OP
     OP.schema(c)
     c.executescript("""
-    CREATE TABLE IF NOT EXISTS app_settings(key TEXT PRIMARY KEY, value TEXT, updated_by TEXT, ts TEXT);""")
+    CREATE TABLE IF NOT EXISTS app_settings(key TEXT PRIMARY KEY, value TEXT, updated_by TEXT, ts TEXT);
+    CREATE TABLE IF NOT EXISTS prediction_log(id INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT, ts TEXT, as_of TEXT, case_id TEXT, provider_id TEXT, lane TEXT,
+        risk REAL, brain REAL, p_fraud REAL, consensus TEXT, stage TEXT, detectors TEXT, versions TEXT);""")
     c.executescript("""
     CREATE TABLE IF NOT EXISTS case_assign(case_id TEXT PRIMARY KEY, assignee TEXT, assignee_name TEXT, assigned_by TEXT, ts TEXT, due TEXT);
     CREATE TABLE IF NOT EXISTS case_notes(id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, author TEXT, role TEXT, ts TEXT, text TEXT);
@@ -214,7 +216,7 @@ def start_run(seed=None, members=2500, data_dir=None):
             if data_dir is not None: STATE["data_dir"] = data_dir
             S["run"]["dataset"] = "synthetic" if data_dir is None or Path(data_dir) == PL.DATA else Path(data_dir).name
             STATE["S"] = S
-            _ingest(S)
+            _ingest(S); _log_predictions(S)
             STATE["status"] = dict(state="idle", step="done", started=None, error=None)
             audit("system", "system", "pipeline_run", S["run"]["run_id"], json.dumps(dict(seed=seed, members=members)))
         except Exception as e:  # fail safe: keep the previous run live
@@ -222,6 +224,51 @@ def start_run(seed=None, members=2500, data_dir=None):
             audit("system", "system", "pipeline_failed", "", str(e)[:300])
     threading.Thread(target=work, daemon=True).start()
     return True
+
+
+def _log_predictions(S):
+    """Model versioning + replay: every case's prediction is stored with the exact versions and detector outputs that
+    produced it, so 'why did SpotZⁱ score this 83 on 14 March?' can be answered later even after models change."""
+    try:
+        run = S["run"]; PT = S["PT"]; c = db()
+        if c.execute("SELECT 1 FROM prediction_log WHERE run_id=? LIMIT 1", (run["run_id"],)).fetchone(): c.close(); return
+        dcols = [col for _, col, _, _ in BR.DETECTORS] + ["risk", "brain", "p_fraud", "outcome_p", "temporal_pct", "peer_pct", "dq"]
+        ts = time.strftime("%Y-%m-%d %H:%M:%S"); vers = json.dumps(run.get("versions", {}))
+        for cs in S["cases"]:
+            for p in cs["primary"]:
+                det = {k: (None if PT.at[p, k] != PT.at[p, k] else round(float(PT.at[p, k]), 4)) for k in dcols if k in PT}
+                c.execute("INSERT INTO prediction_log(run_id,ts,as_of,case_id,provider_id,lane,risk,brain,p_fraud,consensus,stage,detectors,versions) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                          (run["run_id"], ts, run["as_of"], cs["case_id"], p, cs["lane"], float(cs["risk"]), float(PT.at[p, "brain"]),
+                           None if "p_fraud" not in PT or PT.at[p, "p_fraud"] != PT.at[p, "p_fraud"] else float(PT.at[p, "p_fraud"]),
+                           str(PT.at[p, "consensus"]) if "consensus" in PT else None, str(PT.at[p, "stage"]) if "stage" in PT else None, json.dumps(det), vers))
+        c.commit(); c.close()
+    except Exception as e:
+        print("SpotZⁱ: prediction log failed:", e)
+
+
+@app.get("/api/replay")
+def replay(req: Request, case_id: str = "", provider_id: str = ""):
+    need(req, "investigate")
+    c = db()
+    rows = [dict(r) for r in c.execute("SELECT * FROM prediction_log WHERE (case_id=? OR ?='') AND (provider_id=? OR ?='') ORDER BY id DESC LIMIT 200",
+                                       (case_id, case_id, provider_id, provider_id)).fetchall()]
+    c.close()
+    for r in rows: r["detectors"] = json.loads(r["detectors"]); r["versions"] = json.loads(r["versions"])
+    return J(rows)
+
+
+@app.get("/api/validation")
+def validation():
+    p = ROOT / "data" / "evaluation" / "engine.json"
+    return J(json.loads(p.read_text()) if p.exists() else {})
+
+
+@app.get("/api/monitoring")
+def monitoring(req: Request):
+    need(req, "run_models"); s = S()
+    return J(dict(run_id=s["run"]["run_id"], drift=s["run"].get("monitoring"), consensus=s["run"].get("consensus"), versions=s["run"].get("versions"),
+                  ood_providers=int(s["PT"].ood.fillna(False).sum()) if "ood" in s["PT"] else None,
+                  stages=s["PT"].stage.value_counts().to_dict() if "stage" in s["PT"] else None))
 
 
 def boot():
@@ -236,7 +283,7 @@ def boot():
     def first():
         try:
             STATE["S"] = PL.run_pipeline(progress=lambda s: STATE["status"].update(step=s), custom_rules=_active_rules())
-            _ingest(STATE["S"])
+            _ingest(STATE["S"]); _log_predictions(STATE["S"])
             STATE["status"] = dict(state="idle", step="done", started=None, error=None)
         except Exception as e:
             STATE["status"] = dict(state="error", step="failed", started=None, error=str(e))
@@ -1648,31 +1695,6 @@ async def tip_triage(tid: int, req: Request):
     c = db(); c.execute("UPDATE tips SET status=?, case_id=?, triaged_by=?, triage_note=? WHERE id=?", ({"link": "linked", "close": "closed", "watch": "watchlist"}[act], cid, u["name"], note, tid)); c.commit(); c.close()
     audit(u["name"], u["role"], "tip_triaged", str(tid), f"{act} {cid or ''}")
     return J(dict(ok=True))
-
-
-@app.get("/api/data/public")
-def public_list():
-    ext = ROOT / "data" / "external"
-    return J(dict(current=(STATE["S"] or {}).get("run", {}).get("dataset", "synthetic"), datasets=[
-        dict(key="synpuf", name="CMS DE-SynPUF Sample 1", detail="Synthetic Medicare claims 2008–2010 · hospitals & outpatient facilities ↔ patients ↔ admissions (doctor IDs are scrambled by CMS, so not used)",
-             available=(ext / "synpuf").exists() and any((ext / "synpuf").glob("*Inpatient*.csv"))),
-        dict(key="synthea", name="Synthea sample", detail="Synthetic patient records · clinicians ↔ patients ↔ organisations · 108 patients",
-             available=(ext / "synthea" / "patients.csv").exists())]))
-
-
-@app.post("/api/data/public")
-async def public_load(req: Request):
-    u = need(req, "run_models"); b = json.loads(await req.body() or b"{}")
-    from synthdata import importers as IM
-    key = b.get("dataset"); ext = ROOT / "data" / "external"; ws = ROOT / "data" / "workspaces" / f"{key}-sample"
-    try:
-        if key == "synpuf": rep = IM.synpuf(ext / "synpuf", ws, n_benes=max(500, min(int(b.get("patients", 4000)), 20000)))
-        elif key == "synthea": rep = IM.synthea(ext / "synthea", ws)
-        else: raise HTTPException(400, "Unknown dataset")
-    except FileNotFoundError: raise HTTPException(409, "Dataset files are not downloaded on this server")
-    ok = start_run(data_dir=ws)
-    audit(u["name"], u["role"], "dataset_switch", key, json.dumps(rep)[:300])
-    return J(dict(started=ok, report=rep))
 
 
 @app.get("/api/evaluation")

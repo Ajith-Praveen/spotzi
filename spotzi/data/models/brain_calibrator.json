@@ -1,0 +1,40 @@
+{
+ "task": "Fraud-probability calibration",
+ "process": "Nexus Brain suspicion \u2192 calibrated probability (p_fraud) used for tiers and thresholds",
+ "kind": "Isotonic regression (monotone; ranking unchanged)",
+ "trained_on": "792 providers from training worlds",
+ "held_out": {
+  "demo world (seed 7)": {
+   "providers": 132,
+   "positives": 16,
+   "ece_raw": 0.1442,
+   "ece_calibrated": 0.0128,
+   "brier_raw": 0.0632,
+   "brier_calibrated": 0.0297
+  },
+  "held-out world (seed 201)": {
+   "providers": 132,
+   "positives": 14,
+   "ece_raw": 0.1493,
+   "ece_calibrated": 0.0059,
+   "brier_raw": 0.0683,
+   "brier_calibrated": 0.0278
+  },
+  "held-out world (seed 202)": {
+   "providers": 132,
+   "positives": 15,
+   "ece_raw": 0.1426,
+   "ece_calibrated": 0.0084,
+   "brier_raw": 0.0557,
+   "brier_calibrated": 0.0146
+  }
+ },
+ "use": "Backend: makes 'p = 0.9' mean roughly 9 in 10 under the evaluation distribution; tiers and capacity thresholds use it.",
+ "limitations": [
+  "Calibrated to synthetic base rates; real base rates differ \u2014 recalibrate on real outcomes."
+ ],
+ "name": "brain_calibrator",
+ "trained": "2026-10-09 00:55:59",
+ "artifact": "brain_calibrator.joblib",
+ "sha256": "1e5a67bf7d6620cb"
+}

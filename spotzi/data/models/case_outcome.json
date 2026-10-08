@@ -2,7 +2,7 @@
  "task": "Case substantiation likelihood",
  "process": "SIU queue \u2192 probability a case's providers are substantiated",
  "kind": "Logistic regression (standardised), class-balanced",
- "trained_on": "4747 providers: generator worlds + DE-SynPUF training patients (disjoint from test)",
+ "trained_on": "792 providers from synthetic generator worlds",
  "features": [
   "rule_score",
   "anomaly_pct",
@@ -16,43 +16,43 @@
   "log_lines"
  ],
  "coefficients": {
-  "rule_score": 0.834,
-  "anomaly_pct": 1.988,
-  "graph_score": 0.836,
-  "twin_pct": 0.078,
-  "path_pct": 2.553,
-  "drift_pct": 0.447,
-  "mix_pct": -0.003,
-  "panel_pct": 0.491,
-  "any_share": 0.287,
-  "log_lines": -0.037
+  "rule_score": 1.253,
+  "anomaly_pct": 0.806,
+  "graph_score": 1.083,
+  "twin_pct": 0.266,
+  "path_pct": -0.046,
+  "drift_pct": 1.171,
+  "mix_pct": -0.54,
+  "panel_pct": 1.013,
+  "any_share": 0.394,
+  "log_lines": 1.119
  },
  "held_out": {
   "demo world (seed 7)": {
    "providers": 132,
    "positives": 15,
-   "auc": 0.994,
-   "ap": 0.964,
-   "brain_auc": 0.994,
-   "brain_ap": 0.961,
-   "risk_auc": 0.985
-  },
-  "synpuf + injected schemes": {
-   "providers": 4332,
-   "positives": 21,
-   "auc": 0.986,
-   "ap": 0.799,
-   "brain_auc": 0.991,
-   "brain_ap": 0.566,
-   "risk_auc": 0.991
-  },
-  "synthea + injected schemes": {
-   "providers": 200,
-   "positives": 14,
    "auc": 1.0,
    "ap": 1.0,
-   "brain_auc": 0.997,
-   "brain_ap": 0.953,
+   "brain_auc": 0.993,
+   "brain_ap": 0.962,
+   "risk_auc": 0.993
+  },
+  "held-out world (seed 201)": {
+   "providers": 132,
+   "positives": 14,
+   "auc": 0.993,
+   "ap": 0.912,
+   "brain_auc": 0.982,
+   "brain_ap": 0.815,
+   "risk_auc": 0.988
+  },
+  "held-out world (seed 202)": {
+   "providers": 132,
+   "positives": 15,
+   "auc": 0.999,
+   "ap": 0.996,
+   "brain_auc": 0.995,
+   "brain_ap": 0.963,
    "risk_auc": 0.997
   }
  },
@@ -61,7 +61,7 @@
   "Trained on simulated outcomes. Replace with your closed SIU cases when available (same script)."
  ],
  "name": "case_outcome",
- "trained": "2026-10-08 23:14:39",
+ "trained": "2026-10-09 00:55:57",
  "artifact": "case_outcome.joblib",
- "sha256": "9e668f7a61e7b15b"
+ "sha256": "61ab932df1e4ecce"
 }

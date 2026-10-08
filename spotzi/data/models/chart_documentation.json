@@ -2,7 +2,7 @@
  "task": "Chart documentation review",
  "process": "Case \u2192 Chart review (offline reviewer and LLM second opinion)",
  "kind": "TF-IDF (word + character n-grams) \u2192 multinomial logistic regression over documented E/M level; parsed time rules",
- "trained_on": "18,000 synthetic notes from training worlds (wording A and B)",
+ "trained_on": "36,000 synthetic notes from training worlds (wording A and B)",
  "held_out": {
   "demo world, wording A": {
    "notes": 600,
@@ -15,8 +15,8 @@
    "notes": 600,
    "model_accuracy": 1.0,
    "model_f1": 1.0,
-   "keyword_reviewer_accuracy": 0.388,
-   "keyword_reviewer_f1": 0.429
+   "keyword_reviewer_accuracy": 0.378,
+   "keyword_reviewer_f1": 0.42
   }
  },
  "use": "Screens chart-review samples without an LLM; when an LLM is configured, disagreements between the two are highlighted for the reviewer.",
@@ -25,7 +25,7 @@
   "Synthetic notes are far more regular than real charts; an LLM is expected to generalise better to real wording."
  ],
  "name": "chart_documentation",
- "trained": "2026-10-08 23:13:56",
+ "trained": "2026-10-09 00:55:14",
  "artifact": "chart_documentation.joblib",
- "sha256": "0d937dccb8e185b7"
+ "sha256": "2c5a8ffbc43dfda4"
 }

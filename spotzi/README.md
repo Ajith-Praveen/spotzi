@@ -1,6 +1,6 @@
 # SpotZⁱ
 
-Healthcare payer FWA (fraud, waste, abuse) intelligence for Special Investigations Units. **Synthetic data only.** Humans make every decision.
+Healthcare payer FWA (fraud, waste, abuse) intelligence for Special Investigations Units. **Synthetic data only — no real or public datasets are used anywhere.** Humans make every decision.
 
 ## Run
 
@@ -50,11 +50,10 @@ spotzi/
 │   ├── auth.py               PBKDF2 passwords, sessions, TOTP MFA, OIDC SSO
 │   └── dbcompat.py           PostgreSQL / SQLite compatibility layer
 ├── synthdata/                synthetic data
-│   ├── gen.py                synthetic claims world generator (scenarios + decoys)
-│   ├── importers.py          CMS DE-SynPUF and Synthea importers (both synthetic)
-│   └── inject.py             labelled scheme injection for evaluation
+│   ├── gen.py                realistic synthetic claims world (conditions, seasonality, cost-share, schemes, legit anomalies)
+│   └── truth.py              hidden entity-level ground truth (evaluation only)
 ├── evaluation/               measurement
-│   ├── evaluate_public.py    accuracy on DE-SynPUF / Synthea backgrounds
+│   ├── engine.py             model validation: truth, calibration, delay, counterfactual, adversarial, ablation, gap, quality
 │   └── evaluate_llm.py       chart-review reviewer comparison
 ├── scripts/migrate_to_postgres.py
 ├── static/                   web app (PWA): index.html, app.js, styles.css, sw.js
@@ -66,8 +65,7 @@ spotzi/
     ├── secrets/              LLM API key (owner-only file; never in the DB)
     ├── llm.env               optional LLM settings via environment
     ├── evaluation/           evaluation results (JSON)
-    ├── external/             downloaded synthetic datasets (DE-SynPUF, Synthea)
-    ├── workspaces/ · training/  imported datasets · generated training worlds
+    ├── training/             generated training and held-out worlds (other seeds)
     └── documents/ · cache/   case attachments · LLM response cache
 ```
 
@@ -78,7 +76,7 @@ PostgreSQL 16 holds application state: users, sessions, MFA, decisions, four-eye
 ```bash
 python3 -m pytest -q tests                      # or: python3 -m unittest tests.test_spotzi
 python3 -m ai.models.train_all                  # retrain all task models (~6 min)
-python3 -m evaluation.evaluate_public           # DE-SynPUF + Synthea accuracy
+python3 -m evaluation.engine                     # full model validation (synthetic worlds)
 python3 -m evaluation.evaluate_llm [--llm]      # chart reviewers (LLM needs a key)
 ```
 

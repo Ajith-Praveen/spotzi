@@ -128,6 +128,30 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
             eq = em_all[em_all.code.isin(EM_HIGH)].reset_index().merge(fq.reset_index()[["provider_id", "q", "hi", "n"]], on=["provider_id", "q"])
             eq = eq[~eq["index"].isin(flags.index[flags.UPCODE])]
             mark("UPCODE", eq["index"].values, [f"Level-5 visit: {h:.0%} of the provider's {int(n)} visits in this quarter were level 5 (peer {peer_hi:.0%})" for h, n in zip(eq.hi, eq.n)])
+    # level-shift view (catches mimicry that stays below level 5): a provider's mean visit level jumps vs its own earlier
+    # quarters AND sits above peers → flag the level-4/5 visits of the shifted quarters
+    if len(em_all):
+        em_all["lvl"] = em_all.code.map({"99212": 2, "99213": 3, "99214": 4, "99215": 5})
+        peer_lvl = float(em_all.lvl.mean())
+        gl = em_all.groupby(["provider_id", "q"]).agg(n=("lvl", "size"), lvl=("lvl", "mean"))
+        rows = []
+        sd_all = em_all.groupby("provider_id").lvl.std().fillna(.7).clip(lower=.5)
+        for pid, g in gl.groupby(level=0):
+            g = g.droplevel(0); base = g[g.n >= 10].head(2)
+            if len(base) < 2: continue
+            b = float(np.average(base.lvl, weights=base.n)); post = g[g.index > base.index.max()]
+            best = None
+            for k in range(1, len(post) + 1):            # most recent k quarters pooled: is the mean level shift statistically real?
+                w = post.iloc[-k:]; n = float(w.n.sum())
+                if n < 30: continue
+                mu = float(np.average(w.lvl, weights=w.n)); z = (mu - b) / (sd_all[pid] / np.sqrt(n))
+                if mu - b >= .3 and mu >= peer_lvl + .3 and z >= 4 and (best is None or z > best[0]): best = (z, list(w.index), mu)
+            if best: rows += [(pid, q, b, best[2]) for q in best[1]]
+        if rows:
+            sh = pd.DataFrame(rows, columns=["provider_id", "q", "base", "now"])
+            el = em_all[em_all.lvl >= 4].reset_index().merge(sh, on=["provider_id", "q"])
+            el = el[~el["index"].isin(flags.index[flags.UPCODE])]
+            mark("UPCODE", el["index"].values, [f"Visit level shift: mean level {n:.1f} this quarter vs {b:.1f} in the provider's earlier quarters (peers {peer_lvl:.1f})" for b, n in zip(el.base, el.now)])
     t = L[(L.code == "90837") & (L.duration_min < 53) & (L.duration_min > 0)]
     mark("UPCODE", t.index, [f"90837 requires ≥53 min; documented {int(x)} min" for x in t.duration_min])
     # ambulance ALS share

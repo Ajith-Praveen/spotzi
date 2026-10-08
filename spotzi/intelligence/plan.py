@@ -20,11 +20,11 @@ ITEMS = {  # key: (label, weight, owner, minutes, how)
     "precedent": ("Historical precedent", 5, "system", 0, "auto"),
     "data_quality": ("Data completeness", 5, "analyst", 15, "mark"),
 }
-VERIFY_TYPES = ("not plausibly rendered", "recruitment", "panel", "phantom", "equipment", "home-health", "excessive", "timing", "repeat")
+VERIFY_TYPES = ("not plausibly rendered", "recruitment", "panel", "phantom", "equipment", "home-health", "excessive", "timing", "repeat", "impossible_timing", "excessive_services")
 
 
 def applicable(c: dict, d: dict) -> dict:
-    t = (c["type"] or "").lower()
+    t = (c["type"] or "").lower() + " " + " ".join(x["type"] for x in (c.get("scheme_types") or [])[:2] if x["p"] >= .25)   # fraud-type model steers evidence
     rules = set(c.get("rules") or [])
     return dict(billing_pattern=True, peer_comparison=True, documentation=True,
                 member_verification=any(k in t for k in VERIFY_TYPES) or bool(rules & {"PHANTOM", "EXCESS", "REPEAT", "TIMING"}),

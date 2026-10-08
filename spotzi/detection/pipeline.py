@@ -14,6 +14,10 @@ from synthdata import gen
 from detection import sentinel as SN
 from detection import brain as BR
 from detection import context as CX
+from detection import temporal as TM
+from detection import baselines as BL
+from detection import consensus as CS
+import os
 import hashlib
 from detection.rules import RULES, RULESET_VERSION, apply_rules
 
@@ -23,7 +27,8 @@ LOOKBACK = 180
 PRIMARY_RISK = 35
 BRAIN_LEAD = .97   # a lead with no rule finding needs near-unanimous detector consensus (0.90 produced too many leads in large portfolios)
 PANEL_LEAD = .75   # patient-panel detector (recruitment typology) strong + fused score >= .9
-MODEL_VERSION = "nexus-models-1.3"
+EXTRA_DEFAULT = ["temporal"]   # chosen by the ablation study (evaluation/engine.py): +temporal = best AP, no extra false leads
+MODEL_VERSION = "nexus-models-2.0"
 
 
 # ---------------------------------------------------------------- load + validate
@@ -146,7 +151,7 @@ ACTIONS = {
 }
 
 
-def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom_rules=None):
+def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom_rules=None, extra_detectors=None):
     log = []
     t0 = time.time()
 
@@ -169,6 +174,12 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     # ---- detect (rules) ----
     Lm = T["lines"].assign(_age=T["lines"].member_id.map(M.set_index("member_id").age))
     L, F, detail = apply_rules(Lm, M, T["stays"], P, T.get("exclusions"), custom_rules)
+    # data errors are data-quality findings, not fraud evidence: unknown codes and impossible dates never raise a fraud flag
+    vocab = L.code.value_counts(); known = set(vocab[vocab >= 3].index)
+    invalid = (~L.code.isin(known)) | (L.paid_date < L.service_end_date)
+    if invalid.any():
+        F.loc[invalid.values] = False
+        for k in detail: detail[k] = {lid: v for lid, v in detail[k].items() if lid not in set(L.line_id[invalid])}
     L = A.prepare_flags(L, F)
     L["claim_anomaly"] = A.claim_anomaly(L)
     step("Rules + claim anomaly", f"{int(L.any_flag.sum()):,} flagged lines of {len(L):,}; ruleset {RULESET_VERSION}")
@@ -190,9 +201,13 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     step("Isolation Forest", "provider anomaly percentile within family peers")
 
     # ---- forecast ----
+    fc = None
     if truth_lines is not None and len(truth_lines):
-        fc = A.train_forecasts(panel, prov_family, truth_lines, END)
-    else:  # no outcome labels: never invent a probability
+        try:
+            fc = A.train_forecasts(panel, prov_family, truth_lines, END)
+        except ValueError:      # too few outcomes in the history so far (e.g. early as-of replays): no forecast rather than a guess
+            fc = None
+    if fc is None:  # no outcome labels: never invent a probability
         fc = dict(metrics={}, pred={}, why={}, calibration={}, model_choice=dict(chosen="unavailable", cv_logloss={}, train_anchors=0, eval_anchors=0, cut="-", eval_from="-",
                   reason="No confirmed-outcome labels in this dataset; forecasts are unavailable until outcomes accumulate."))
     step("Forecast models", f"discrete-time hazard · chosen {fc['model_choice']['chosen']} · purged temporal holdout")
@@ -212,9 +227,13 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
         PT[f"n_{k}"] = g[f"f_{k}"].sum().reindex(PT.index).fillna(0)
     # rule score (volume-guarded)
     def rscore(r):
-        prod = 1.0
+        """Rate-based evidence: Wilson 95% lower bound of each rule's flagged-line share. Small samples are discounted
+        statistically, and a provider that simply grows (same rate, more lines) is not scored as more suspicious."""
+        prod = 1.0; n_all = max(1.0, r["n_lines"])
         for k, spec in RULES.items():
-            s = min(1.0, r[f"s_{k}"] / .06) * min(1.0, r[f"n_{k}"] / 8)
+            ph, z = r[f"s_{k}"], 1.96
+            lb = max(0.0, (ph + z * z / (2 * n_all) - z * np.sqrt(ph * (1 - ph) / n_all + z * z / (4 * n_all * n_all))) / (1 + z * z / n_all)) if r[f"n_{k}"] > 0 else 0.0
+            s = min(1.0, lb / .04)
             prod *= (1 - .8 * s * min(1.0, spec["severity"] + .2))
         return 1 - prod
     PT["rule_score"] = PT.apply(rscore, axis=1)
@@ -252,7 +271,25 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     PT["panel_pct"] = .5 + .49 * (PT.panel_raw / .3).clip(0, 1)   # absolute scale: most providers have no new-patient wave, so ranks would inflate tiny values
     for c in ("drift", "mix"):
         PT[f"{c}_pct"] = .7 * PT.groupby("family")[f"{c}_raw"].rank(pct=True).fillna(.5) + .3 * PT[f"{c}_raw"].rank(pct=True).fillna(.5)
+    # temporal behavioural evolution + hierarchical peer baselines
+    tm = TM.analyse(L, END).reindex(PT.index)
+    for c in ("temporal_raw", "burst", "cusum", "trend", "sustained", "onset", "stage", "trend_label"):
+        PT[c] = tm[c]
+    PT["stage"] = PT.stage.fillna(TM.STAGES[0])
+    pr, peer_drivers = BL.score(W, P)
+    # per-patient INTENSITY that rose (own history or peers): business events may explain volume, not necessarily intensity
+    t_int = {"paid_per_member", "paid_per_line", "hi_em_share", "units_per_line"}   # rule-flag share is judged by the rule logic, not here
+    p_int = {"paid per patient": "paid_per_member", "paid per service": "paid_per_line", "level-5 visit share": "hi_em_share", "units per service": "units_per_line",
+             "services per patient": "lines_per_member", "distinct services per patient": "codes_per_member"}
+    PT["intensity_up"] = [sorted(set(x for x in (tm.at[p, "drivers"] if p in tm.index and isinstance(tm.at[p, "drivers"], list) else []) if x in t_int)
+                                 | {p_int[d["metric"]] for d in peer_drivers.get(p, []) if d["metric"] in p_int and d["z"] >= 3}) for p in PT.index]
+    PT["peer_raw"] = pr.peer_raw.reindex(PT.index)
+    for c in ("temporal", "peer"):
+        r = PT[f"{c}_raw"].where(PT.n_lines >= 15)
+        PT[f"{c}_pct"] = (.7 * r.groupby(PT.family).rank(pct=True) + .3 * r.rank(pct=True)).fillna(.5)
+    step("Temporal + peer baselines", f"monthly trajectories (burst, CUSUM, trend, stage) · specialty→region→family→portfolio shrinkage baselines")
     PT["rule_pct"] = .5 + .49 * PT.rule_score
+    BR.use(extra_detectors if extra_detectors is not None else [x for x in os.environ.get("SPOTZI_EXTRA_DETECTORS", ",".join(EXTRA_DEFAULT)).split(",") if x])
     bw, bb, _, _ = BR.learn(PT, {})
     PT["brain"], brain_contrib = BR.score(PT, bw, bb)
     step("Nexus Brain", f"change-point + code-mix + patient-panel detectors; fusion over {len(BR.DETECTORS)} detectors (prior weights)")
@@ -278,6 +315,27 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     step("Graph analytics", f"{G.number_of_nodes()} providers, {G.number_of_edges()} relationships, {len(comms)} communities")
 
     # ---- cases ----
+    # consensus / evidence diversity / data quality / out-of-distribution (trust in the score, not the score)
+    from ai.models import registry as MREG2
+    ref = MREG2.load("reference_profile")
+    prof = BL.features(W).reindex(PT.index)[list(BL.METRICS)]
+    dq = CS.data_quality(W)
+    oodf = CS.ood(prof.dropna(how="all"), ref)
+    cons, cons_meta = CS.assess(PT, dq, oodf)
+    for c in ("n_firing", "n_families", "n_eff", "dq", "ood", "consensus", "consensus_text"):
+        PT[c] = cons[c].reindex(PT.index)
+    cal = MREG2.load("brain_calibrator")
+    PT["p_fraud"] = cal.predict(PT.brain.values) if cal is not None else np.nan
+    ftm = MREG2.load("fraud_type")
+    if ftm is not None:
+        try:
+            Xf = PT.reindex(columns=ftm["cols"]).astype(float).fillna(0)
+            Pf = ftm["model"].predict_proba(Xf)
+            PT["scheme_types"] = [[dict(type=t, p=round(float(p), 3)) for t, p in sorted(zip(ftm["model"].classes_, row), key=lambda z: -z[1])[:4]] for row in Pf]
+        except Exception as e:
+            log.append(dict(step="Fraud-type model", seconds=0, detail=f"skipped: {type(e).__name__}"))
+    monitoring = CS.drift(prof, ref) if ref else None
+    step("Consensus + data quality + OOD", f"effective independent detectors {cons_meta['effective_detectors']:.1f} of {len(CS.DETECTORS)}; {int(PT.ood.fillna(False).sum())} out-of-distribution providers")
     cases = build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties)
     step("Case construction", f"{len(cases)} cases from {int(L.any_flag.sum()):,} flagged lines")
 
@@ -292,8 +350,22 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
                ruleset=RULESET_VERSION, model=MODEL_VERSION, seed=seed, log=log, validation=val, evaluation=ev, forecast_metrics=fc["metrics"],
                calibration=fc["calibration"], model_choice=fc["model_choice"], seconds=round(time.time() - t0, 1))
     run["sentinel_fit"] = sen_fit
+    run["monitoring"] = monitoring
+    run["consensus"] = dict(effective_detectors=cons_meta["effective_detectors"], families=cons_meta["families"])
+    run["versions"] = dict(ruleset=RULESET_VERSION, model=MODEL_VERSION, features="features-2.0", detectors=[d[0] for d in BR.DETECTORS],
+                           artifacts={c["name"]: c.get("sha256") for c in MREG2.cards()})
     ctx = (L, PT, G, H, T, detail, fc, adrivers, END, ties)
-    return dict(run=run, build_ctx=ctx, base_cases=cases, paths=paths, change_points=cps, panel=panel, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
+    return dict(run=run, build_ctx=ctx, base_cases=cases, paths=paths, change_points=cps, panel=panel, peer_drivers=peer_drivers, consensus_meta=cons_meta, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
+
+
+def _best(PT, prim, by, cols):
+    if by not in PT: return None
+    p = max(prim, key=lambda q: (PT.at[q, by] if PT.at[q, by] == PT.at[q, by] else -1))
+    out = {"provider_id": p}
+    for c in cols:
+        v = PT.at[p, c] if c in PT else None
+        out[c] = v.item() if hasattr(v, "item") else (None if isinstance(v, float) and v != v else v)
+    return out
 
 
 # ---------------------------------------------------------------- case construction
@@ -354,7 +426,7 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         for p in prim:   # observable business events (new sites, clinicians, contracts, acquisitions)
             onsets = {k: str(W.loc[W.provider_id.eq(p) & W[f"f_{k}"], "service_date"].min().date()) for k in RULES if (W.provider_id.eq(p) & W[f"f_{k}"]).any()}
             cp = PT.at[p, "cp_onset"] if "cp_onset" in PT and isinstance(PT.at[p, "cp_onset"], str) else None
-            a = CX.assess(p, PT, onsets, CX.events_for(E, p, END), cp)
+            a = CX.assess(p, PT, onsets, CX.events_for(E, p, END), cp, PT.at[p, "intensity_up"] if "intensity_up" in PT else [])
             if a["events"]: context[p] = a
         ctx_status = "full" if context and all(a["status"] == "full" for a in context.values()) and len(context) == len(prim) else \
                      "partial" if any(a["status"] in ("full", "partial") for a in context.values()) else "none"
@@ -384,7 +456,7 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         lane = "Investigate"
         if brain_lead: lane = "Brain lead"
         elif ev < 35: lane = "Needs more data"
-        elif benign_ctx and ev < 60: lane = "Validate context first"
+        elif benign_ctx and (ev < 60 or set(rules_sorted) <= {"UPCODE", "EXCESS", "REPEAT"}): lane = "Validate context first"   # specialty context can explain level/frequency findings
         if ctx_status == "full" and not has_graph: lane = "Explained by context"     # a human can still open it; never auto-closed
         elif ctx_status == "partial" and lane in ("Investigate", "Brain lead") and not rule_unexplained:
             lane = "Validate context first"     # only learned signals remain unexplained; an unexplained rule finding keeps the case live
@@ -393,6 +465,10 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
             risk=risk, exposure=exposure, members=int(members), vulnerable=n_vuln, severity=float(severity), evidence=ev,
             forecast=fcs, forecast_why=why, flagged_lines=flagged_lines, effort_hours=effort, rules=rules_sorted,
             rule_counts=rule_counts, rule_paid=rule_paid, signals=signals, lane=lane, benign_context=ctx, context=context, context_status=ctx_status,
+            consensus=_best(PT, prim, "n_families", ["consensus", "consensus_text", "n_firing", "n_families", "n_eff", "dq", "ood"]),
+            temporal=_best(PT, prim, "temporal_raw", ["stage", "trend_label", "burst", "cusum", "trend", "sustained", "onset"]),
+            p_fraud=(float(np.nanmax([PT.at[p, "p_fraud"] for p in prim])) if "p_fraud" in PT and PT.loc[prim, "p_fraud"].notna().any() else None),
+            scheme_types=(PT.at[max(prim, key=lambda q: PT.at[q, "brain"]), "scheme_types"] if "scheme_types" in PT else None),
             brain_lead=bool(brain_lead), anomalous=bool(anomalous), has_graph=bool(has_graph), escalating=bool(escal), dx_missing=dx_missing,
             signal_flags=dict(rules=bool(rule_counts), anomaly=bool(anomalous), graph=bool(has_graph), temporal=bool(escal), sentinel=bool(learned)),
         ))

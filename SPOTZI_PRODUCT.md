@@ -98,16 +98,25 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 | **Case documents** | Upload records to a case (PDF, images, text, CSV, Word, Excel; ≤20 MB; content checked against extension; SHA-256 recorded); downloads require sign-in and are audited. |
 | **Tips intake** | Log hotline / member / employee / provider / law-enforcement tips; supervisors are notified, triage each tip (link to case, watchlist, close) with a note; SpotZⁱ suggests the matching open case; linked tips appear on the case brief. |
 
-## Public datasets
+## Synthetic data (the only data SpotZⁱ uses)
+SpotZⁱ uses only its own generator (`spotzi/synthdata/gen.py`). No real, public or third-party dataset is used. The generator is built to resemble real payer claims:
+- **Members:** a realistic age and plan mix (Medicare for 65+, Medicaid skewing young, children), and 12% enrolling mid-period.
+- **Health and care use:** age-graded chronic conditions (hypertension, diabetes, COPD, heart failure, CKD, depression, osteoarthritis, asthma, high cholesterol). Care use is heavy-tailed: the top 10% of members generate about a third of claims, and sicker members use more care.
+- **Diagnoses that fit the service:** for example A1c → diabetes, CPAP → sleep apnoea, ECG → cardiac; plus a winter respiratory season and a summer dip.
+- **Claim mechanics:**
+  - payer-realistic refill and repeat-test spacing;
+  - contract-level price variation, copays and coinsurance, charge-master mark-ups;
+  - log-normal payment lags with ~3% late or reprocessed claims;
+  - modifiers 25, RT/LT and RR;
+  - ~1.5% missing diagnoses;
+  - format-valid NPIs (10 digits, Luhn) in a range real NPIs never use.
+- **Fraud and context:**
+  - 9 seeded schemes plus an exclusion;
+  - decoys (oncology, dialysis, high-volume clinic, chain pharmacies);
+  - 4 legitimate anomalies with observable business events, plus an adversarial upcoder with a genuine event;
+  - hidden ground truth at claim, provider, timing and ring level.
 
-Downloaded to `spotzi/data/external/` (git-ignored) and importable from **Data & pipeline → Public synthetic datasets**:
-
-| Dataset | Source | What SpotZⁱ imports | Notes |
-|---|---|---|---|
-| **CMS DE-SynPUF Sample 1** (2008–2010 synthetic Medicare claims) | cms.gov / downloads.cms.gov — beneficiary summary 2008 & 2009, inpatient, outpatient, carrier 1A (~158 MB zipped) | Patients (age, sex, state, death date), **hospitals and outpatient facilities** (CCN), inpatient stays, outpatient services (repeated codes on a claim become units; claim payment allocated across lines) | CMS deliberately scrambles physician NPIs and tax IDs, so doctor-level networks would be noise and are not imported. Default sample 4,000 patients (~144k lines, ~70 s analysis). |
-| **Synthea sample** | synthetichealth.github.io (~6 MB) | Patients (age, sex, county only — no names, SSNs or addresses), clinicians, organisations (as shared-ownership links), charges with payments; last 3 years | Small (108 patients) and thin network. |
-
-Neither has fraud labels: detection, the Brain, link analysis, briefs and the decision chain run; forecasts show "unavailable" and accuracy is not measured. The SpotZⁱ synthetic dataset remains the reference demo for doctor networks and seeded schemes.
+Training uses other seeds (101–106). Held-out tests use seeds 201–202 and the demo world (seed 7).
 
 ## 4. Data layer
 
@@ -173,16 +182,16 @@ Detector weights start at expert priors and update from every recorded decision 
 - Local drivers shown per provider.
 
 ### Task models (trained per SIU process) — `spotzi/ai/models/`
-Each model is trained by `python3 -m ai.models.train_all` on synthetic data only, saved as a versioned artifact with a model card (`data/models/*.json`), shown in **Governance → Task models**, and tested on data it never saw. Training data: three generator worlds (seeds 101–103) plus DE-SynPUF patients disjoint from the test set. Tests: the demo world, DE-SynPUF evaluation patients, and Synthea, which is never used in training.
+Each model is trained by `python3 -m ai.models.train_all` on synthetic data only, saved as a versioned artifact with a model card (`data/models/*.json`), shown in **Governance → Task models**, and tested on data it never saw. Training: synthetic generator worlds (seeds 101–106). Tests: the demo world (seed 7) and held-out worlds (seeds 201–202) never used in training.
 
 | Model | Process | Method | Held-out result |
 |---|---|---|---|
-| **Pre-payment line risk** | Operations → Pre-payment | Gradient-boosted trees on 18 behaviour features (units vs norm, after death, during stay, repeat interval, busy-day ratio, level-5 share, first-visit share…) | Same flag budget as the rules — DE-SynPUF precision 0.36 vs 0.14, recall 0.64 vs 0.25 (AUC 0.97); Synthea (never trained on) precision 0.82 vs 0.71 (AUC 0.91); demo 0.90 / 0.78 vs 0.80 / 0.70 |
+| **Pre-payment line risk** | Operations → Pre-payment | Gradient-boosted trees on 18 behaviour features | see EVALUATION.md (held-out worlds) |
 | **Chart documentation** | Case → Chart review | TF-IDF (word + char) → logistic regression over documented E/M level; parsed time rules | Unseen clinician wording: 100% vs 36% for a keyword reviewer |
 | **Tip triage** | Tips → automatic structuring | Ensemble: TF-IDF → logistic regression + local sentence encoder (bge-small, frozen) → logistic regression; 9 scheme types | Unseen templates and names: **94%** (v1 was 53%; keyword matching 20%). An urgency model failed its test and was not shipped |
-| **Case outcome** | Cases / providers | Logistic regression on detector outputs, learned from simulated closed cases | DE-SynPUF AP 0.80 vs 0.57 for Nexus Brain; Synthea AP 1.00 vs 0.95 |
+| **Case outcome** | Cases / providers | Logistic regression on detector outputs, learned from simulated closed cases | see EVALUATION.md |
 
-Lesson kept in the code: the first pre-payment model scored AUC 0.3 on DE-SynPUF. It had learned the generator, not the fraud. Generator-specific features were removed and real-format training data was added.
+Design rule kept in the code: features must mean the same thing in any claims system (no family one-hots or data-completeness artefacts), so models learn behaviour, not the generator.
 
 ### LLM-assisted detection (where a language model is genuinely needed) — `ai/llm_detect.py`
 | Use | Why an LLM | Guardrails |
@@ -339,6 +348,39 @@ It produces a clear recommendation, for example: *"Do not refer yet. Next: obtai
 - Every protected action is checked on the server by role; identity comes from the session, never from the request.
 
 ---
+
+## 12b. Backend intelligence (not shown as investigator features)
+```
+                  SPOTZⁱ BACKEND
+        ┌──────────────┼──────────────────┐
+   DATA LAYER     DETECTION LAYER     INTELLIGENCE
+   validation     rules (+ level-shift)  evidence · precedents
+   data quality   ML detectors           readiness · action plan
+   temporal       graph · peer baselines context reasoning
+        └──────────────┼──────────────────┘
+                 EVIDENCE FUSION (Nexus Brain)
+          ┌────────────┴─────────────┐
+   RISK · calibrated p_fraud     CONSENSUS / TRUST
+   fraud stage · scheme type     independent evidence families, data quality, OOD
+          └────────────┬─────────────┘
+                  HUMAN DECISION  ← prediction log (versions + detector outputs) for replay
+
+   behind it:  EVALUATION ENGINE (evaluation/engine.py) — hidden ground truth only
+   ground truth (claim / provider / network / type) · calibration & thresholds · detection delay
+   counterfactual tests · adversarial evasion · ablation · synthetic-to-real gap · data-quality robustness
+```
+| Component | File | What it adds |
+|---|---|---|
+| Temporal behaviour | `detection/temporal.py` | Monthly trajectories of 7 behaviours against the provider's own early baseline, de-seasonalised. Measures bursts, slow build-up (CUSUM), trend and sustained months. Labels a lifecycle stage: Normal → Deviation → Emerging → Sustained → Established |
+| Hierarchical peer baselines | `detection/baselines.py` | Expected behaviour cascades portfolio → family → family×region → family×specialty with leave-one-out empirical-Bayes shrinkage. Each deviation names the peer group actually used |
+| Consensus & evidence diversity | `detection/consensus.py` | Counts detectors firing and the *independent* evidence families behind them (correlated detectors merged; effective number by eigen participation ratio) |
+| Data quality & out-of-distribution | `detection/consensus.py` | Per-provider data-quality score and a Mahalanobis out-of-distribution check against the training reference. Both can only **lower** confidence |
+| Context & intensity | `detection/context.py` | A business event may explain volume. It cannot explain per-patient intensity it could not cause |
+| Calibrated probability | `ai/models` `brain_calibrator` | Isotonic calibration of the fused score into `p_fraud`; tiers and capacity thresholds use it |
+| Fraud-type classifier | `ai/models` `fraud_type` | Probability per scheme type. Steers which evidence the action plan asks for |
+| Drift monitor | `detection/consensus.py` | PSI of every behaviour feature against the training reference, recorded on every run (`/api/monitoring`) |
+| Model versioning & replay | `api/app.py` `prediction_log` | Every case prediction is stored with ruleset, model, feature and artifact versions plus all detector outputs (`/api/replay`) |
+| Entity ground truth | `synthdata/truth.py` | Hidden per-provider true state, fraud type, start date, severity and ring, for evaluation only |
 
 ## 13. Architecture
 

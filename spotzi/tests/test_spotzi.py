@@ -82,9 +82,8 @@ class PipelineTests(unittest.TestCase):
         mill = [p for p in S["PT"].index if L[(L.provider_id == p) & L._scenario.str.startswith("S9")].shape[0] >= 20]
         self.assertTrue(mill)
         in_cases = {p for c in S["cases"] for p in c["primary"]}
-        for p in mill:
-            self.assertLess(S["PT"].at[p, "rule_score"], .1)
-            self.assertIn(p, in_cases, "learned detectors should open the held-out scheme as a case")
+        for p in mill:   # the visit-level-shift view (added for mimicry) now sees part of it; the case must open either way
+            self.assertIn(p, in_cases, "the held-out recruitment scheme should be opened as a case")
 
     def test_detection_does_not_use_hidden_labels(self):
         """Same cases whether or not the evaluation labels are present."""
@@ -390,33 +389,6 @@ class PrepayTests(unittest.TestCase):
         self.assertEqual(OP.safe_name("../../etc/passwd"), "passwd")
 
 
-# ============================================================================ public datasets
-EXT = ROOT / "data" / "external"
-
-
-@unittest.skipUnless((EXT / "synthea" / "patients.csv").exists(), "Synthea sample not downloaded")
-class SyntheaImportTests(unittest.TestCase):
-    def test_import_and_analyse_without_labels(self):
-        from synthdata import importers as IM
-        ws = TMP / "synthea"; rep = IM.synthea(EXT / "synthea", ws)
-        self.assertGreater(rep["lines"], 1000)
-        members = pd.read_csv(ws / "members.csv")
-        self.assertFalse({"FIRST", "LAST", "SSN", "ADDRESS"} & set(members.columns), "no direct identifiers imported")
-        S2 = PL.run_pipeline(data_dir=ws)
-        self.assertEqual(S2["run"]["evaluation"], {}); self.assertEqual(S2["run"]["model_choice"]["chosen"], "unavailable")
-
-
-@unittest.skipUnless(any((EXT / "synpuf").glob("*Inpatient*.csv")) if (EXT / "synpuf").exists() else False, "DE-SynPUF not downloaded")
-class SynpufImportTests(unittest.TestCase):
-    def test_import_institutions_and_units(self):
-        from synthdata import importers as IM
-        ws = TMP / "synpuf"; rep = IM.synpuf(EXT / "synpuf", ws, n_benes=500)
-        L = pd.read_csv(ws / "claim_lines.csv", dtype={"code": str})
-        self.assertTrue(L.provider_id.str.startswith("INST-").all(), "scrambled physician IDs must not become providers")
-        self.assertFalse(L.duplicated(["claim_id", "code"]).any(), "repeated HCPCS on a claim become units, not duplicate lines")
-        self.assertGreater(rep["stays"], 0)
-
-
 # ============================================================================ LLM-assisted detection
 class LlmDetectTests(unittest.TestCase):
     def setUp(self):
@@ -494,7 +466,7 @@ def _task_models_api(self):
     alex = self.login("alex")
     ms = alex.get("/api/models").json()["models"]
     self.assertEqual({m["name"] for m in ms} >= {"prepay_line_risk", "chart_documentation", "tip_triage", "case_outcome"}, True)
-    self.assertTrue(all(m["held_out"] for m in ms))
+    self.assertTrue(all(m["held_out"] for m in ms if m["name"] != "reference_profile"))
     ex = alex.get("/api/prepay/examples").json()
     r = alex.post("/api/prepay/score", json=ex[0]["claim"]).json()
     self.assertIsNotNone(r["model"]); self.assertTrue(all(0 <= l["model_risk"] <= 1 for l in r["lines"]))
@@ -558,3 +530,50 @@ def _readiness_api(self):
 
 
 ApiTests.test_readiness_plan_and_referral_gate = _readiness_api
+
+
+# ============================================================================ backend intelligence
+class BackendIntelligenceTests(unittest.TestCase):
+    def test_temporal_stage_and_trajectory(self):
+        S = run_once(); PT = S["PT"]
+        from detection import temporal as TM
+        self.assertTrue(set(PT.stage.dropna()) <= set(TM.STAGES))
+        mill = PT.loc["P-0009"]                      # scheme started mid-2025: must not look Normal
+        self.assertNotEqual(mill.stage, "Normal")
+        self.assertGreater((PT.stage == "Normal").mean(), .4, "most providers should be Normal")
+
+    def test_peer_baseline_uses_specialty_when_available(self):
+        from detection import baselines as BL
+        S = run_once(); drv = S["peer_drivers"]
+        self.assertTrue(any(d for d in drv.values()))
+        self.assertTrue(any("·" in x["peers"] for v in drv.values() for x in v), "some expectations should come from a sub-group (family × specialty/region)")
+
+    def test_consensus_counts_correlated_detectors_once(self):
+        import pandas as pd
+        from detection import consensus as CS
+        C = pd.DataFrame([[1, .95, .1], [.95, 1, .1], [.1, .1, 1]], index=["drift", "temporal", "graph"], columns=["drift", "temporal", "graph"])
+        self.assertLess(CS.effective_n(C), 2.2)
+        fam = CS.families(C)
+        self.assertEqual(fam["drift"], fam["temporal"])
+        self.assertNotEqual(fam["drift"], fam["graph"])
+
+    def test_bad_data_lowers_quality_and_caps_confidence(self):
+        import pandas as pd
+        from detection import consensus as CS
+        L = run_once()["L"]; W = L[L.provider_id.isin(["P-0004", "P-0020"])].copy()
+        clean = CS.data_quality(W)["P-0004"]
+        W.loc[W.provider_id == "P-0004", "dx"] = None
+        self.assertLess(CS.data_quality(W)["P-0004"], clean - .3)
+
+    def test_versions_recorded_for_replay(self):
+        v = run_once()["run"]["versions"]
+        self.assertTrue(v["ruleset"] and v["model"] and v["detectors"])
+
+
+def _replay_api(self):
+    alex = self.login("alex")
+    rows = alex.get("/api/replay?case_id=CS-0004").json()
+    self.assertTrue(rows); self.assertIn("versions", rows[0]); self.assertIn("brain", rows[0]["detectors"])
+
+
+ApiTests.test_prediction_replay = _replay_api

@@ -4,8 +4,8 @@
   python3 -m ai.models.train_all --quick    # 1 training world (faster; for CI)
 
 Training worlds: gen.py with seeds 101-103 (the demo world is seed 7) → data/training/world-<seed>/.
-Held-out tests: the demo world, the public-data evaluation workspaces (DE-SynPUF / Synthea + injected schemes) where
-available, and unseen wording for the text models. Every result is written into the model card."""
+Held-out tests: the demo world (seed 7) and independent held-out worlds (seeds 201-202) never used in training, plus unseen
+wording for the text models. Synthetic data only. Every result is written into the model card."""
 from __future__ import annotations
 
 import json
@@ -25,7 +25,8 @@ from detection import pipeline as PL# noqa: E402
 from ai.models import chart_model as CM, outcome_model as OM, prepay_model as PM, registry as R, tipgen as TG  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-TRAIN_SEEDS = [101, 102, 103]
+TRAIN_SEEDS = [101, 102, 103, 104, 105, 106]
+HELDOUT_SEEDS = [201, 202]
 CODE_MIN = {k: v[3] for k, v in gen.CODES.items()}
 OUTCOME_FEATURES = OM.FEATURES
 
@@ -37,19 +38,6 @@ def world(seed):
     d = ROOT / "data" / "training" / f"world-{seed}" / "synthetic"
     if not (d / "claim_lines.csv").exists():
         gen.generate(seed=seed, n_members=2500, out_dir=d)
-    return d
-
-
-def synpuf_train():
-    """DE-SynPUF patients DISJOINT from the evaluation workspace, with schemes injected at a different seed."""
-    from synthdata import importers as IM
-    from synthdata import inject as INJ
-    ext = ROOT / "data" / "external" / "synpuf"; ev = ROOT / "data" / "workspaces" / "synpuf-eval" / "members.csv"
-    if not ext.exists() or not ev.exists(): return None
-    d = ROOT / "data" / "training" / "synpuf-train"
-    if not (d / "hidden" / "scenario_truth.csv").exists():
-        IM.synpuf(ext, d, n_benes=4000, seed=12, exclude_members=set(pd.read_csv(ev).member_id))
-        INJ.inject(d, seed=21, n_per_scheme=3, n_benign=4, min_lines=200)
     return d
 
 
@@ -82,8 +70,8 @@ def train_prepay(train_S, tests):
                          model_precision_same_budget=round(float(yt[top].mean()), 3), model_recall_same_budget=round(float(yt[top].sum() / yt.sum()), 3))
         log("prepay", name, res[name])
     card = dict(task="Pre-payment line risk", process="Pre-payment claim check (Operations → Pre-payment)", kind="Gradient-boosted trees (HistGradientBoosting), supervised",
-                trained_on=f"{len(X):,} labelled lines: generator worlds (seeds {TRAIN_SEEDS}) + DE-SynPUF patients disjoint from the test set", features=PM.FEATURES,
-                note="Synthea was never used in training: it is the out-of-domain test.", held_out=res, use="Adds a line-risk probability and its local drivers to every pre-payment check. Recommendation only; a human resolves every pended claim.",
+                trained_on=f"{len(X):,} labelled lines: synthetic generator worlds (seeds {TRAIN_SEEDS})", features=PM.FEATURES,
+                held_out=res, use="Adds a line-risk probability and its local drivers to every pre-payment check. Recommendation only; a human resolves every pended claim.",
                 limitations=["Labels are synthetic scheme truth, not adjudicated outcomes.", "Training worlds share the generator's scheme templates; the public-data test is the stronger check."])
     return R.save("prepay_line_risk", dict(model=m, stats=stats), card)
 
@@ -185,10 +173,111 @@ def train_outcome(train_S, tests):
         log("outcome", name, res[name])
     coef = dict(zip(OUTCOME_FEATURES, np.round(m[-1].coef_[0], 3)))
     card = dict(task="Case substantiation likelihood", process="SIU queue → probability a case's providers are substantiated", kind="Logistic regression (standardised), class-balanced",
-                trained_on=f"{len(X)} providers: generator worlds + DE-SynPUF training patients (disjoint from test)", features=OUTCOME_FEATURES, coefficients=coef, held_out=res,
+                trained_on=f"{len(X)} providers from synthetic generator worlds", features=OUTCOME_FEATURES, coefficients=coef, held_out=res,
                 use="Shown on cases and providers as a learned estimate from simulated closed cases. Not used to rank or decide; Nexus Brain keeps learning from your real decisions.",
                 limitations=["Trained on simulated outcomes. Replace with your closed SIU cases when available (same script)."])
     return R.save("case_outcome", m, card)
+
+
+# ---------------------------------------------------------------- 5. fraud-type classifier, 6. calibration, 7. reference population
+TYPE_FEATURES_DET = ["rule_score", "anomaly_pct", "graph_score", "twin_pct", "path_pct", "drift_pct", "mix_pct", "panel_pct", "temporal_pct", "peer_pct", "burst", "cusum", "trend"]
+
+
+def entity_truth(S):
+    from synthdata import truth as TRU
+    d = S.get("data_dir")
+    L = S["L"]
+    lt = L.assign(truth=L["_truth"], scenario=L["_scenario"])[["provider_id", "service_date", "paid", "truth", "scenario"]] if "_truth" in L else None
+    return TRU.build(lt, list(S["PT"].index), exclusions=S["T"].get("exclusions")).set_index("provider_id") if lt is not None else None
+
+
+def type_xy(S):
+    from detection.rules import RULES
+    PT = S["PT"]; E = entity_truth(S)
+    cols = [f"s_{k}" for k in RULES] + TYPE_FEATURES_DET
+    X = PT.reindex(columns=cols).astype(float).fillna(0)
+    if E is None: return X, None
+    y = E.fraud_type.reindex(PT.index)
+    keep = y.notna()
+    return X[keep], y[keep]
+
+
+def train_types(train_S, tests):
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+    from detection.rules import RULES
+    Xs, ys = zip(*[type_xy(S) for S in train_S])
+    X, y = pd.concat(Xs), pd.concat(ys)
+    m = make_pipeline(StandardScaler(), LogisticRegression(C=.5, max_iter=3000, class_weight="balanced")).fit(X, y)
+    RULE_TYPE = {"DUP": "duplicate", "UPCODE": "upcoding", "MUE": "unit_inflation", "UNBUNDLE": "unbundling", "PHANTOM": "phantom", "TIMING": "impossible_timing",
+                 "REPEAT": "excessive_services", "EXCESS": "excessive_services"}
+    res = {}
+    for name, S in tests.items():
+        Xt, yt = type_xy(S)
+        if yt is None or not len(yt): continue
+        p = m.predict(Xt); P = m.predict_proba(Xt)
+        top2 = np.array([yt.iat[i] in m.classes_[np.argsort(-P[i])[:2]] for i in range(len(yt))])
+        base = [RULE_TYPE.get(max(RULES, key=lambda k: Xt.iloc[i][f"s_{k}"]), "recruitment") if Xt.iloc[i][[f"s_{k}" for k in RULES]].max() > 0 else "recruitment" for i in range(len(Xt))]
+        res[name] = dict(fraud_providers=int(len(yt)), accuracy=round(float((p == yt.values).mean()), 3), top2_accuracy=round(float(top2.mean()), 3),
+                         dominant_rule_baseline=round(float((np.array(base) == yt.values).mean()), 3), types_present=sorted(set(yt)),
+                         unseen_types=sorted(set(yt) - set(m.classes_)))
+        log("types", name, res[name])
+    card = dict(task="Fraud-type classification", process="Cases → most likely scheme types (probability per type) → selects the evidence to collect",
+                kind="Multinomial logistic regression on rule profiles, detector outputs and temporal features", trained_on=f"{len(X)} labelled fraudulent providers",
+                classes=list(m.classes_), held_out=res, use="Backend: ranks likely scheme types for each case so the investigation plan targets the right evidence.",
+                limitations=["Few labelled fraudulent providers; types never seen in training cannot be predicted (see unseen_types)."])
+    return R.save("fraud_type", dict(model=m, cols=list(X.columns)), card)
+
+
+def train_calibration(train_S, tests):
+    from sklearn.isotonic import IsotonicRegression
+    xs, ys = [], []
+    for S in train_S:
+        E = entity_truth(S)
+        if E is None: continue
+        xs.append(S["PT"].brain.values); ys.append((E.true_state.reindex(S["PT"].index) == "fraudulent").astype(int).values)
+    x, y = np.concatenate(xs), np.concatenate(ys)
+    iso = IsotonicRegression(y_min=.005, y_max=.97, out_of_bounds="clip").fit(x, y)
+    res = {}
+    for name, S in tests.items():
+        E = entity_truth(S)
+        if E is None: continue
+        yt = (E.true_state.reindex(S["PT"].index) == "fraudulent").astype(int).values; raw = S["PT"].brain.values; p = iso.predict(raw)
+        res[name] = dict(providers=int(len(yt)), positives=int(yt.sum()), ece_raw=round(_ece(yt, raw), 4), ece_calibrated=round(_ece(yt, p), 4),
+                         brier_raw=round(float(np.mean((raw - yt) ** 2)), 4), brier_calibrated=round(float(np.mean((p - yt) ** 2)), 4))
+        log("calibration", name, res[name])
+    card = dict(task="Fraud-probability calibration", process="Nexus Brain suspicion → calibrated probability (p_fraud) used for tiers and thresholds",
+                kind="Isotonic regression (monotone; ranking unchanged)", trained_on=f"{len(x):,} providers from training worlds", held_out=res,
+                use="Backend: makes 'p = 0.9' mean roughly 9 in 10 under the evaluation distribution; tiers and capacity thresholds use it.",
+                limitations=["Calibrated to synthetic base rates; real base rates differ — recalibrate on real outcomes."])
+    return R.save("brain_calibrator", iso, card)
+
+
+def _ece(y, p, bins=10):
+    edges = np.quantile(p, np.linspace(0, 1, bins + 1)); idx = np.clip(np.searchsorted(edges, p, side="right") - 1, 0, bins - 1)
+    return float(sum(abs(y[idx == b].mean() - p[idx == b].mean()) * (idx == b).mean() for b in range(bins) if (idx == b).any()))
+
+
+def train_reference(train_S):
+    from detection import baselines as BLN
+    from detection.pipeline import LOOKBACK
+    F = []
+    for S in train_S:
+        L = S["L"] if isinstance(S, dict) else S; end = L.service_date.max(); W = L[L.service_date > end - pd.Timedelta(days=LOOKBACK)]
+        f = BLN.features(W); F.append(f[f.n_lines >= 15][list(BLN.METRICS)])
+    X = np.log1p(pd.concat(F).clip(lower=0).fillna(0))
+    cov = np.cov(X.values, rowvar=False) + 1e-4 * np.eye(X.shape[1])
+    hist = {}
+    for c in X.columns:   # tie-safe bins (point masses such as 0% level-5 share get their own bin)
+        e = np.unique(X[c].quantile(np.linspace(0, 1, 11)).values)
+        e = np.concatenate([[-np.inf], (e[:-1] + e[1:]) / 2 if len(e) > 1 else e, [np.inf]])
+        hist[c] = dict(edges=[float(x) for x in e], share=(np.histogram(X[c].values, e)[0] / len(X)).tolist())
+    ref = dict(cols=list(X.columns), mean=X.mean().to_dict(), cov_inv=np.linalg.pinv(cov).tolist(), n=int(len(X)), hist=hist)
+    card = dict(task="Reference population (OOD + drift)", process="Out-of-distribution checks and drift monitoring", kind="Log-space mean / covariance of provider behaviour profiles",
+                trained_on=f"{len(X)} providers from training worlds", held_out={}, use="Backend: flags providers unlike anything the models were trained on; drift monitoring compares each run with it.",
+                limitations=["Built from synthetic worlds: real data will look out-of-distribution until the reference is rebuilt from real history."])
+    return R.save("reference_profile", ref, card)
 
 
 def main(quick=False):
@@ -197,15 +286,13 @@ def main(quick=False):
     for s in seeds:
         log("training world", s); train_S.append(run_world(world(s)))
     gen_S = list(train_S)
-    sp = None if quick else synpuf_train()
-    if sp: log("training workspace synpuf-train (disjoint patients)"); train_S.append(run_world(sp))
+
     log("demo world"); demo = PL.run_pipeline()
     tests = {"demo world (seed 7)": demo}
-    for ws in ("synpuf-eval", "synthea-eval"):
-        d = ROOT / "data" / "workspaces" / ws
-        if (d / "claim_lines.csv").exists() and (d / "hidden" / "scenario_truth.csv").exists() and not quick:
-            log("public eval", ws); tests[f"{ws.split('-')[0]} + injected schemes"] = PL.run_pipeline(data_dir=d)
-    cards = [train_prepay(train_S, tests), train_chart(gen_S, demo), train_tips(gen_S, demo), train_outcome(train_S, tests)]
+    for s2 in HELDOUT_SEEDS[: 0 if quick else len(HELDOUT_SEEDS)]:   # independent held-out generator worlds (never trained on)
+        log("held-out world", s2); tests[f"held-out world (seed {s2})"] = run_world(world(s2))
+    cards = [train_reference(gen_S), train_prepay(train_S, tests), train_chart(gen_S, demo), train_tips(gen_S, demo), train_outcome(train_S, tests),
+             train_types(train_S, tests), train_calibration(train_S, tests)]
     (R.DIR / "summary.txt").write_text(json.dumps([dict(name=c["name"], held_out=c["held_out"]) for c in cards], indent=1))
     log("done:", [c["name"] for c in cards])
     return cards

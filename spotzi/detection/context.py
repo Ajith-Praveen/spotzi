@@ -21,6 +21,10 @@ EXPLAINS = {
     "acquisition": (set(), {"drift", "panel", "iforest", "twin"}, "an acquired practice's existing patients move over"),
 }
 NEVER = {"DUP", "PHANTOM", "TIMING", "UNBUNDLE", "MUE", "EXCLUDED", "CUSTOM"}
+# per-patient intensity changes an event CAN explain (anything else stays unexplained, e.g. a "new clinic" does not explain
+# each patient suddenly costing three times more)
+INTENSITY = {"location_opened": set(), "acquisition": set(), "clinician_joined": {"hi_em_share", "paid_per_line", "paid_per_member", "codes_per_member", "lines_per_member"},
+             "contract_started": {"lines_per_member", "paid_per_member"}}
 LEARNED = {"drift": "drift_pct", "panel": "panel_pct", "mix": "mix_pct", "iforest": "anomaly_pct", "twin": "twin_pct", "path": "path_pct"}
 
 
@@ -37,7 +41,7 @@ def events_for(E, pid, end, lookback_days=420):
     return [dict(event_id=r.event_id, date=str(r.event_date.date()), type=r.event_type, detail=r.detail, source=r.source) for r in x.itertuples()]
 
 
-def assess(pid, PT, rule_onsets: dict, events: list, cp_onset=None) -> dict:
+def assess(pid, PT, rule_onsets: dict, events: list, cp_onset=None, intensity=()) -> dict:
     """rule_onsets: {rule: first flag date}. Learned detectors count as 'firing' at >= .85 percentile."""
     firing_rules = {k for k in rule_onsets}
     firing_learned = {k for k, col in LEARNED.items() if col in PT and PT.at[pid, col] == PT.at[pid, col] and PT.at[pid, col] >= .85}
@@ -53,7 +57,8 @@ def assess(pid, PT, rule_onsets: dict, events: list, cp_onset=None) -> dict:
         if r_hit or l_hit:
             explained |= r_hit | l_hit
             why.append(dict(event=ev, explains=sorted(r_hit | l_hit), reason=reason))
-    unexplained = sorted((firing_rules | firing_learned) - explained)
+    ok_int = set().union(*[INTENSITY.get(ev["type"], set()) for ev in events]) if events else set()
+    unexplained = sorted((firing_rules | firing_learned) - explained) + [f"intensity:{m}" for m in intensity if m not in ok_int]
     blocking = sorted(set(unexplained) & (NEVER | firing_rules))
     status = "full" if explained and not unexplained else "partial" if explained else "none"
     return dict(events=events, explained=sorted(explained), unexplained=unexplained, blocking=blocking, why=why, status=status)

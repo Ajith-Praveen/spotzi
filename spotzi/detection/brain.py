@@ -24,6 +24,13 @@ DETECTORS = [  # key, column in PT, label, prior weight
     ("mix", "mix_pct", "Peer code-mix divergence", .35),
     ("panel", "panel_pct", "Patient-panel shift", .5),
 ]
+BASE = list(DETECTORS)
+EXTRA = {"temporal": ("temporal", "temporal_pct", "Temporal evolution", .5), "peer": ("peer", "peer_pct", "Hierarchical peer baseline", .5)}
+
+
+def use(extra: list[str]):
+    """Choose which optional detectors join the fusion (decided by the ablation study, see evaluation/engine.py)."""
+    DETECTORS[:] = BASE + [EXTRA[k] for k in extra if k in EXTRA]
 PRIOR_BIAS = -3.2
 POSITIVE = {"Open investigation", "Recommend referral", "Approve referral"}
 NEGATIVE = {"Close - legitimate explanation", "Close - insufficient evidence"}

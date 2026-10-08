@@ -80,7 +80,7 @@ NAME_B = {"PRO": ["Family Care", "Medical Group", "Health Associates", "Primary 
           "PHARM": ["Pharmacy", "Drug", "Apothecary"], "AMB": ["Ambulance", "EMS", "Medical Transport"],
           "BH": ["Behavioral Health", "Counseling", "Wellness Center"], "HH": ["Home Health", "Home Care", "Visiting Nurses"],
           "DME": ["Medical Supply", "Home Medical", "Mobility Equipment"]}
-DX = ["I10", "E11.9", "J44.9", "M54.5", "F32.9", "Z00.00", "K21.9", "G47.33", "N39.0", "R07.9"]
+DX = ["I10", "E11.9", "J44.9", "M54.5", "F32.9", "Z00.00", "K21.9", "G47.33", "N39.0", "R07.9", "E78.5", "J06.9", "M17.11", "F41.1"]
 
 
 def price(code):
@@ -114,7 +114,14 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
                              size=float(np.exp(rng.normal(0, 0.55)))))
     prov = pd.DataFrame(rows)
     prov.insert(0, "provider_id", [f"P-{i + 1:04d}" for i in range(len(prov))])
-    prov["npi"] = [f"SYN{9000000 + i * 37:07d}" for i in range(len(prov))]
+    def _npi(i):
+        body = f"9{(731 + i * 7919) % 100000000:08d}"
+        digits = [int(c) for c in "80840" + body]; tot = 0
+        for k, dgt in enumerate(reversed(digits)):
+            v = dgt * 2 if k % 2 == 0 else dgt
+            tot += v - 9 if v > 9 else v
+        return body + str((10 - tot % 10) % 10)
+    prov["npi"] = [_npi(i) for i in range(len(prov))]          # format-valid synthetic NPIs; leading 9 → never a real NPI (real NPIs start with 1 or 2)
     prov["city"] = [REGIONS[r][0] for r in prov.region]
     prov["lat"] = [REGIONS[r][1] + rng.normal(0, .05) for r in prov.region]
     prov["lon"] = [REGIONS[r][2] + rng.normal(0, .05) for r in prov.region]
@@ -176,15 +183,30 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
 
     # ---------------- members ----------------
     m = pd.DataFrame({"member_id": [f"M-{i + 1:05d}" for i in range(n_members)]})
-    m["age"] = np.clip(rng.normal(52, 20, n_members), 1, 95).astype(int)
+    r3 = np.random.default_rng(seed + 5150)          # realism layer (own RNG)
+    band = r3.choice(4, n_members, p=[.18, .42, .18, .22])          # children / working age / pre-Medicare / 65+
+    m["age"] = np.select([band == 0, band == 1, band == 2], [r3.integers(0, 18, n_members), r3.integers(18, 50, n_members), r3.integers(50, 65, n_members)],
+                         np.clip(65 + r3.gamma(2.0, 6.0, n_members), 65, 99)).astype(int)
     m["region"] = rng.integers(0, len(REGIONS), n_members)
     m["sex"] = rng.choice(["F", "M"], n_members)
-    m["plan"] = rng.choice(["Commercial", "Medicare Advantage", "Medicaid"], n_members, p=[.5, .3, .2])
-    m["enroll_date"] = START
+    m["plan"] = np.where(m.age >= 65, np.where(r3.random(n_members) < .88, "Medicare Advantage", "Medicaid"),
+                         np.where(r3.random(n_members) < np.where(m.age < 18, .45, .25), "Medicaid", "Commercial"))
+    # chronic conditions: age-graded prevalence; they drive utilisation and diagnosis codes like in real claims
+    a = m.age.values
+    prev = {"I10": .02 + .55 * np.clip((a - 25) / 50, 0, 1), "E11.9": .005 + .25 * np.clip((a - 30) / 45, 0, 1), "J44.9": .01 + .10 * np.clip((a - 45) / 35, 0, 1),
+            "I50.9": .002 + .08 * np.clip((a - 55) / 30, 0, 1), "N18.3": .003 + .09 * np.clip((a - 50) / 35, 0, 1), "F32.9": np.where(a >= 12, .08, .01),
+            "M17.11": .005 + .16 * np.clip((a - 45) / 35, 0, 1), "J45.909": np.where(a < 18, .09, .05), "E78.5": .01 + .30 * np.clip((a - 35) / 40, 0, 1)}
+    cond = {k: r3.random(n_members) < p for k, p in prev.items()}
+    m["_conds"] = [[k for k in prev if cond[k][i]] for i in range(n_members)]
+    n_ch = np.array([len(c) for c in m._conds])
+    m["_frailty"] = r3.gamma(.6, 1 / .6, n_members) * (1 + .35 * n_ch) * np.where(a < 18, .7, 1.0)   # overdispersed, sicker → more care
+    late = r3.random(n_members) < .12                                                                     # mid-period enrolment (new members)
+    m["enroll_date"] = pd.to_datetime(np.where(late, START + pd.to_timedelta(r3.integers(30, DAYS - 120, n_members), unit="D"), START))
     m["term_date"] = pd.NaT
     m["death_date"] = pd.NaT
     t = rng.random(n_members) < 0.08
     m.loc[t, "term_date"] = START + pd.to_timedelta(rng.integers(120, DAYS - 20, t.sum()), unit="D")
+    m.loc[t & (m.term_date <= m.enroll_date + pd.Timedelta(days=60)), "term_date"] = pd.NaT
     elderly = m.index[(m.age >= 68) & ~t]
     dead = rng.choice(elderly, 12, replace=False)
     m.loc[dead, "death_date"] = START + pd.to_timedelta(rng.integers(300, DAYS - 150, len(dead)), unit="D")
@@ -197,7 +219,8 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     m["pcp"] = [pick_pcp(r) for r in m.region]
     # ensure scenario practices have patient panels
     m_end = m.term_date.fillna(END).where(m.death_date.isna(), m.death_date).clip(upper=END)
-    active_days = np.maximum(1, (m_end - START).dt.days.values + 1)
+    e0 = (m.enroll_date - START).dt.days.values                         # first day of coverage
+    active_days = np.maximum(1, (m_end - m.enroll_date).dt.days.values + 1)
 
     # ---------------- base claim lines ----------------
     fam_prov = {f: prov[prov.family == f].reset_index(drop=True) for f in PROVIDER_COUNTS}
@@ -231,11 +254,11 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
         chunks.append(d)
 
     for fam, rate in RATE_PER_YEAR.items():
-        mult = np.where(m.age >= 60, 1.5, 1.0) if fam in ("PRO", "LAB", "PHARM") else 1.0
+        mult = m._frailty.values * (1.0 if fam in ("PRO", "LAB", "PHARM") else np.where(m.age >= 65, 1.6, .8))
         counts = rng.poisson(rate * mult * active_days / 365.0)
         midx = np.repeat(np.arange(n_members), counts)
         if not len(midx): continue
-        dates = START + pd.to_timedelta((rng.random(len(midx)) * active_days[midx]).astype(int), unit="D")
+        dates = START + pd.to_timedelta(e0[midx] + (rng.random(len(midx)) * active_days[midx]).astype(int), unit="D")
         codes = rng.choice(list(CODE_MIX[fam]), len(midx), p=list(CODE_MIX[fam].values()))
         regs = m.region.values[midx]
         provider = choose_provider(fam, regs, pcp=m.pcp.values[midx], pcp_prob=0.65 if fam == "PRO" else 0.0)
@@ -257,7 +280,7 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
         users = rng.choice(n_members, int(n_members * share), replace=False)
         rowsl = []
         for mi in users:
-            st = START + pd.Timedelta(days=int(rng.integers(0, max(1, active_days[mi] - 60))))
+            st = START + pd.Timedelta(days=int(e0[mi] + rng.integers(0, max(1, active_days[mi] - 60))))
             n = n_events_fn(); d = st
             prv = choose_provider(fam, np.array([m.region.values[mi]]))[0]
             code = code_fn()
@@ -279,6 +302,43 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
         list(rng.choice(["K0823", "L1832"], 70, p=[.3, .7])), choose_provider("DME", m.region.values[one]), ref=m.pcp.values[one])
     base = pd.concat([base] + chunks, ignore_index=True); chunks.clear()
     base["service_date"] = _weekday_shift(base.service_date, rng, base.family)
+    # ---- realism: diagnoses that fit the member and the service; winter respiratory season; a little missing data
+    code_dx = {"83036": ["E11.9", "R73.03"], "A4253": ["E11.9"], "E0601": ["G47.33"], "E1390": ["J44.9", "I50.9"], "93000": ["I10", "R07.9", "I48.91", "I50.9"],
+               "G0299": ["I50.9", "J44.9", "Z48.812"], "G0151": ["M17.11", "Z96.651"], "L1832": ["M17.11", "S83.511A"], "K0823": ["G35", "M62.81"],
+               "90834": ["F32.9", "F41.1", "F43.10"], "90837": ["F32.9", "F41.1", "F43.10"], "90791": ["F32.9", "F41.1"], "90853": ["F10.20", "F32.9"],
+               "99283": ["R10.9", "S93.401A", "J06.9", "R07.9"], "99285": ["R07.9", "I21.9", "J18.9", "S72.001A"], "A0427": ["R07.9", "I21.9", "R55"], "A0428": ["Z74.09", "R26.89"]}
+    acute = ["J06.9", "J02.9", "M54.5", "R51.9", "K21.9", "N39.0", "L03.90", "H66.90", "Z00.00", "Z23"]
+    winter = base.service_date.dt.month.isin([12, 1, 2])
+    conds = base.member_id.map(m.set_index("member_id")._conds)
+    u = r3.random(len(base))
+    def pick_dx(code, cl, uu, w):
+        if code in code_dx and uu < .75: return code_dx[code][int(uu * 97) % len(code_dx[code])]
+        if cl and uu < .80: return cl[int(uu * 131) % len(cl)]
+        if w and uu < .92: return ["J06.9", "J11.1", "J20.9"][int(uu * 53) % 3]
+        return acute[int(uu * 71) % len(acute)]
+    base["dx"] = [pick_dx(c, cl, uu, w) for c, cl, uu, w in zip(base.code, conds, u, winter)]
+    base.loc[base.family == "PRO", "code"] = np.where((base.family == "PRO") & base.dx.isin(["J06.9", "J11.1", "J20.9", "J02.9"]) & (base.code == "99214") & (u < .5), "99213", base.code)[base.family == "PRO"]
+    # winter adds respiratory visits (≈ +18% PRO/FAC volume in Dec–Feb), summer dips
+    keep = ~((base.family.isin(["PRO", "FAC"])) & base.service_date.dt.month.isin([7, 8]) & (r3.random(len(base)) < .12))
+    base = base[keep].reset_index(drop=True)
+    wv = base[base.family.isin(["PRO", "FAC"]) & base.service_date.dt.month.isin([12, 1, 2])].sample(frac=.18, random_state=seed)
+    sh = r3.integers(2, 12, len(wv)) * r3.choice([-1, 1], len(wv))            # a separate sick visit, never the same day
+    wv = wv.assign(dx=r3.choice(["J06.9", "J11.1", "J20.9", "J18.9"], len(wv)), code=np.where(wv.family == "PRO", "99213", wv.code),
+                   service_date=wv.service_date + pd.to_timedelta(sh, unit="D"))
+    base = pd.concat([base, wv[(wv.service_date >= START) & (wv.service_date <= END)]], ignore_index=True)
+    base = base.drop_duplicates(["member_id", "provider_id", "code", "service_date"]).reset_index(drop=True)
+    # payer-realistic spacing: legitimate refills / repeat tests respect the clinical minimum interval (claims edits deny earlier ones)
+    from detection.rules import MIN_INTERVAL
+    base = base.sort_values("service_date").reset_index(drop=True)
+    keep = np.ones(len(base), bool)
+    for (mid, code), idx in base[base.code.isin(list(MIN_INTERVAL))].groupby(["member_id", "code"]).groups.items():
+        last = None
+        for i in idx:
+            d = base.at[i, "service_date"]
+            if last is not None and (d - last).days < MIN_INTERVAL[code] + 1: keep[i] = False
+            else: last = d
+    base = base[keep].reset_index(drop=True)
+    base.loc[r3.random(len(base)) < .015, "dx"] = None              # ~1.5% missing diagnosis, as in real feeds
     base["truth"] = False
     base["scenario"] = ""
 
@@ -566,6 +626,15 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     endd = mm.term_date.fillna(mm.death_date)
     ed = allx.member_id.map(endd)
     allx = allx[~((ed.notna()) & (allx.service_date > ed) & (~allx.scenario.str.startswith("S2")) & (~allx.scenario.str.startswith("S8")))].copy()
+    # ground truth: any scenario line billed while the member was an inpatient (non-facility, non-inpatient POS) is improper
+    st_ = stays[["member_id", "admit_date", "discharge_date"]]
+    cand = allx[allx.scenario.str.startswith("S") & ~allx.truth & (allx.family != "FAC") & (allx.pos != "21")][["member_id", "service_date"]].reset_index()
+    j = cand.merge(st_, on="member_id")
+    allx.loc[j[(j.service_date > j.admit_date) & (j.service_date < j.discharge_date)]["index"].unique(), "truth"] = True
+    # ...and any scenario line after the member's death or coverage end
+    mm_ = m.set_index("member_id"); end_ = mm_.death_date.combine_first(mm_.term_date)
+    after = allx.scenario.str.startswith("S") & ~allx.truth & (allx.service_date > allx.member_id.map(end_))
+    allx.loc[after, "truth"] = True
     # drop scenario-less lines after death
     allx = allx.sort_values(["service_date", "member_id"]).reset_index(drop=True)
     allx["line_id"] = [f"L{i + 1:07d}" for i in range(len(allx))]
@@ -575,11 +644,22 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     allx["claim_id"] = [f"C{k + 1:07d}" for k in key]
     allx["line_no"] = allx.groupby("claim_id").cumcount() + 1
     pr = allx.code.map(lambda c: price(c))
-    allx["paid"] = (pr * allx.units * rng.uniform(.93, 1.05, len(allx))).round(2)
-    allx["billed"] = (allx.paid * rng.uniform(1.6, 2.8, len(allx))).round(2)
-    lag = rng.integers(10, 45, len(allx))
+    r4 = np.random.default_rng(seed + 6161)
+    allowed = pr * allx.units * r4.lognormal(0, .06, len(allx))                 # contract variation
+    plan = allx.member_id.map(m.set_index("member_id").plan)
+    copay = np.where(allx.family.isin(["PRO", "BH"]) & (plan == "Commercial"), 25.0, np.where(allx.family.isin(["PRO", "BH"]) & (plan == "Medicare Advantage"), 10.0, 0.0))
+    coins = np.where(allx.family.isin(["FAC", "DME", "AMB", "HH"]) & (plan != "Medicaid"), .2, 0.0)
+    first_line = allx.line_no == 1
+    allx["paid"] = np.maximum(0.0, allowed * (1 - coins) - np.where(first_line, copay, 0.0)).round(2)
+    allx["billed"] = (allowed * r4.lognormal(np.log(2.1), .25, len(allx))).round(2)   # charge-master mark-up
+    lag = np.clip(r4.lognormal(np.log(21), .45, len(allx)), 5, 200).astype(int)
+    lag = np.where(r4.random(len(allx)) < .03, lag + r4.integers(60, 150, len(allx)), lag)   # ~3% late / reprocessed claims
     allx["paid_date"] = allx.service_end_date + pd.to_timedelta(lag, unit="D")
     allx["modifier"] = ""
+    em_ecg = allx.groupby("claim_id").code.transform(lambda c: c.isin(["93000"]).any())
+    allx.loc[allx.code.isin(["99212", "99213", "99214", "99215"]) & em_ecg, "modifier"] = "25"        # E/M with same-day procedure
+    allx.loc[allx.code == "L1832", "modifier"] = r4.choice(["RT", "LT"], int((allx.code == "L1832").sum()))
+    allx.loc[allx.code.isin(["E0601", "E1390"]), "modifier"] = "RR"                                    # rental
     fac_map = fam_prov["FAC"]
     allx["facility_id"] = np.where(allx.pos.isin(["21", "23"]), np.where(allx.family == "FAC", allx.provider_id, allx.member_id.map(stays.drop_duplicates("member_id").set_index("member_id").facility_id)), None)
     allx.loc[allx.family == "LAB", "dx"] = allx.loc[allx.family == "LAB", "dx"]
@@ -622,6 +702,7 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     facilities = prov[prov.family == "FAC"][["provider_id", "name", "city", "lat", "lon"]].rename(columns={"provider_id": "facility_id"})
     facilities["licensed_beds"] = rng.integers(60, 420, len(facilities))
 
+    m["vulnerable"] = (m.age >= 65) | (m.plan == "Medicaid")
     members_out = m[["member_id", "age", "sex", "plan", "region", "enroll_date", "term_date", "death_date", "vulnerable", "pcp"]].copy()
     members_out["region"] = members_out.region.map(lambda r: REGIONS[r][0])
     providers_out = prov[["provider_id", "npi", "name", "family", "specialty", "city", "lat", "lon", "org_id", "address_id", "bank_id", "enrolled_date", "context_note"]]
@@ -640,7 +721,7 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     truth.to_csv(hid / "scenario_truth.csv", index=False)
     lg = pd.DataFrame(legit, columns=["provider_id", "kind", "onset", "explanation", "legitimate"]); lg.to_csv(hid / "legit_anomalies.csv", index=False)
     from synthdata import truth as TR
-    TR.build(allx, list(providers_out.provider_id), lg).to_csv(hid / "entity_truth.csv", index=False)
+    TR.build(allx, list(providers_out.provider_id), lg, exclusions=pd.read_csv(out / "exclusions.csv") if (out / "exclusions.csv").exists() else None).to_csv(hid / "entity_truth.csv", index=False)
     return dict(lines=len(lines), providers=len(providers_out), members=len(members_out), truth_lines=int(truth.truth.sum()))
 
 
