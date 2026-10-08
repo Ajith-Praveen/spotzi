@@ -149,7 +149,7 @@ def overview(horizon: int = 60, capacity: float = 96):
 @app.get("/api/queue")
 def queue(request: Request, horizon: int = 60, capacity: float = 96):
     w = {k[2:]: float(v) for k, v in request.query_params.items() if k.startswith("w_")}
-    q = briefs.rank(S(), weights=w, horizon=horizon, capacity_hours=capacity, statuses=statuses())
+    q = briefs.rank(S(), weights=w, horizon=horizon, capacity_hours=capacity, statuses=statuses(), sb=llm.SB.state["results"] if llm.SB.state.get("run_id") == STATE["S"]["run"]["run_id"] else None)
     q["weight_labels"] = briefs.WEIGHT_LABELS; q["defaults"] = briefs.DEFAULT_WEIGHTS
     return J(q)
 
@@ -167,6 +167,8 @@ def case(cid: str, horizon: int = 60):
     if d is None: raise HTTPException(404, "Unknown case")
     c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM decisions WHERE case_id=? ORDER BY id", (cid,)).fetchall()]; c.close()
     d["decisions"] = rows
+    sbr = llm.SB.state["results"] if llm.SB.state.get("run_id") == s["run"]["run_id"] else {}
+    d["second_brain"] = [dict(provider_id=p, name=s["PT"].at[p, "name"], first_brain_risk=float(s["PT"].at[p, "risk"]), **sbr[p]) for p in next(x for x in s["cases"] if x["case_id"] == cid)["providers"] if p in sbr]
     d["status"] = statuses().get(cid, "New")
     return J(d)
 
@@ -242,7 +244,7 @@ def claims(provider_id: str = "", member_id: str = "", rule: str = "", flagged: 
 def providers():
     PT = S()["PT"]
     cs = {p: c["case_id"] for c in S()["cases"] for p in c["providers"]}
-    df = PT.reset_index()[["provider_id", "name", "family", "specialty", "city", "risk", "rule_score", "anomaly_pct", "graph_score", "n_lines", "paid", "members", "flagged_lines", "flagged_paid", "fc30", "fc60", "fc90", "context_note"]]
+    df = PT.reset_index()[["provider_id", "name", "family", "specialty", "city", "risk", "rule_score", "anomaly_pct", "graph_score", "own_model", "n_lines", "paid", "members", "flagged_lines", "flagged_paid", "fc30", "fc60", "fc90", "context_note"]]
     df["case_id"] = df.provider_id.map(cs)
     return J(df.sort_values("risk", ascending=False).to_dict("records"))
 
@@ -256,7 +258,7 @@ def provider(pid: str):
     codes = sub.groupby("code").agg(lines=("line_id", "size"), paid=("paid", "sum"), flagged=("any_flag", "sum")).reset_index().sort_values("paid", ascending=False).head(10)
     r = PT.loc[pid]
     return J(dict(provider_id=pid, profile={k: r[k] for k in ["name", "family", "specialty", "city", "npi", "org_id", "address_id", "bank_id", "context_note"]},
-                  scores={k: r[k] for k in ["risk", "rule_score", "anomaly_pct", "graph_score", "fc30", "fc60", "fc90"]},
+                  scores={k: r[k] for k in ["risk", "rule_score", "anomaly_pct", "graph_score", "own_model", "fc30", "fc60", "fc90"]},
                   rules={k: dict(name=RULES[k]["name"], lines=int(r[f"n_{k}"]), share=float(r[f"s_{k}"])) for k in RULES},
                   monthly=mg.to_dict("records"), codes=codes.to_dict("records"), network=PL.ego_graph(s, [pid], True, 12),
                   anomaly_drivers=s["adrivers"].get(pid, []), forecast_why=s["fc"]["why"].get(pid, {})))
@@ -292,7 +294,7 @@ def ego(pid: str):
 def governance():
     s = S(); run = s["run"]
     return J(dict(run=run, rules=[dict(key=k, **{kk: v for kk, v in spec.items()}) for k, spec in RULES.items()],
-                  forecast=dict(metrics=run["forecast_metrics"], calibration=run["calibration"]),
+                  forecast=dict(metrics=run["forecast_metrics"], calibration=run["calibration"]), own_model=run.get("own_model"),
                   principles=[
                       "Human in the loop: the system ranks and explains; people open, scope, close, and refer cases. There is no automated adverse action.",
                       "Four-eyes referral: a recommended referral needs a different supervisor to approve it, with written rationale.",
@@ -325,11 +327,11 @@ NARR: dict = {}
 
 @app.get("/api/llm/status")
 def llm_status():
-    return J(dict(available=llm.available(), model=llm.MODEL))
+    return J(dict(available=llm.available(), model=llm.model_name(), provider=llm.provider()))
 
 
 def _llm_guard():
-    if not llm.available(): raise HTTPException(503, "No ANTHROPIC_API_KEY set. Deterministic briefs still work; set the key and restart to enable the AI layer.")
+    if not llm.available(): raise HTTPException(503, "No LLM available. Start a local model server (see README: mlx_lm.server on :8080) or set a valid ANTHROPIC_API_KEY. Deterministic briefs still work.")
 
 
 @app.post("/api/cases/{cid}/narrative")
@@ -358,6 +360,33 @@ async def ask_case(cid: str, req: Request):
         audit("system", "system", "llm_failed", cid, str(e)[:200]); raise HTTPException(502, f"AI layer unavailable ({type(e).__name__}).")
     audit(b.get("reviewer") or "viewer", "investigator", "llm_question", cid, q[:150])
     return J(out)
+
+
+@app.get("/api/secondbrain")
+def sb_state():
+    s = S(); st = llm.SB.state; cur = st.get("run_id") == s["run"]["run_id"]
+    res = st["results"] if cur else {}
+    return J(dict(available=llm.available(), model=llm.model_name(), status=st["status"] if cur else "idle", done=st["done"] if cur else 0, total=st["total"] if cur else 0,
+                  error=st["error"] if cur else None, failed=st["failed"] if cur else {}, rows=llm.compare(s, res), scorecard=llm.scorecard(s, res) if res else None))
+
+
+@app.post("/api/secondbrain/run")
+async def sb_run(req: Request):
+    _llm_guard(); s = S()
+    b = await req.json() if (await req.body()) else {}
+    ok = llm.SB.start(s, limit=int(b.get("limit", 45)))
+    if ok: audit("analyst", "analyst", "second_brain_run", s["run"]["run_id"], f"model={llm.model_name()} limit={b.get('limit', 45)}")
+    return J(dict(started=ok))
+
+
+@app.get("/api/secondbrain/{pid}")
+def sb_provider(pid: str):
+    s = S(); st = llm.SB.state
+    if st.get("run_id") != s["run"]["run_id"] or pid not in st["results"]: raise HTTPException(404, "No second-brain review for this provider yet")
+    r = st["results"][pid]; PT = s["PT"]
+    first = dict(risk=float(PT.at[pid, "risk"]), rule_score=float(PT.at[pid, "rule_score"]), anomaly_pct=float(PT.at[pid, "anomaly_pct"]), graph_score=float(PT.at[pid, "graph_score"]),
+                 rules={k: int(PT.at[pid, f"n_{k}"]) for k in RULES})
+    return J(dict(provider_id=pid, name=PT.at[pid, "name"], family=PT.at[pid, "family"], review=r, first_brain=first, dossier=llm.dossier(s, pid)))
 
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 

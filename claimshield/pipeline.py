@@ -8,8 +8,11 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
+import sys
 import analytics as A
 import gen
+sys.path.insert(0, str(Path(__file__).parent / "kaggle_model"))
+import transfer as KT
 from rules import RULES, RULESET_VERSION, apply_rules
 
 ROOT = Path(__file__).parent
@@ -130,7 +133,7 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
 
     # ---- forecast ----
     fc = A.train_forecasts(panel, prov_family, truth_lines if truth_lines is not None else pd.DataFrame(columns=["provider_id", "service_date"]), END)
-    step("Forecast models", "logistic + gradient boosting, temporal split, 30/60/90 days")
+    step("Forecast models", f"discrete-time hazard · chosen {fc['model_choice']['chosen']} · purged temporal holdout")
 
     # ---- provider table (lookback window) ----
     W = L[L.service_date > END - pd.Timedelta(days=LOOKBACK)]
@@ -181,6 +184,18 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
         PT[f"fc{h}"] = pd.Series({p: v.get(h, 0) for p, v in fc["pred"].items()})
     PT["escalation"] = X_end.escalation.reindex(PT.index).fillna(0)
     PT["flag_paid30"] = X_end.flag_paid30.reindex(PT.index).fillna(0)
+    own_metrics = None
+    PT["own_model"] = np.nan
+    if KT.available():
+        try:
+            sc, _ = KT.score(L, M, P)
+            PT["own_model"] = sc.reindex(PT.index)
+            own_metrics = KT.metrics()
+            step("Own model (Kaggle-trained)", f"scored {int(PT.own_model.notna().sum())} providers; CV AUC {own_metrics['auc_ensemble']:.2f} on Kaggle data" if own_metrics else "scored")
+        except Exception as e:
+            step("Own model (Kaggle-trained)", f"skipped: {type(e).__name__}: {str(e)[:80]}")
+    else:
+        step("Own model (Kaggle-trained)", "not trained yet: see kaggle_model/README.md")
     comms = A.communities(G)
     step("Graph analytics", f"{G.number_of_nodes()} providers, {G.number_of_edges()} relationships, {len(comms)} communities")
 
@@ -196,7 +211,8 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
     net = network_payload(G, H, PT, comms, L)
     run = dict(run_id=f"RUN-{time.strftime('%Y%m%d-%H%M%S')}", as_of=str(END.date()), created=time.strftime("%Y-%m-%d %H:%M:%S"),
                ruleset=RULESET_VERSION, model=MODEL_VERSION, seed=seed, log=log, validation=val, evaluation=ev, forecast_metrics=fc["metrics"],
-               calibration=fc["calibration"], seconds=round(time.time() - t0, 1))
+               calibration=fc["calibration"], model_choice=fc["model_choice"], seconds=round(time.time() - t0, 1))
+    run["own_model"] = own_metrics
     return dict(run=run, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
 
 

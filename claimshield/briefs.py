@@ -17,7 +17,7 @@ STATUS_FROM_OUTCOME = {
 }
 
 
-def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None):
+def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None, sb=None):
     w = {**DEFAULT_WEIGHTS, **(weights or {})}
     tw = sum(w.values()) or 1
     cs = S["cases"]
@@ -25,8 +25,16 @@ def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None):
     mx_m = max(np.log1p(c["members"] + .5 * c["vulnerable"]) for c in cs) or 1
     rows = []
     for c in cs:
+        ev_adj, sb_view = 0, None
+        rs = [sb[p] for p in c["primary"] if sb and p in sb]
+        if rs:
+            top = max(r["suspicion"] for r in rs)
+            if top >= 60: ev_adj, sb_view = 8, "agrees"
+            elif top < 30 and all(r["confidence"] != "low" for r in rs): ev_adj, sb_view = -8, "disagrees"
+            else: sb_view = "unsure"
+        ev_now = float(np.clip(c["evidence"] + ev_adj, 0, 100))
         comp = dict(risk=c["risk"] / 100, forecast=c["forecast"][horizon], dollars=np.log1p(c["exposure"]) / mx_d,
-                    members=np.log1p(c["members"] + .5 * c["vulnerable"]) / mx_m, severity=c["severity"] / 100, evidence=c["evidence"] / 100)
+                    members=np.log1p(c["members"] + .5 * c["vulnerable"]) / mx_m, severity=c["severity"] / 100, evidence=ev_now / 100)
         pr = 100 * sum(w[k] * comp[k] for k in w) / tw
         gate = .65 if c["lane"] == "Needs more data" else .9 if c["lane"] == "Validate context first" else 1.0
         rows.append(dict(case_id=c["case_id"], title=c["title"], type=c["type"], priority=round(pr * gate, 1), raw_priority=round(pr, 1), gate=gate,
@@ -35,7 +43,7 @@ def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None):
                          risk=round(c["risk"], 1), forecast=round(100 * c["forecast"][horizon], 1), exposure=round(c["exposure"], 0),
                          members=c["members"], vulnerable=c["vulnerable"], severity=round(c["severity"], 1),
                          severity_label="Critical" if c["severity"] >= 85 else "High" if c["severity"] >= 65 else "Medium",
-                         evidence=round(c["evidence"], 1), lane=c["lane"], effort_hours=c["effort_hours"], families=c["families"],
+                         evidence=round(ev_now, 1), second_brain=sb_view, lane=c["lane"], effort_hours=c["effort_hours"], families=c["families"],
                          network=c["network"], n_providers=len(c["providers"]), rules=c["rules"], flagged_lines=c["flagged_lines"],
                          signal_flags=c["signal_flags"], escalating=c["escalating"],
                          status=(statuses or {}).get(c["case_id"], "New")))
@@ -87,6 +95,13 @@ def case_detail(S, cid, horizon=60):
             items.append(dict(id=f"EV-{n_id:03d}", kind="anomaly", label=f"Provider behaviour unusual vs. {PT.at[p, 'family']} peers", provider=p,
                               strength="Moderate" if pct >= .93 else "Context", pct=pct, drivers=S["adrivers"].get(p, []),
                               source="Isolation Forest on 90-day provider features (peer-normalised)"))
+    for p in prim:
+        om = PT.at[p, "own_model"]
+        if om == om and om >= .5:
+            n_id += 1
+            items.append(dict(id=f"EV-{n_id:03d}", kind="own_model", label="Own model (trained on Kaggle provider-fraud data)", provider=p, strength="Moderate" if om >= .8 else "Context",
+                              detail=f"{PT.at[p, 'name']}: {om * 100:.0f}% fraud-likeness from relative behaviour (claims per beneficiary, amount spread, repeat-beneficiary share, inpatient share…). Transfer from a different dataset, so treat as a complementary signal.",
+                              source="kaggle_model/model.joblib (gradient boosting + logistic) on shared provider features"))
     if c["network"]:
         ego = ego_graph(S, c["primary"], extra_hops=False)
         ent = [n for n in ego["nodes"] if n["kind"] != "provider"]

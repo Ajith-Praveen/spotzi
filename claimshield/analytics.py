@@ -127,52 +127,122 @@ def _fam_dummies(panel, prov_family):
     return pd.DataFrame({f"fam_{f}": (fam == f).astype(float) for f in FAMILIES}, index=panel.index)
 
 
-def train_forecasts(panel, prov_family, truth_lines, end):
-    """Temporal-split training per horizon. Returns models, metrics, final-predictions and explanations."""
+def _ece(y, p, bins=5):
+    q = pd.qcut(pd.Series(p).rank(method="first"), bins, labels=False, duplicates="drop")
+    d = pd.DataFrame({"y": y, "p": p, "q": q}).groupby("q").agg(n=("y", "size"), y=("y", "mean"), p=("p", "mean"))
+    return float((d.n * (d.y - d.p).abs()).sum() / d.n.sum()), d
+
+
+def train_forecasts(panel, prov_family, truth_lines, end, groups=None):
+    """Discrete-time hazard model (doc 10). Intervals (0,30],(30,60],(60,90]; covariates frozen at the anchor;
+    P30=h1, P60=1-(1-h1)(1-h2), P90=1-(1-h1)(1-h2)(1-h3) so horizons can never contradict each other.
+    Baseline: pooled logistic hazard. Challenger: pooled gradient-boosting hazard. Both sigmoid-calibrated with
+    provider-group cross-fitting on the TRAINING period only; evaluation is a temporal, purged holdout."""
+    from sklearn.calibration import CalibratedClassifierCV
+    from sklearn.model_selection import GroupKFold
+    from sklearn.metrics import log_loss
     end = pd.Timestamp(end)
-    Xall = pd.concat([panel[FEATURES], _fam_dummies(panel, prov_family)], axis=1)
-    cols = list(Xall.columns)
-    res = {"metrics": {}, "pred": {}, "why": {}, "calibration": {}}
-    cur = panel.snap == end
-    for H in (30, 60, 90):
-        y = label_panel(panel, truth_lines, H, end)
-        lab = ~np.isnan(y)
-        active = panel.n90 >= 5
-        test_start = end - pd.Timedelta(days=H + 84)
-        tr = lab & active & ((panel.snap + pd.Timedelta(days=H)) <= test_start)
-        te = lab & active & (panel.snap >= test_start)
-        def fit(mask):
-            sc = StandardScaler().fit(Xall[mask])
-            lr = LogisticRegression(C=.4, max_iter=600, class_weight="balanced").fit(sc.transform(Xall[mask]), y[mask])
-            gb = HistGradientBoostingClassifier(max_depth=3, learning_rate=.06, max_iter=140, l2_regularization=1.0, random_state=0).fit(Xall[mask], y[mask])
-            return sc, lr, gb
-        def predict(models, X):
-            sc, lr, gb = models
-            return .5 * lr.predict_proba(sc.transform(X))[:, 1] + .5 * gb.predict_proba(X)[:, 1]
-        m_eval = fit(tr)
-        p_te = predict(m_eval, Xall[te])
-        yt = y[te]
-        met = dict(train_rows=int(tr.sum()), test_rows=int(te.sum()), base_rate=float(np.mean(yt)),
-                   auc=float(roc_auc_score(yt, p_te)), ap=float(average_precision_score(yt, p_te)),
-                   brier=float(brier_score_loss(yt, p_te)),
-                   train_through=str((test_start).date()), test_from=str(test_start.date()))
-        # baseline: rules-only flag share
-        met["baseline_auc_flag_share"] = float(roc_auc_score(yt, panel.loc[te, "any_share"]))
-        bins = pd.cut(p_te, [0, .1, .25, .5, .75, 1.0001], include_lowest=True)
-        cal = pd.DataFrame({"p": p_te, "y": yt, "b": bins}).groupby("b", observed=True).agg(n=("y", "size"), predicted=("p", "mean"), observed=("y", "mean"))
-        res["calibration"][H] = [dict(bin=str(i), n=int(r.n), predicted=float(r.predicted), observed=float(r.observed)) for i, r in cal.iterrows()]
-        # production fit on all labelled history
-        m_fin = fit(lab & active)
-        Xc = Xall[cur]
-        p = predict(m_fin, Xc)
-        sc, lr, gb = m_fin
-        contrib = lr.coef_[0] * sc.transform(Xc)
-        res["metrics"][H] = met
-        for pid, pv, ct in zip(panel.provider_id[cur], p, contrib):
-            res["pred"].setdefault(pid, {})[H] = float(np.clip(pv, 0.01, 0.97))
-            order = np.argsort(-ct)[:4]
-            res["why"].setdefault(pid, {})[H] = [dict(feature=FEATURE_LABELS.get(cols[i], cols[i].replace("fam_", "Family: ")), contribution=float(ct[i]),
-                                                 value=float(Xc.iloc[list(panel.provider_id[cur]).index(pid), i])) for i in order if ct[i] > 0.05]
+    base_cols = FEATURES + [f"fam_{f}" for f in FAMILIES]
+    X0 = pd.concat([panel[FEATURES], _fam_dummies(panel, prov_family)], axis=1)
+    tl = truth_lines[["provider_id", "service_date"]]
+    arr = tl.groupby("provider_id").service_date.apply(lambda s: np.sort(s.values.astype("datetime64[D]")))
+    def count(pid, a, b):
+        x = arr.get(pid)
+        return 0 if x is None else int(np.searchsorted(x, np.datetime64(b.date()), side="right") - np.searchsorted(x, np.datetime64(a.date()), side="right"))
+    anchors = sorted(panel.snap.unique())
+    full = [T for T in anchors if T + pd.Timedelta(days=90) <= end]
+    rows = []
+    active = (panel.n90 >= 5).values
+    for i in np.where(panel.snap.isin(full).values & active)[0]:
+        T, pid = panel.snap.iat[i], panel.provider_id.iat[i]
+        ev = []
+        for k in (1, 2, 3):
+            c = count(pid, T + pd.Timedelta(days=30 * (k - 1)), T + pd.Timedelta(days=30 * k))
+            ev.append(int(c >= 2))
+        rows.append((i, T, pid, ev))
+    cut = pd.Timestamp("2024-12-15")
+    eval_from = cut + pd.Timedelta(days=90)
+    def expand(sel):
+        r_, y_, g_ = [], [], []
+        for i, T, pid, ev in sel:
+            for k in (1, 2, 3):
+                r_.append((i, k)); y_.append(ev[k - 1]); g_.append(pid)
+                if ev[k - 1]: break
+        idx = np.array([i for i, _ in r_]); ks = np.array([k for _, k in r_])
+        X = X0.iloc[idx].reset_index(drop=True).copy()
+        for k in (1, 2, 3): X[f"int{k}"] = (ks == k).astype(float)
+        return X, np.array(y_), np.array(g_), idx, ks
+    tr = [r for r in rows if r[1] <= cut]
+    te = [r for r in rows if r[1] >= eval_from]
+    Xtr, ytr, gtr, _, _ = expand(tr)
+    def make(kind):
+        if kind == "logistic":
+            from sklearn.pipeline import make_pipeline
+            return make_pipeline(StandardScaler(), LogisticRegression(C=.4, max_iter=800))
+        return HistGradientBoostingClassifier(max_depth=3, learning_rate=.06, max_iter=120, l2_regularization=1.0, min_samples_leaf=30, random_state=0)
+    def fit_cal(X, y, g, kind):
+        splits = list(GroupKFold(5).split(X, y, g))
+        splits = [s_ for s_ in splits if len(set(y[s_[0]])) > 1]
+        m = CalibratedClassifierCV(make(kind), method="sigmoid", cv=splits) if len(splits) >= 3 else make(kind).fit(X, y)
+        return m.fit(X, y) if hasattr(m, "classes_") is False or isinstance(m, CalibratedClassifierCV) else m
+    models = {k: fit_cal(Xtr, ytr, gtr, k) for k in ("logistic", "gboost")}
+    cvll = {}
+    for k, mdl in models.items():
+        cvll[k] = float(log_loss(ytr, np.clip(mdl.predict_proba(Xtr)[:, 1], 1e-4, 1 - 1e-4)))
+    chosen = min(cvll, key=cvll.get)  # frozen rule: lower training-period log loss
+    def hazards(models_, X1):
+        """X1 = anchor-level feature frame; return n×3 hazards"""
+        out = []
+        for k in (1, 2, 3):
+            Xk = X1.copy()
+            for j in (1, 2, 3): Xk[f"int{j}"] = float(j == k)
+            out.append(models_.predict_proba(Xk)[:, 1])
+        return np.column_stack(out)
+    def cumul(h):
+        s1 = 1 - h[:, 0]; s2 = s1 * (1 - h[:, 1]); s3 = s2 * (1 - h[:, 2])
+        return np.column_stack([1 - s1, 1 - s2, 1 - s3])
+    res = {"metrics": {}, "pred": {}, "why": {}, "calibration": {}, "model_choice": dict(chosen=chosen, cv_logloss=cvll, train_anchors=len({r[1] for r in tr}), eval_anchors=len({r[1] for r in te}), cut=str(cut.date()), eval_from=str(eval_from.date()))}
+    if te:
+        idx = np.array([r[0] for r in te]); X1 = X0.iloc[idx].reset_index(drop=True)
+        Yc = np.array([[int(any(r[3][:k])) for k in (1, 2, 3)] for r in te])
+        P = {k: cumul(hazards(m, X1)) for k, m in models.items()}
+        flag = panel.iloc[idx].any_share.values
+        for j, H in enumerate((30, 60, 90)):
+            y = Yc[:, j]
+            if len(set(y)) < 2: continue
+            met = dict(test_rows=int(len(y)), positives=int(y.sum()), base_rate=float(y.mean()), train_anchors=res["model_choice"]["train_anchors"], eval_anchors=res["model_choice"]["eval_anchors"])
+            for k in P:
+                e, _ = _ece(y, P[k][:, j])
+                met[k] = dict(auc=float(roc_auc_score(y, P[k][:, j])), ap=float(average_precision_score(y, P[k][:, j])), brier=float(brier_score_loss(y, P[k][:, j])), ece=e)
+            met["baseline_auc_flag_share"] = float(roc_auc_score(y, flag))
+            ch = met[chosen]; met.update(auc=ch["auc"], ap=ch["ap"], brier=ch["brier"], ece=ch["ece"], chosen=chosen)
+            res["metrics"][H] = met
+            _, d = _ece(y, P[chosen][:, j])
+            res["calibration"][H] = [dict(bin=str(i), n=int(r.n), predicted=float(r.p), observed=float(r.y)) for i, r in d.iterrows()]
+    # production: refit on all fully observed anchors (hyper-parameters frozen), then predict at the as-of date
+    Xall, yall, gall, _, _ = expand(rows)
+    prod = fit_cal(Xall, yall, gall, chosen)
+    lr_all = fit_cal(Xall, yall, gall, "logistic")
+    cur = (panel.snap == end).values
+    Xc = X0[cur].reset_index(drop=True)
+    pids = panel.provider_id[cur].tolist()
+    H3 = hazards(prod, Xc); C = cumul(H3)
+    # local explanation from the pooled logistic hazard (coef × standardised value), horizon-specific via interval
+    pipe = make("logistic").fit(Xall, yall)
+    sc, lrm = pipe.steps[0][1], pipe.steps[1][1]
+    names = list(Xall.columns)
+    for n_, pid in enumerate(pids):
+        res["pred"][pid] = {30: float(np.clip(C[n_, 0], .01, .97)), 60: float(np.clip(C[n_, 1], .01, .97)), 90: float(np.clip(C[n_, 2], .01, .97))}
+        res["pred"][pid]["hazards"] = [float(x) for x in H3[n_]]
+        row = Xc.iloc[[n_]].copy()
+        for j in (1, 2, 3): row[f"int{j}"] = 0.0
+        row["int1"] = 1.0
+        ct = lrm.coef_[0] * sc.transform(row[names])[0]
+        order = [i for i in np.argsort(-ct)[:6] if names[i] in FEATURE_LABELS or names[i].startswith("fam_")][:4]
+        why = [dict(feature=FEATURE_LABELS.get(names[i], names[i].replace("fam_", "Family: ")), contribution=float(ct[i]), value=float(row[names[i]].iloc[0])) for i in order if ct[i] > .05]
+        res["why"][pid] = {30: why, 60: why, 90: why}
+    for pid in list(res["pred"]):
+        p = res["pred"][pid]; p[60] = max(p[60], p[30]); p[90] = max(p[90], p[60])
     return res
 
 
