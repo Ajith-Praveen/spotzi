@@ -1,0 +1,19 @@
+{
+  "name": "SpotZ^i Claims Intelligence",
+  "short_name": "SpotZ^i",
+  "description": "Evidence-first healthcare claims intelligence for human SIU review.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#14213d",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/spotzi-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+investigation_id,provider_id,opened_date,closed_date,outcome,recovered_amount
+INV-0001,P-0093,2024-02-10,2024-04-20,Confirmed overpayment,18400
+INV-0002,P-0005,2023-06-01,2023-09-12,Unfounded,0
+INV-0003,P-0050,2024-05-02,2024-07-30,Unfounded,0
+INV-0004,P-0072,2024-03-01,2024-06-01,Education letter,0
+INV-0005,P-0120,2023-11-15,2024-02-01,Confirmed overpayment,9200
+INV-0006,P-0021,2024-04-10,2024-06-14,Unfounded,0
+INV-0007,P-0054,2024-01-20,2024-03-30,Education letter,0
+INV-0008,P-0112,2024-02-02,2024-05-15,Confirmed overpayment,5300
