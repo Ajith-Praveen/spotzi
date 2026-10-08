@@ -141,7 +141,7 @@ Retrieval is read-only. No endpoint applies a precedent outcome to another case.
 ## Proposed implementation files
 
 ```text
-backend/src/claimshield/precedents/
+backend/src/spotzi/precedents/
   contracts.py
   eligibility.py
   fingerprint.py
@@ -151,8 +151,8 @@ backend/src/claimshield/precedents/
   quality_review.py
   blueprint_builder.py
   replay.py
-backend/src/claimshield/api/routers/precedents.py
-backend/src/claimshield/db/models/precedents.py
+backend/src/spotzi/api/routers/precedents.py
+backend/src/spotzi/db/models/precedents.py
 backend/migrations/versions/0006_precedent_intelligence.py
 frontend/src/features/precedents/PrecedentsTab.tsx
 frontend/src/features/precedents/PrecedentComparison.tsx

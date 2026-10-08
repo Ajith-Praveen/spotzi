@@ -8,7 +8,7 @@ The responsive internal web app is installable as a PWA. It uses standalone disp
 
 ```bash
 pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy
-cd claimshield && python3 server.py      # → http://localhost:8000
+cd spotzi && python3 server.py      # → http://localhost:8000
 ```
 
 First start generates ~64k synthetic claim lines (8 service families, 132 providers, 2,500 members) and runs the whole pipeline in ~7s.

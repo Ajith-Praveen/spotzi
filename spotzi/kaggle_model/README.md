@@ -7,7 +7,7 @@ public Medicare-style beneficiary / inpatient / outpatient claims with a provide
 ```bash
 # put your token at ~/.kaggle/kaggle.json (Kaggle → Settings → API → Create New Token), then:
 chmod 600 ~/.kaggle/kaggle.json
-cd claimshield
+cd spotzi
 kaggle datasets download -d rohitrox/healthcare-provider-fraud-detection-analysis -p data/kaggle --unzip
 ```
 Expected files in `data/kaggle/`: `Train_Beneficiarydata*.csv`, `Train_Inpatientdata*.csv`, `Train_Outpatientdata*.csv`, `Train*.csv` (labels: Provider, PotentialFraud).

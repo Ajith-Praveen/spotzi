@@ -1,4 +1,4 @@
-"""Provider-level features shared by the Kaggle training data and the ClaimShield synthetic claims.
+"""Provider-level features shared by the Kaggle training data and the SpotZ^i synthetic claims.
 Both sides are reduced to the same schema, then rank-normalised so only *relative* behaviour transfers."""
 from __future__ import annotations
 
@@ -61,7 +61,7 @@ def from_kaggle(ben: pd.DataFrame, inp: pd.DataFrame, out: pd.DataFrame) -> pd.D
     return _agg(c)[SHARED]
 
 
-def from_claimshield(L: pd.DataFrame, M: pd.DataFrame, providers: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+def from_spotzi(L: pd.DataFrame, M: pd.DataFrame, providers: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     inp = L.code.eq("INP-DAY")
     c = pd.DataFrame({"provider": L.provider_id, "bene": L.member_id, "amt": L.paid, "ip": inp.values,
                       "phys": L.referring_provider_id.fillna(L.provider_id + "-self"), "start": pd.to_datetime(L.service_date),

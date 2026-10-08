@@ -4,7 +4,7 @@
 
 The repository root is `/Users/ajith/acentra`. The files below are the **proposed implementation tree**; this task creates only `idea/*.md`. Build modules in the roadmap order instead of creating hundreds of empty stubs.
 
-Use a Python package called `claimshield` under `backend/src/`. Tests import public module interfaces. API routers delegate to services; services use repositories and analytics contracts. Models never import frontend or API code.
+Use a Python package called `spotzi` under `backend/src/`. Tests import public module interfaces. API routers delegate to services; services use repositories and analytics contracts. Models never import frontend or API code.
 
 ```text
 acentra/
@@ -25,7 +25,7 @@ acentra/
 │   │       ├── 0002_entities_relationships.py
 │   │       ├── 0003_analysis_evidence_predictions.py
 │   │       └── 0004_cases_jobs_audit.py
-│   ├── src/claimshield/
+│   ├── src/spotzi/
 │   │   ├── __init__.py
 │   │   ├── main.py                    # API construction and middleware
 │   │   ├── cli.py                     # Generate, validate, run, train, evaluate

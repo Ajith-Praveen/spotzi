@@ -10,7 +10,7 @@ Build an investigation workspace that answers:
 
 The flagship interaction is **Challenge this case**. It opens competing explanations, the evidence supporting and contradicting each, a recommended next evidence check, and isolated scenario branches. An investigator chooses which check to perform, reviews the result, and makes the decision.
 
-This extends ClaimShield from detecting patterns to helping investigators resolve uncertainty efficiently and defend their reasoning. Its most memorable demonstration is two cases with identical visible claims but different underlying explanations, revealed through investigator-approved evidence checks.
+This extends SpotZ^i from detecting patterns to helping investigators resolve uncertainty efficiently and defend their reasoning. Its most memorable demonstration is two cases with identical visible claims but different underlying explanations, revealed through investigator-approved evidence checks.
 
 ## What is and is not a credible uniqueness claim
 
@@ -165,7 +165,7 @@ This adds a module to the existing API/worker codebase. It does not require anot
 ## Proposed additional files
 
 ```text
-backend/src/claimshield/challenge_lab/
+backend/src/spotzi/challenge_lab/
   contracts.py                  # Hypotheses, checks, outcomes, branches
   explanation_catalog.py       # Reviewed alternative explanations
   compatibility.py             # Support, contradiction, unknown evaluation
@@ -175,10 +175,10 @@ backend/src/claimshield/challenge_lab/
   fragility.py                 # Allowed assumption-sensitivity checks
   reveal_service.py            # Human-approved synthetic artifact access
   decision_replay.py           # Timeline of reasoning and evidence changes
-backend/src/claimshield/api/routers/challenge_lab.py
-backend/src/claimshield/db/models/challenge_lab.py
-backend/src/claimshield/synthetic/evidence_vault.py
-backend/src/claimshield/synthetic/scenarios/matched_worlds.py
+backend/src/spotzi/api/routers/challenge_lab.py
+backend/src/spotzi/db/models/challenge_lab.py
+backend/src/spotzi/synthetic/evidence_vault.py
+backend/src/spotzi/synthetic/scenarios/matched_worlds.py
 backend/migrations/versions/0005_challenge_lab.py
 frontend/src/features/challenge-lab/ChallengeLabPanel.tsx
 frontend/src/features/challenge-lab/ExplanationBoard.tsx

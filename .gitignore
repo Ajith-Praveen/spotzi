@@ -3,3 +3,9 @@ dist/
 .DS_Store
 *.log
 .env
+spotzi/data/seed_users.json
+spotzi/data/app.db
+spotzi/data/cache/
+spotzi/data/pg/
+spotzi/data/db.env
+spotzi/data/.pg_su

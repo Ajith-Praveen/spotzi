@@ -98,7 +98,7 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
     em = L[L.code.isin(EM_ALL) & (L.pos == "11")].copy()
     em["ym"] = em.service_date.dt.to_period("M")
     g = em.groupby(["provider_id", "ym"]).agg(n=("code", "size"), hi=("code", lambda s: (s.isin(EM_HIGH)).mean()))
-    peer_hi = em.groupby("code").size()[ "99215"] / len(em)
+    peer_hi = float((em.code == "99215").mean()) if len(em) else 0.0
     flag_pm = g[(g.n >= 12) & (g.hi >= max(.30, 3 * peer_hi))]
     em = L[L.code.isin(EM_HIGH) & (L.pos == "11")].assign(ym=lambda x: x.service_date.dt.to_period("M")).reset_index() \
         .merge(flag_pm.reset_index()[["provider_id", "ym"]].assign(_f=1), on=["provider_id", "ym"], how="left")
@@ -108,7 +108,8 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
     mark("UPCODE", t.index, [f"90837 requires ≥53 min; documented {int(x)} min" for x in t.duration_min])
     # ambulance ALS share
     am = L[L.family == "AMB"]
-    sh = am[am.code.isin(["A0427", "A0428"])].groupby("provider_id").apply(lambda x: (x.code == "A0427").mean(), include_groups=False)
+    amc = am[am.code.isin(["A0427", "A0428"])]
+    sh = (amc.code == "A0427").groupby(amc.provider_id).mean() if len(amc) else pd.Series(dtype=float)
     hi_amb = sh[(sh > .75) & (am.groupby("provider_id").size().reindex(sh.index) > 40)].index
     am_x = am[am.provider_id.isin(hi_amb) & (am.code == "A0427")]
     mark("UPCODE", am_x.index, [f"ALS-level transport; provider's ALS share {sh[p] * 100:.0f}% vs ~45% peer" for p in am_x.provider_id])

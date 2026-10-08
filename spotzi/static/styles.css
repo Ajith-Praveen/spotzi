@@ -103,3 +103,44 @@ pre{background:var(--sunk);border:1px solid var(--line);border-radius:6px;paddin
 .cutrow td{padding:2px 10px;border:0;font-size:11px;color:var(--red);font-weight:600;background:var(--red-bg)}
 @media print{aside,.noprint,.tabs{display:none!important}#app{display:block}main{padding:0}.card{box-shadow:none}}
 main,.grid>*{min-width:0}
+#offbar{position:sticky;top:0;z-index:50;background:#7C2D12;color:#fff;padding:8px 16px;font-size:12.5px}
+#updbar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px;z-index:60;font-size:12.5px;display:flex;gap:10px;align-items:center}
+#updbar .btn{background:#fff;color:var(--ink)}
+body.offline .btn.pri,body.offline [data-reveal],body.offline #mkbp,body.offline #submitDec,body.offline [data-wiki],body.offline #upgo{pointer-events:none;opacity:.4}
+
+/* network graph */
+.graph.net{border:0;border-radius:0;background:#FCFCFB;background-image:radial-gradient(#ECEAE7 1px,transparent 1px);background-size:20px 20px}
+.graph.net .nl{font-size:11.5px;font-weight:550;fill:#27272A;paint-order:stroke;stroke:#FCFCFB;stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.graph.net .nl.sm2{font-size:10px;font-weight:500;fill:#57534E}
+.graph.net .badge{font-size:9.5px;font-weight:650;fill:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;pointer-events:none}
+.graph.net .hull-l{font-size:10px;letter-spacing:1.4px;font-weight:650;fill:#B91C1C;fill-opacity:.55;pointer-events:none}
+.graph.net .node{cursor:pointer;transition:opacity .15s}
+.graph.net .node.prov:hover>circle:nth-child(3){stroke:#18181B;stroke-width:2}
+.graph.net .node.dim{opacity:.16}
+.graph.net .edge{transition:opacity .15s}
+.graph.net .edge.dim{opacity:.06}
+.graph.net .edge.hot{opacity:1;stroke-width:2.6}
+.graph.net .gctl{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.graph.net .gctl button{border:0;background:#fff;width:30px;height:28px;cursor:pointer;font-size:15px;color:var(--ink2)}
+.graph.net .gctl button+button{border-top:1px solid var(--line)}
+.graph.net .gctl button:hover{background:var(--sunk)}
+.graph.net .gtip{position:absolute;display:none;width:236px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;box-shadow:0 8px 24px rgba(24,24,27,.12);pointer-events:none;z-index:5}
+.graph.net .gpanel{position:absolute;display:none;right:54px;top:12px;width:250px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(24,24,27,.14);z-index:6}
+.graph.net .gx{position:absolute;right:8px;top:6px;border:0;background:none;font-size:18px;cursor:pointer;color:var(--mut)}
+.graph.net .gstats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 6px}
+.graph.net .gstats div{background:var(--sunk);border-radius:6px;padding:5px 6px}
+.graph.net .gstats span{display:block;font-size:10px;color:var(--mut)}
+.graph.net .gstats b{font-size:15px;font-variant-numeric:tabular-nums}
+.graph.net .gstats em{display:block;font-style:normal;font-size:10px;color:var(--mut)}
+.gleg{font-size:11px;color:var(--ink2);padding:9px 14px;border-top:1px solid var(--line);background:#fff}
+.gleg svg{flex:none}
+.badge-l{background:#18181B;color:#fff;border-radius:8px;padding:0 5px;font-size:9.5px;font-family:ui-monospace,Menlo,monospace}
+
+.graph.net .cn{font-size:12px;font-weight:600;fill:#18181B;pointer-events:none}
+.graph.net .cs{font-size:10.5px;fill:#78716C;pointer-events:none}
+.graph.net .rk{font-size:11px;font-weight:700;fill:#fff;font-variant-numeric:tabular-nums;pointer-events:none}
+.graph.net .et{font-size:10.5px;font-weight:550;fill:#57534E;font-family:"SF Mono",ui-monospace,Menlo,monospace;pointer-events:none}
+.graph.net .node.card:hover>rect:first-child,.graph.net .node.tile:hover>rect:first-child{stroke:#18181B;stroke-width:1.6}
+.rkl{color:#fff;border-radius:4px;padding:0 5px;font-size:10px;font-weight:600}
+.casel{display:inline-block;width:18px;height:11px;border:1.5px solid #18181B;border-radius:3px;background:#fff}
+.tilel{display:inline-block;width:11px;height:11px;border:1px solid #D6D3D1;border-radius:3px;background:#fff;box-shadow:inset 0 -2px 0 #A8A29E}

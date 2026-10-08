@@ -4,7 +4,7 @@
 
 **Every claim, member, provider, employee/investigator persona, facility, location, relationship, and investigation record used by the prototype is synthetic.** Public technical documentation may inform the design; public real-person or real-provider records are not input datasets. Do not scrape provider directories or use de-identified production claims as a shortcut.
 
-The generator is the default data source. A bundled demo is fully offline and deterministic for a seed. Optional Synthea-derived synthetic clinical context can be adapted later, but it does not supply validated FWA labels or all payer billing relationships. Synthea generates fictional health records; ClaimShield still needs its own claim lifecycle, network, and scenario simulation. [Synthea overview](https://synthetichealth.github.io/about.html).
+The generator is the default data source. A bundled demo is fully offline and deterministic for a seed. Optional Synthea-derived synthetic clinical context can be adapted later, but it does not supply validated FWA labels or all payer billing relationships. Synthea generates fictional health records; SpotZ^i still needs its own claim lifecycle, network, and scenario simulation. [Synthea overview](https://synthetichealth.github.io/about.html).
 
 Any adapter must validate the provenance of every exported table independently. Do not assume synthetic patient records imply that associated provider, organization, or location reference files are fictional. Replace any real-world reference entities with generated fictional equivalents and remap all keys before import; otherwise exclude that adapter from the synthetic-only prototype.
 

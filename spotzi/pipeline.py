@@ -26,17 +26,59 @@ MODEL_VERSION = "nexus-models-1.0"
 
 
 # ---------------------------------------------------------------- load + validate
+REQUIRED = {
+    "claim_lines": ["line_id", "claim_id", "member_id", "provider_id", "family", "service_date", "code", "units", "paid"],
+    "providers": ["provider_id", "name", "family"],
+    "members": ["member_id", "age"],
+}
+OPTIONAL = {
+    "referrals": ["referral_id", "referring_provider_id", "receiving_provider_id", "member_id", "referral_date", "service_family"],
+    "relationships": ["entity_a", "entity_b", "relationship_type", "source"],
+    "investigations": ["investigation_id", "provider_id", "opened_date", "closed_date", "outcome", "recovered_amount"],
+    "inpatient_stays": ["stay_id", "member_id", "admit_date", "discharge_date", "facility_id"],
+    "facilities": ["facility_id", "name", "city"],
+}
+LINE_DEFAULTS = dict(service_end_date=None, paid_date=None, billed=None, pos="11", dx=None, modifier="", start_min=540, duration_min=0, referring_provider_id=None, facility_id=None, line_no=1)
+
+
+def _opt(d, name, **kw):
+    f = d / f"{name}.csv"
+    return pd.read_csv(f, **kw) if f.exists() else pd.DataFrame(columns=OPTIONAL[name])
+
+
 def load_tables(data_dir=DATA):
     d = Path(data_dir)
     t = {}
-    t["lines"] = pd.read_csv(d / "claim_lines.csv", dtype={"code": str, "pos": str, "modifier": str}, parse_dates=["service_date", "service_end_date", "paid_date"])
-    t["providers"] = pd.read_csv(d / "providers.csv").fillna({"context_note": ""})
-    t["members"] = pd.read_csv(d / "members.csv", parse_dates=["enroll_date", "term_date", "death_date"])
-    t["referrals"] = pd.read_csv(d / "referrals.csv")
-    t["relationships"] = pd.read_csv(d / "relationships.csv")
-    t["investigations"] = pd.read_csv(d / "investigations.csv")
-    t["stays"] = pd.read_csv(d / "inpatient_stays.csv", parse_dates=["admit_date", "discharge_date"])
-    t["facilities"] = pd.read_csv(d / "facilities.csv")
+    L = pd.read_csv(d / "claim_lines.csv", dtype={"code": str, "pos": str, "modifier": str})
+    for k, v in LINE_DEFAULTS.items():
+        if k not in L: L[k] = v
+    L["service_date"] = pd.to_datetime(L.service_date)
+    L["service_end_date"] = pd.to_datetime(L.service_end_date).fillna(L.service_date)
+    L["paid_date"] = pd.to_datetime(L.paid_date).fillna(L.service_end_date + pd.Timedelta(days=21))
+    L["billed"] = L.billed.fillna(L.paid)
+    t["lines"] = L
+    P = pd.read_csv(d / "providers.csv")
+    for k, v in dict(specialty="Unknown", city="Unknown", context_note="", npi="", org_id=None, address_id=None, bank_id=None).items():
+        if k not in P: P[k] = v
+    P["context_note"] = P.context_note.fillna(""); P["city"] = P.city.fillna("Unknown"); P["specialty"] = P.specialty.fillna("Unknown")
+    P["org_id"] = P.org_id.fillna("ORG-" + P.provider_id); P["address_id"] = P.address_id.fillna("ADDR-" + P.provider_id); P["bank_id"] = P.bank_id.fillna("BANK-" + P.provider_id)
+    t["providers"] = P
+    M = pd.read_csv(d / "members.csv")
+    for k, v in dict(sex="U", plan="Unknown", region="Unknown", enroll_date=None, term_date=None, death_date=None, vulnerable=None, pcp=None).items():
+        if k not in M: M[k] = v
+    for k in ("enroll_date", "term_date", "death_date"): M[k] = pd.to_datetime(M[k])
+    M["vulnerable"] = M.vulnerable.fillna((M.age >= 65) | (M.plan == "Medicaid")).astype(bool)
+    t["members"] = M
+    t["referrals"] = _opt(d, "referrals")
+    rel = _opt(d, "relationships")
+    if rel.empty:  # derive ownership / address / bank links from provider master data
+        rel = pd.concat([pd.DataFrame({"entity_a": P.provider_id, "entity_b": P[c], "relationship_type": t_, "source": "providers.csv"})
+                         for c, t_ in (("org_id", "owned_by"), ("address_id", "located_at"), ("bank_id", "paid_to_account"))], ignore_index=True)
+    t["relationships"] = rel
+    t["investigations"] = _opt(d, "investigations")
+    t["stays"] = _opt(d, "inpatient_stays", parse_dates=["admit_date", "discharge_date"])
+    t["stays"]["admit_date"] = pd.to_datetime(t["stays"].admit_date); t["stays"]["discharge_date"] = pd.to_datetime(t["stays"].discharge_date)
+    t["facilities"] = _opt(d, "facilities")
     tp = d.parent / "hidden" / "scenario_truth.csv"
     t["truth"] = pd.read_csv(tp) if tp.exists() else None
     return t
@@ -135,7 +177,11 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
     step("Isolation Forest", "provider anomaly percentile within family peers")
 
     # ---- forecast ----
-    fc = A.train_forecasts(panel, prov_family, truth_lines if truth_lines is not None else pd.DataFrame(columns=["provider_id", "service_date"]), END)
+    if truth_lines is not None and len(truth_lines):
+        fc = A.train_forecasts(panel, prov_family, truth_lines, END)
+    else:  # no outcome labels: never invent a probability
+        fc = dict(metrics={}, pred={}, why={}, calibration={}, model_choice=dict(chosen="unavailable", cv_logloss={}, train_anchors=0, eval_anchors=0, cut="-", eval_from="-",
+                  reason="No confirmed-outcome labels in this dataset; forecasts are unavailable until outcomes accumulate."))
     step("Forecast models", f"discrete-time hazard · chosen {fc['model_choice']['chosen']} · purged temporal holdout")
 
     # ---- provider table (lookback window) ----
@@ -199,7 +245,7 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
     # low-volume guard: no case from tiny providers
     PT.loc[PT.n_lines < 15, "risk"] *= .5
     for h in (30, 60, 90):
-        PT[f"fc{h}"] = pd.Series({p: v.get(h, 0) for p, v in fc["pred"].items()})
+        PT[f"fc{h}"] = pd.Series({p: v.get(h, 0) for p, v in fc["pred"].items()}, dtype=float).reindex(PT.index)
     PT["escalation"] = X_end.escalation.reindex(PT.index).fillna(0)
     PT["flag_paid30"] = X_end.flag_paid30.reindex(PT.index).fillna(0)
     own_metrics = None
@@ -233,11 +279,12 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
                calibration=fc["calibration"], model_choice=fc["model_choice"], seconds=round(time.time() - t0, 1))
     run["own_model"] = own_metrics
     run["sentinel_fit"] = sen_fit
-    return dict(run=run, paths=paths, change_points=cps, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
+    ctx = (L, PT, G, H, T, detail, fc, adrivers, END, ties)
+    return dict(run=run, build_ctx=ctx, base_cases=cases, paths=paths, change_points=cps, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
 
 
 # ---------------------------------------------------------------- case construction
-def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
+def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
     W = L[L.service_date > END - pd.Timedelta(days=LOOKBACK)]
     primary = set(PT.index[(PT.risk >= PRIMARY_RISK) | ((PT.brain >= .9) & (PT.n_lines >= 30))])
     groups, seen = [], set()
@@ -250,10 +297,14 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
         groups.append(([p], [p]))
     cases = []
     inv = T["investigations"]
-    for prim, comp in groups:
+    if forced is not None:
+        groups = [(sorted(f["primary"]), sorted(f["providers"]), f["case_id"]) for f in forced]
+    else:
+        groups = [(pr, cp, None) for pr, cp in groups]
+    for prim, comp, forced_id in groups:
         sub = W[W.provider_id.isin(prim) & W.any_flag]
         brain_lead = all(PT.at[p, "risk"] < PRIMARY_RISK for p in prim)
-        if sub.empty and not brain_lead: continue
+        if sub.empty and not brain_lead and forced_id is None: continue
         fam = sorted({PT.at[p, "family"] for p in prim})
         rule_counts = {k: int(sub[f"f_{k}"].sum()) for k in RULES if sub[f"f_{k}"].sum() > 0}
         rule_paid = {k: float(sub.loc[sub[f"f_{k}"], "paid"].sum()) for k in rule_counts}
@@ -284,7 +335,7 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
         if benign_ctx: ev -= 22
         ev = float(np.clip(ev, 5, 98))
         risk = float(max(max(PT.at[p, "risk"], 80 * PT.at[p, "brain"] if brain_lead else 0) for p in prim))
-        fcs = {h: float(max(PT.at[p, f"fc{h}"] for p in prim)) for h in (30, 60, 90)}
+        fcs = {h: (float(np.nanmax([PT.at[p, f"fc{h}"] for p in prim])) if PT.loc[prim, f"fc{h}"].notna().any() else None) for h in (30, 60, 90)}
         why = {}
         for h in (30, 60, 90):
             top = max(prim, key=lambda p: PT.at[p, f"fc{h}"])
@@ -297,7 +348,7 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
         title = PT.at[top_prov, "name"] + (f" + {len(comp) - 1} linked" if net else "")
         rules_sorted = [] if brain_lead else sorted(rule_counts, key=lambda k: -rule_paid[k])  # stray hits do not steer a learned-detector lead
         ctype = case_type(rules_sorted, fam, net) if not brain_lead else "Behaviour shift found by learned detectors (no rule fired)"
-        cid = f"CS-{pid_num:04d}"
+        cid = forced_id or f"CS-{pid_num:04d}"
         lane = "Investigate"
         if brain_lead: lane = "Brain lead"
         elif ev < 35: lane = "Needs more data"
@@ -360,7 +411,9 @@ def ego_graph(S, provider_ids, extra_hops=True, limit=16):
     ent = {}
     for n in sub.nodes:
         d = G.nodes[n]
-        nd.append(dict(id=n, label=d["label"], kind="provider", family=d["family"], risk=float(PT.at[n, "risk"]), primary=n in provider_ids, city=d["city"]))
+        nd.append(dict(id=n, label=d["label"], kind="provider", family=d["family"], risk=float(PT.at[n, "risk"]), primary=n in provider_ids, city=d["city"],
+                       lines=int(PT.at[n, "n_lines"]), paid=float(PT.at[n, "paid"]), brain=float(PT.at[n, "brain"]) if "brain" in PT else None,
+                       rule=float(PT.at[n, "rule_score"]), anomaly=float(PT.at[n, "anomaly_pct"])))
     for a, b, d in sub.edges(data=True):
         for m in d["multi"]:
             if m["kind"] in ("ownership", "address", "bank"):
@@ -387,22 +440,72 @@ def network_payload(G, H, PT, comms, L):
     cid = {}
     for i, c in enumerate(comms):
         for p in c: cid[p] = i
-    # lay out every connected component separately and tile them on a grid
+    # community-aware layout: each component is laid out as communities-of-nodes, given room by size, then shelf-packed
     comps = sorted([c for c in nx.connected_components(G) if len(c) > 1], key=lambda c: -len(c))
-    ncol = max(1, int(np.ceil(np.sqrt(len(comps)))))
-    pos = {}
-    for i, c in enumerate(comps):
+    boxes = []
+
+    def _sep(local, d=1.25, iters=80):   # guarantee a minimum distance between nodes
+        ks = list(local); P_ = np.array([local[k] for k in ks], float)
+        for _ in range(iters):
+            moved = False
+            for i in range(len(P_)):
+                dv = P_ - P_[i]; dist = np.hypot(dv[:, 0], dv[:, 1]); dist[i] = 1e9
+                close = dist < d
+                if close.any():
+                    moved = True
+                    push = (dv[close] / np.maximum(dist[close], 1e-3)[:, None]) * (d - dist[close])[:, None] * .5
+                    P_[close] += push; P_[i] -= push.sum(axis=0) * .5
+            if not moved: break
+        return {k: tuple(P_[j]) for j, k in enumerate(ks)}
+
+    for c in comps:
         sub = G.subgraph(c)
-        lp = A.layout(sub, seed=2)
-        xs = np.array([v[0] for v in lp.values()]); ys = np.array([v[1] for v in lp.values()])
-        sx = (xs.max() - xs.min()) or 1; sy = (ys.max() - ys.min()) or 1
-        span = 0.45 + 0.55 * min(1.0, len(c) / 12)
-        for n, (x, y) in lp.items():
-            pos[n] = ((i % ncol) + .5 + ((x - xs.min()) / sx - .5) * span * .9, (i // ncol) + .5 + ((y - ys.min()) / sy - .5) * span * .9)
+        if len(c) <= 8:
+            lp = A.layout(sub, seed=2); R = 1.6 * np.sqrt(len(c))
+            xs = np.array([v[0] for v in lp.values()]); ys = np.array([v[1] for v in lp.values()])
+            s_ = max(xs.max() - xs.min(), ys.max() - ys.min()) or 1
+            local = {n: ((x - xs.min()) / s_ * 2 * R, (y - ys.min()) / s_ * 2 * R) for n, (x, y) in lp.items()}
+        else:
+            groups = {}
+            for n in c: groups.setdefault(cid.get(n, f"solo-{n}"), []).append(n)
+            meta = nx.Graph(); meta.add_nodes_from(groups)
+            owner = {n: g for g, ms in groups.items() for n in ms}
+            for u, v in sub.edges():
+                if owner[u] != owner[v]:
+                    w = meta[owner[u]][owner[v]]["weight"] + 1 if meta.has_edge(owner[u], owner[v]) else 1
+                    meta.add_edge(owner[u], owner[v], weight=w)
+            rad = {g: 1.15 * np.sqrt(len(ms)) + .6 for g, ms in groups.items()}
+            mp = nx.spring_layout(meta, seed=4, k=2.2 / np.sqrt(max(len(meta), 1)), iterations=300, weight="weight") if len(meta) > 1 else {next(iter(groups)): (0, 0)}
+            # scale group centres so the largest groups do not collide
+            scale = 2.6 * max(rad.values()) / max(1e-6, min([np.hypot(*(np.array(mp[a_]) - np.array(mp[b_]))) for a_ in mp for b_ in mp if a_ != b_] or [1]))
+            scale = min(scale, 6 * max(rad.values()))
+            local = {}
+            for g, ms in groups.items():
+                gx, gy = np.array(mp[g]) * scale
+                if len(ms) == 1:
+                    local[ms[0]] = (gx, gy); continue
+                lp = A.layout(G.subgraph(ms), seed=5) if nx.is_connected(G.subgraph(ms)) else nx.circular_layout(G.subgraph(ms))
+                xs = np.array([v[0] for v in lp.values()]); ys = np.array([v[1] for v in lp.values()])
+                s_ = max(xs.max() - xs.min(), ys.max() - ys.min()) or 1
+                for n, (x, y) in lp.items():
+                    local[n] = (gx + (x - (xs.min() + xs.max()) / 2) / s_ * 2 * rad[g], gy + (y - (ys.min() + ys.max()) / 2) / s_ * 2 * rad[g])
+        local = _sep(local)
+        xs = np.array([v[0] for v in local.values()]); ys = np.array([v[1] for v in local.values()])
+        local = {n: (x - xs.min(), y - ys.min()) for n, (x, y) in local.items()}
+        boxes.append((local, xs.max() - xs.min() + 2.4, ys.max() - ys.min() + 2.4))
+    total = sum(w * h for _, w, h in boxes) or 1
+    row_w = max(max((w for _, w, _ in boxes), default=1), np.sqrt(total) * 1.6)   # landscape canvas
+    pos, cx, cy, rh = {}, 0.0, 0.0, 0.0
+    for local, w, h in boxes:
+        if cx + w > row_w and cx > 0: cx, cy, rh = 0.0, cy + rh, 0.0
+        for n, (x, y) in local.items(): pos[n] = (cx + x + 1.2, cy + y + 1.2)
+        cx += w; rh = max(rh, h)
     for n in G.nodes:
         if n not in pos: continue
         d = G.nodes[n]
-        nodes.append(dict(id=n, label=d["label"], family=d["family"], risk=float(PT.at[n, "risk"]), community=cid.get(n, -1), x=pos[n][0], y=pos[n][1], degree=G.degree(n)))
+        nodes.append(dict(id=n, label=d["label"], family=d["family"], risk=float(PT.at[n, "risk"]), community=cid.get(n, -1), x=pos[n][0], y=pos[n][1], degree=G.degree(n),
+                          lines=int(PT.at[n, "n_lines"]), paid=float(PT.at[n, "paid"]), city=d["city"], brain=float(PT.at[n, "brain"]) if "brain" in PT else None,
+                          rule=float(PT.at[n, "rule_score"]), anomaly=float(PT.at[n, "anomaly_pct"])))
     edges = []
     for a, b, d in G.edges(data=True):
         kinds = sorted({m["kind"] for m in d["multi"]})

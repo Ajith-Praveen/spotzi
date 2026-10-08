@@ -1,4 +1,4 @@
-"""Score ClaimShield providers with the Kaggle-trained model (relative-feature transfer)."""
+"""Score SpotZ^i providers with the Kaggle-trained model (relative-feature transfer)."""
 from __future__ import annotations
 
 import json
@@ -26,7 +26,7 @@ def metrics():
 
 def score(L, members, providers) -> tuple[pd.Series, pd.DataFrame]:
     bundle = joblib.load(HERE / "model.joblib")
-    f, fam = F.from_claimshield(L, members, providers)
+    f, fam = F.from_spotzi(L, members, providers)
     Xn = F.rank_norm(f, fam)[bundle["features"]]
     p = .5 * bundle["lr"].predict_proba(Xn)[:, 1] + .5 * bundle["gb"].predict_proba(Xn)[:, 1]
     return pd.Series(p, index=Xn.index), Xn

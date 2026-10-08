@@ -46,7 +46,7 @@ References were checked during blueprint preparation on 8 October 2026. They sup
 |---|---|---|
 | [CMS Medicare NCCI overview](https://www.cms.gov/medicare/coding-billing/national-correct-coding-initiative-ncci-edits) | Understand coding-edit context and program-specific applicability | Do not copy a rule into every service family or payer context |
 | [CMS NCCI FAQ](https://www.cms.gov/medicare/coding-billing/national-correct-coding-initiative-ncci-edits/medicare-ncci-faq-library) | Distinguish coding indicators, modifier exceptions, and medical-necessity decisions | Demo thresholds remain fictional |
-| [Synthea overview](https://synthetichealth.github.io/about.html) | Optional synthetic clinical-context generation | Does not provide ClaimShield's scenario truth or network labels |
+| [Synthea overview](https://synthetichealth.github.io/about.html) | Optional synthetic clinical-context generation | Does not provide SpotZ^i's scenario truth or network labels |
 | [Synthea repository](https://github.com/synthetichealth/synthea) | Future adapter implementation reference | Review configuration and outputs before use |
 | [scikit-learn IsolationForest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html) | Outlier scoring API and score semantics | Anomaly score is not probability of fraud |
 | [scikit-learn probability calibration](https://scikit-learn.org/stable/modules/calibration.html) | Calibration design and reliability assessment | Validate on the actual synthetic evaluation distribution |

@@ -19,6 +19,8 @@ STATUS_FROM_OUTCOME = {
 
 def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None, sb=None, brain=None):
     w = {**DEFAULT_WEIGHTS, **(weights or {})}
+    if all(c["forecast"].get(horizon) is None for c in S["cases"]):
+        w["forecast"] = 0.0  # forecasts unavailable: weight redistributed, never guessed
     tw = sum(w.values()) or 1
     cs = S["cases"]
     mx_d = max(np.log1p(c["exposure"]) for c in cs) or 1
@@ -35,14 +37,14 @@ def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None, sb=None,
         ev_now = float(np.clip(c["evidence"] + ev_adj, 0, 100))
         bscore = max(float(brain[p]) for p in c["primary"]) if brain is not None else None
         risk_eff = c["risk"] / 100 if bscore is None else .65 * c["risk"] / 100 + .35 * bscore
-        comp = dict(risk=risk_eff, forecast=c["forecast"][horizon], dollars=np.log1p(c["exposure"]) / mx_d,
+        comp = dict(risk=risk_eff, forecast=c["forecast"].get(horizon) or 0.0, dollars=np.log1p(c["exposure"]) / mx_d,
                     members=np.log1p(c["members"] + .5 * c["vulnerable"]) / mx_m, severity=c["severity"] / 100, evidence=ev_now / 100)
         pr = 100 * sum(w[k] * comp[k] for k in w) / tw
         gate = .65 if c["lane"] == "Needs more data" else .9 if c["lane"] in ("Validate context first", "Brain lead") else 1.0
         rows.append(dict(case_id=c["case_id"], title=c["title"], type=c["type"], priority=round(pr * gate, 1), raw_priority=round(pr, 1), gate=gate,
                          components={k: round(100 * comp[k], 1) for k in comp},
                          contributions={k: round(100 * w[k] * comp[k] / tw, 1) for k in w},
-                         risk=round(c["risk"], 1), forecast=round(100 * c["forecast"][horizon], 1), exposure=round(c["exposure"], 0),
+                         risk=round(c["risk"], 1), forecast=(round(100 * c["forecast"][horizon], 1) if c["forecast"].get(horizon) is not None else None), exposure=round(c["exposure"], 0),
                          members=c["members"], vulnerable=c["vulnerable"], severity=round(c["severity"], 1),
                          severity_label="Critical" if c["severity"] >= 85 else "High" if c["severity"] >= 65 else "Medium",
                          evidence=round(ev_now, 1), second_brain=sb_view, brain=bscore, lane=c["lane"], effort_hours=c["effort_hours"], families=c["families"],
@@ -231,7 +233,7 @@ def brief_markdown(d, decisions=None):
          "## Summary", d["summary"], "",
          "## Key numbers", f"- Risk {m['risk']:.0f}/100 · Severity {m['severity']:.0f}/100 · Evidence strength {m['evidence']:.0f}/100",
          f"- Gross flagged exposure {_fmt_money(m['exposure'])} (not a recovery estimate) · {m['members']} members ({m['vulnerable']} vulnerable) · est. {m['effort_hours']} review hours",
-         f"- Forecast chance of repeat/escalating FWA: 30d {d['forecast'][30]['p'] * 100:.0f}% · 60d {d['forecast'][60]['p'] * 100:.0f}% · 90d {d['forecast'][90]['p'] * 100:.0f}%", "",
+         ("- Forecast chance of repeat/escalating FWA: " + " · ".join(f"{h}d {d['forecast'][h]['p'] * 100:.0f}%" for h in (30, 60, 90)) if d['forecast'][30]['p'] is not None else "- Forecast unavailable (no outcome labels yet)"), "",
          "## Evidence"]
     for e in d["evidence"]:
         o.append(f"### {e['id']} {e['label']} — {e['strength']}")

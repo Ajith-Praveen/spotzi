@@ -22,8 +22,17 @@ SpotZ^i turns thousands of unexplained claim alerts into a short, ranked list of
 
 ### Run it
 ```bash
-pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy
-cd claimshield && python3 server.py        # → http://localhost:8000
+pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy python-multipart "psycopg[binary]"
+cd spotzi && ./start.sh               # starts local PostgreSQL (port 5544) + SpotZ^i → http://localhost:8000
+./stop.sh                                  # stops both
+```
+**Storage.** SpotZ^i runs on **PostgreSQL 16** (project-local cluster in `spotzi/data/pg`, SCRAM-SHA-256 password auth, listening on 127.0.0.1 only). Connection settings live in `spotzi/data/db.env` (owner-readable, git-ignored); point `SPOTZI_DB_URL` at any managed Postgres to move it. Without `SPOTZI_DB_URL` it falls back to a single SQLite file for laptops and quick demos. `migrate_to_postgres.py` copies an existing SQLite database into Postgres.
+On first start SpotZ^i creates five local demo accounts (2 investigators, 1 supervisor, 1 analyst, 1 admin) with random passwords, written only to `spotzi/data/seed_users.json` (owner-readable). Sign in with one of them; change or remove them for any shared deployment.
+
+### Test it
+```bash
+cd spotzi && python3 -m unittest discover -s tests -v                               # SQLite, ~85 s
+cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests -v  # PostgreSQL (separate spotzi_test database)
 ```
 
 ---
@@ -44,7 +53,39 @@ cd claimshield && python3 server.py        # → http://localhost:8000
 
 ---
 
-## 3. Data layer
+## 3. Access, roles and case management
+
+**Sign-in and roles.** Local accounts with PBKDF2-hashed passwords (200,000 rounds) and HttpOnly, SameSite-strict session cookies (12-hour expiry). Every `/api` call requires a session. The server stamps the signed-in user's name and role on every action — a client cannot act as someone else.
+
+| Permission | Investigator | Supervisor | Analyst | Admin |
+|---|:-:|:-:|:-:|:-:|
+| Record case decisions, run evidence checks, notes, blueprints | ✓ | ✓ | | ✓ |
+| Approve / reject referrals (must differ from recommender) | | ✓ | | ✓ |
+| Assign cases | | ✓ | | ✓ |
+| Approve knowledge updates | | ✓ | ✓ | ✓ |
+| Quality-approve precedents (must differ from decision-maker) | | ✓ | | ✓ |
+| Run models, upload data, switch datasets | | | ✓ | ✓ |
+| Manage users (create, role, deactivate, reset password) | | | | ✓ |
+
+**Two-factor sign-in (TOTP).** Works with any authenticator app; ±30-second window, each code usable once (replay-protected), 8 single-use recovery codes. Admins choose which roles must use it; users in those roles must enrol before anything else works. Admins can reset a user's two-factor. Verified against the RFC 6238 test vectors.
+
+**Single sign-on (OpenID Connect).** Authorization-code flow with PKCE, single-use state and nonce, ID-token signature verified (RS256 via the identity provider's published keys), issuer / audience / expiry checked. Users must already exist in SpotZ^i (matched by work email) — the identity provider proves who you are; SpotZ^i still decides your role. Configure with `SPOTZI_OIDC_ISSUER`, `SPOTZI_OIDC_CLIENT_ID`, `SPOTZI_OIDC_CLIENT_SECRET` (optional `SPOTZI_OIDC_REDIRECT`, `SPOTZI_OIDC_LABEL`). Tested end-to-end against a simulated identity provider; not yet tried with a live one.
+
+**Security hardening.** Strict Content-Security-Policy (no inline scripts), no framing, no-sniff, no-referrer, `no-store` on API responses; cross-site writes blocked by origin check; a client/server contract version stops an outdated browser tab from submitting decisions ("refresh first").
+
+**Settings** (every user): two-factor setup, password change, notification preferences. Admins also get the two-factor policy, SSO status and the delivery outbox.
+
+**My work** (home screen, per user): my assigned cases with due dates and overdue flags; for supervisors — referral approvals waiting, unassigned cases, team workload, precedent quality review; for analysts — knowledge review count; notifications for assignments, notes and approval requests.
+
+**Email and Slack notifications.** Every in-app notification can also go to email (SMTP) and/or a Slack-compatible webhook, if the user opts in. Messages carry only case IDs and actions — never provider or member names, scores or outcomes — and link back to SpotZ^i, which requires sign-in. A durable outbox retries failures with exponential back-off (5 attempts) and shows status to admins. Configure `SPOTZI_SMTP_HOST/PORT/USER/PASSWORD/FROM`, `SPOTZI_SLACK_WEBHOOK`, `SPOTZI_BASE_URL`.
+
+**Case split and merge.** Supervisors can merge cases that belong together or split providers into their own case, with a written reason. Edits are stored, replayed on every analysis run, can be undone, and are audited; a merged-away case ID points to its successor.
+
+**Case management:** supervisors assign a case to an investigator with a due date (default 10 days); assignee shown in the queue; working notes on each case (member identifiers require explicit confirmation); in-app notifications.
+
+**Users & roles** (admin): create users, change roles, deactivate (ends all sessions), reset passwords; users can change their own password.
+
+## 4. Data layer
 
 | Table | Contents |
 |---|---|
@@ -69,11 +110,15 @@ cd claimshield && python3 server.py        # → http://localhost:8000
 | **S9 recruitment mill (held-out)** | sudden wave of out-of-region members, one templated visit + lab bundle each |
 | Decoys | oncology (legitimately high-level visits), dialysis lab (legitimate repeat labs), chain pharmacies (routine shared ownership) |
 
+**Bring your own data.** Analysts upload CSVs on *Data & pipeline*: `claim_lines`, `providers`, `members` (required) plus optional referrals, relationships, investigations, inpatient stays and facilities. Required files and columns are validated before anything runs; missing optional columns get safe defaults (e.g. ownership links are derived from provider master data). Without outcome labels SpotZ^i still detects, ranks, explains and reasons; forecasts show as **unavailable** (their queue weight is redistributed, never guessed), and evaluation and the evidence vault switch off. A test proves detection is identical with and without labels. One click switches back to the synthetic demo.
+
+**X12 837 claim files.** Upload 837 professional (837P) and institutional (837I) files directly — alone or alongside CSVs. The parser reads billing provider, taxonomy, subscriber/patient and demographics, claims, diagnoses, referring provider, service lines and dates, and inpatient admission/discharge; provider type comes from the taxonomy code, falling back to place of service. Malformed segments are reported, never silently dropped. Round-trip tested: 100% of codes, amounts, dates and provider types preserved. 837 carries billed charges only, so paid amounts equal billed until 835 remittance is added. Sample 837P/837I files can be downloaded from *Data & pipeline*.
+
 **Validation checks:** schema, unique IDs, provider and member foreign keys, non-negative amounts, date ranges, paid-after-service, diagnosis completeness, referral coverage, documented-time coverage, label isolation.
 
 ---
 
-## 4. AI models — the detection brain
+## 5. AI models — the detection brain
 
 All seven detectors are built and trained in-house on the claims themselves.
 
@@ -111,7 +156,7 @@ Detector weights start at expert priors and update from every recorded decision 
 
 ---
 
-## 5. The second brain — knowledge layer
+## 6. The second brain — knowledge layer
 
 SpotZ^i keeps a persistent, linked memory that improves with every approved update.
 
@@ -140,7 +185,7 @@ A traceable reasoning path for every case:
 
 ---
 
-## 6. Precedent Intelligence — where it is used
+## 7. Precedent Intelligence — where it is used
 
 Precedents are retrieved for every case and used in **three places**:
 
@@ -157,7 +202,7 @@ How it works:
 
 ---
 
-## 7. Evidence Challenge Lab
+## 8. Evidence Challenge Lab
 
 Helps the investigator test legitimate against suspicious explanations before deciding.
 
@@ -170,7 +215,7 @@ Helps the investigator test legitimate against suspicious explanations before de
 
 ---
 
-## 8. SIU queue & prioritisation
+## 9. SIU queue & prioritisation
 
 - Transparent priority: **risk 22 % · forecast 15 % · potential dollars 20 % · member impact 10 % · severity 15 % · evidence strength 18 %** — all adjustable live with sliders.
 - Case risk blends rule-based risk with the current (learned) Brain score.
@@ -181,18 +226,18 @@ Helps the investigator test legitimate against suspicious explanations before de
 
 ---
 
-## 9. Case workspace
+## 10. Case workspace
 
 | Tab | Contents |
 |---|---|
 | **Brief** | summary, recommended human action, confidence rationale, signal families, competing explanations, LLM second opinion (optional), AI narrative (optional), limitations |
-| **Decision chain** | the six-step reasoning path (§5) |
+| **Decision chain** | the six-step reasoning path (§6) |
 | **Evidence** | every rule finding with example lines and reasons, Isolation Forest drivers, Sentinel findings with improbable transitions, Brain fusion breakdown, behaviour change before→after, graph links, prior investigations, Kaggle model (if trained) — each with source |
 | **Network** | interactive ego graph (zoom, pan, click) + provider roles; linked providers may be innocent bystanders |
 | **Timeline** | monthly paid vs flagged; first-flag events; prior investigations |
 | **Forecast** | 30/60/90-day probability, drivers, held-out metrics |
-| **Challenge lab** | §7 |
-| **Precedents** | §6 + review blueprint |
+| **Challenge lab** | §8 |
+| **Precedents** | §7 + review blueprint |
 | **AI copilot** | optional grounded Q&A |
 | **Claims** | highest-anomaly flagged lines with rules and reasons |
 | **Decision** | outcome, rationale, role; history; four-eyes referral approval |
@@ -201,8 +246,9 @@ Helps the investigator test legitimate against suspicious explanations before de
 
 ---
 
-## 10. Other screens
+## 11. Other screens
 
+- **Installable app (PWA)** — installs as a standalone window. Offline it is read-only by design (doc 23): only the application shell is cached, never case data or tokens; an offline banner shows the run and as-of date; decisions, approvals and evidence checks are disabled and nothing is queued. Updates show "Update available" and apply only when the user chooses; caches are cleared at sign-out.
 - **Overview** — KPIs, user-journey strip, top priorities, alert-to-action funnel, flagged lines by rule, flagged dollars by family, monthly trend, synthetic self-check.
 - **Nexus Brain** — held-out test result, insight feed (leads, behaviour changes, detector disagreements, what it learned), detector weights prior → learned, ranking power per detector, highest-suspicion providers with driver breakdown.
 - **Knowledge** — search, approved pages by kind, review queue with lint, version history, page view with backlinks.
@@ -214,7 +260,7 @@ Helps the investigator test legitimate against suspicious explanations before de
 
 ---
 
-## 11. Human control & responsible AI
+## 12. Human control & responsible AI
 
 - The system recommends; **a named human decides** every outcome. No automated payment hold, provider contact or referral exists.
 - Decisions require a written rationale (≥15 characters).
@@ -226,10 +272,11 @@ Helps the investigator test legitimate against suspicious explanations before de
 - **Audit:** every run, decision, evidence check, blueprint edit, wiki approval and export is logged with run, ruleset and model versions.
 - **Fail safe:** failed validation or model steps keep the previous analysis live; optional AI layers degrade to deterministic output.
 - Work is keyed to a data fingerprint, so it survives restarts.
+- Every protected action is checked on the server by role; identity comes from the session, never from the request.
 
 ---
 
-## 12. Architecture
+## 13. Architecture
 
 ```
 gen.py ──► data/synthetic/*.csv ──► pipeline.py
@@ -243,28 +290,35 @@ server.py (FastAPI) ─┬─ briefs.py      (ranking, case detail, Markdown bri
                      ├─ precedents.py  (Precedent Intelligence)
                      ├─ knowledge.py   (wiki, lint, retrieval, decision chain)
                      ├─ llm.py         (optional LLM layer)
-                     └─ SQLite data/app.db (decisions, audit, lab events, blueprints, wiki, precedent quality)
+                     ├─ auth.py        (accounts, sessions, roles, TOTP two-factor, OIDC SSO)
+                     ├─ x12.py         (837P / 837I parser and exporter)
+                     ├─ notify.py      (email / Slack outbox)
+                     ├─ scope.py       (case split / merge)
+                     ├─ dbcompat.py    (one SQL API over PostgreSQL / SQLite)
+                     └─ PostgreSQL: decisions, audit, users, sessions, lab events, blueprints, wiki, precedents, notes, outbox, scope edits
 static/ (vanilla JS single-page app, no build step)
+tests/test_spotzi.py (28 product-guarantee tests, standard-library unittest)
 ```
 
-**Main API groups:** `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/secondbrain` · `/api/llm/status`.
+**Main API groups:** `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/secondbrain` · `/api/llm/status`.
 
 ---
 
-## 13. Honest limitations
+## 14. Honest limitations
 
 - **Synthetic only.** The scenarios were written with rules in mind, so rules look stronger than they would on real claims; all metrics are synthetic.
 - Rule thresholds and Challenge-Lab outcome probabilities are expert estimates, not measured.
 - The precedent library is simulated; real retrieval will be messier.
 - Peer baselines are by service family, not specialty; claims run-out is not modelled.
-- Storage is SQLite + in-memory analysis — suitable for one machine and a small team, not production scale.
-- No user authentication yet; the reviewer's name and role are self-declared.
+- Analysis runs in memory on one machine — fine for hundreds of thousands of lines, not for national payer volumes.
+- SSO is tested against a simulated identity provider only; offline/PWA install could not be verified in the embedded preview browser (it blocks service workers) and needs a check in Chrome or Edge.
+- Postgres runs as a single local instance; backups, replication and connection pooling are not set up yet.
 
-## 14. Roadmap
+## 15. Roadmap
 
-1. Postgres, authentication and role-based access for multi-user pilots.
-2. Real-claims ingestion (837 mapping) and data-quality monitoring.
+1. Managed Postgres (backups, replicas, pooling) and row-level / multi-tenant access.
+2. 835 remittance ingestion (paid amounts, reversals) and data-quality monitoring.
 3. Learning-to-rank from investigator outcomes; continuous-time care-pathway model.
 4. Precedent quality-review screen; automation-bias evaluation.
 5. Drift monitoring, model registry with human-approved promotion.
-6. Case split/merge, assignments, notifications, offline-capable PWA.
+6. Live identity-provider certification (Okta / Entra ID) and SCIM user provisioning.
