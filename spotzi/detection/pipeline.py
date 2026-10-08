@@ -28,7 +28,7 @@ PRIMARY_RISK = 35
 BRAIN_LEAD = .97   # a lead with no rule finding needs near-unanimous detector consensus (0.90 produced too many leads in large portfolios)
 PANEL_LEAD = .75   # patient-panel detector (recruitment typology) strong + fused score >= .9
 EXTRA_DEFAULT = ["temporal"]   # chosen by the ablation study (evaluation/engine.py): +temporal = best AP, no extra false leads
-MODEL_VERSION = "nexus-models-2.2"
+MODEL_VERSION = "nexus-models-2.3"
 
 
 # ---------------------------------------------------------------- load + validate
@@ -320,6 +320,10 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     step("Nexus Brain", f"change-point + code-mix + patient-panel detectors; fusion over {len(BR.DETECTORS)} detectors (prior weights)")
     aadj = ((PT.anomaly_pct - .5) / .5).clip(0, 1)
     sadj = ((PT.sentinel.fillna(.5) - .6) / .4).clip(0, 1)
+    # corrupted data must not manufacture suspicion: learned-detector contributions are weighted by data quality
+    dq_w = CS.data_quality(W).reindex(PT.index).fillna(1.0)
+    dq_w = ((dq_w - .3) / .6).clip(0, 1)
+    aadj, sadj = aadj * dq_w, sadj * dq_w
     PT["risk"] = (100 * (.50 * PT.rule_score + .15 * aadj + .20 * PT.graph_score + .15 * sadj)).clip(0, 100)
     # low-volume guard: no case from tiny providers
     PT.loc[PT.n_lines < 15, "risk"] *= .5

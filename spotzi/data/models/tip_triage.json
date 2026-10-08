@@ -31,7 +31,7 @@
   "Never decides anything \u2014 a tip is an allegation, not evidence."
  ],
  "name": "tip_triage",
- "trained": "2026-10-09 01:49:17",
+ "trained": "2026-10-09 02:06:28",
  "artifact": "tip_triage.joblib",
- "sha256": "38fb83d494ba20f9"
+ "sha256": "97dee7c69708df6e"
 }

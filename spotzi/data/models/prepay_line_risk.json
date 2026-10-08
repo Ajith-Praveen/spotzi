@@ -40,22 +40,22 @@
    "fraud_lines": 6218,
    "auc": 0.997,
    "ap": 0.979,
-   "rules_flagged": 5679,
-   "rules_precision": 0.818,
+   "rules_flagged": 5702,
+   "rules_precision": 0.815,
    "rules_recall": 0.747,
-   "model_precision_same_budget": 0.958,
-   "model_recall_same_budget": 0.875
+   "model_precision_same_budget": 0.957,
+   "model_recall_same_budget": 0.878
   },
   "held-out world (seed 202)": {
    "lines": 59268,
    "fraud_lines": 5974,
    "auc": 0.996,
    "ap": 0.976,
-   "rules_flagged": 5319,
-   "rules_precision": 0.82,
+   "rules_flagged": 5343,
+   "rules_precision": 0.816,
    "rules_recall": 0.73,
-   "model_precision_same_budget": 0.958,
-   "model_recall_same_budget": 0.853
+   "model_precision_same_budget": 0.956,
+   "model_recall_same_budget": 0.855
   }
  },
  "use": "Adds a line-risk probability and its local drivers to every pre-payment check. Recommendation only; a human resolves every pended claim.",
@@ -64,7 +64,7 @@
   "Training worlds share the generator's scheme templates; the public-data test is the stronger check."
  ],
  "name": "prepay_line_risk",
- "trained": "2026-10-09 01:48:11",
+ "trained": "2026-10-09 02:05:26",
  "artifact": "prepay_line_risk.joblib",
  "sha256": "069c82f3b0d30d28"
 }

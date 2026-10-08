@@ -19,7 +19,7 @@
      "ap": 0.963
     },
     "p_fraud": {
-     "auc": 0.966,
+     "auc": 0.965,
      "ap": 0.919
     },
     "outcome_p": {
@@ -199,65 +199,65 @@
   {
    "dataset": "held-out world 201",
    "providers": 132,
-   "fraudulent": 15,
-   "cases": 12,
+   "fraudulent": 16,
+   "cases": 13,
    "claim": {
-    "precision": 0.818,
+    "precision": 0.815,
     "recall": 0.747
    },
    "provider_detectors": {
     "risk": {
-     "auc": 0.998,
-     "ap": 0.983
+     "auc": 0.997,
+     "ap": 0.976
     },
     "brain": {
-     "auc": 0.995,
-     "ap": 0.965
+     "auc": 0.991,
+     "ap": 0.945
     },
     "p_fraud": {
-     "auc": 0.964,
-     "ap": 0.918
+     "auc": 0.992,
+     "ap": 0.938
     },
     "outcome_p": {
-     "auc": 1.0,
-     "ap": 1.0
+     "auc": 0.999,
+     "ap": 0.996
     },
     "rule_score": {
-     "auc": 0.963,
-     "ap": 0.922
+     "auc": 0.965,
+     "ap": 0.929
     },
     "anomaly_pct": {
-     "auc": 0.974,
-     "ap": 0.76
+     "auc": 0.97,
+     "ap": 0.75
     },
     "temporal_pct": {
-     "auc": 0.974,
-     "ap": 0.89
+     "auc": 0.953,
+     "ap": 0.851
     },
     "peer_pct": {
-     "auc": 0.768,
-     "ap": 0.536
+     "auc": 0.766,
+     "ap": 0.523
     },
     "drift_pct": {
-     "auc": 0.944,
-     "ap": 0.615
+     "auc": 0.928,
+     "ap": 0.596
     },
     "panel_pct": {
-     "auc": 0.733,
-     "ap": 0.547
+     "auc": 0.696,
+     "ap": 0.521
     }
    },
    "queue": {
     "@5": {
      "precision": 1.0,
-     "recall": 0.6
+     "recall": 0.562
     },
     "@10": {
      "precision": 1.0,
-     "recall": 1.0
+     "recall": 0.938
     },
     "@20": {
-     "precision": 0.909,
+     "precision": 0.917,
      "recall": 1.0
     }
    },
@@ -291,6 +291,10 @@
     "excessive_services": {
      "n": 2,
      "caught": 2
+    },
+    "excluded_provider": {
+     "n": 1,
+     "caught": 1
     },
     "impossible_timing": {
      "n": 1,
@@ -328,30 +332,31 @@
      "mean_independent_families": 1.33
     },
     "fraudulent": {
-     "n": 15,
-     "escalated": 15,
+     "n": 16,
+     "escalated": 16,
      "stage": {
       "Established pattern": 12,
       "Behavioural deviation": 2,
-      "Sustained anomaly": 1
+      "Sustained anomaly": 2
      },
      "consensus": {
       "High": 9,
-      "Moderate": 6
+      "Moderate": 6,
+      "Low": 1
      },
-     "mean_independent_families": 4.47
+     "mean_independent_families": 4.19
     },
     "legitimate": {
-     "n": 110,
+     "n": 109,
      "escalated": 0,
      "stage": {
-      "Normal": 72,
+      "Normal": 71,
       "Behavioural deviation": 27,
       "Emerging anomaly": 9,
       "Sustained anomaly": 2
      },
      "consensus": {
-      "Low": 107,
+      "Low": 106,
       "Moderate": 3
      },
      "mean_independent_families": 0.2
@@ -368,7 +373,7 @@
       "High": 1,
       "Moderate": 1
      },
-     "mean_independent_families": 1.5
+     "mean_independent_families": 1.75
     }
    },
    "case_precision_by_consensus": {
@@ -379,71 +384,75 @@
     "Moderate": {
      "cases": 4,
      "precision": 1.0
+    },
+    "Low": {
+     "cases": 1,
+     "precision": 1.0
     }
    }
   },
   {
    "dataset": "held-out world 202",
    "providers": 132,
-   "fraudulent": 15,
-   "cases": 12,
+   "fraudulent": 16,
+   "cases": 13,
    "claim": {
-    "precision": 0.82,
+    "precision": 0.816,
     "recall": 0.73
    },
    "provider_detectors": {
     "risk": {
-     "auc": 0.998,
-     "ap": 0.983
+     "auc": 0.997,
+     "ap": 0.981
     },
     "brain": {
-     "auc": 0.997,
-     "ap": 0.97
+     "auc": 0.992,
+     "ap": 0.951
     },
     "p_fraud": {
-     "auc": 0.994,
-     "ap": 0.912
+     "auc": 0.961,
+     "ap": 0.868
     },
     "outcome_p": {
-     "auc": 1.0,
-     "ap": 1.0
+     "auc": 0.999,
+     "ap": 0.993
     },
     "rule_score": {
-     "auc": 0.991,
-     "ap": 0.946
+     "auc": 0.992,
+     "ap": 0.952
     },
     "anomaly_pct": {
-     "auc": 0.968,
-     "ap": 0.734
+     "auc": 0.963,
+     "ap": 0.723
     },
     "temporal_pct": {
-     "auc": 0.91,
-     "ap": 0.627
+     "auc": 0.902,
+     "ap": 0.615
     },
     "peer_pct": {
-     "auc": 0.777,
-     "ap": 0.535
+     "auc": 0.729,
+     "ap": 0.509
     },
     "drift_pct": {
-     "auc": 0.944,
-     "ap": 0.655
+     "auc": 0.918,
+     "ap": 0.628
     },
     "panel_pct": {
-     "auc": 0.798,
-     "ap": 0.599
+     "auc": 0.757,
+     "ap": 0.569
     }
    },
    "queue": {
     "@5": {
      "precision": 1.0,
-     "recall": 0.6
+     "recall": 0.562
     },
     "@10": {
      "precision": 1.0,
-     "recall": 1.0
+     "recall": 0.938
     },
     "@20": {
-     "precision": 0.909,
+     "precision": 0.917,
      "recall": 1.0
     }
    },
@@ -477,6 +486,10 @@
     "excessive_services": {
      "n": 2,
      "caught": 2
+    },
+    "excluded_provider": {
+     "n": 1,
+     "caught": 1
     },
     "impossible_timing": {
      "n": 1,
@@ -514,37 +527,38 @@
      "mean_independent_families": 2.0
     },
     "fraudulent": {
-     "n": 15,
-     "escalated": 15,
+     "n": 16,
+     "escalated": 16,
      "stage": {
       "Established pattern": 11,
+      "Sustained anomaly": 2,
       "Behavioural deviation": 1,
       "Emerging anomaly": 1,
-      "Normal": 1,
-      "Sustained anomaly": 1
+      "Normal": 1
      },
      "consensus": {
       "High": 9,
-      "Moderate": 6
+      "Moderate": 6,
+      "Low": 1
      },
-     "mean_independent_families": 4.4
+     "mean_independent_families": 4.19
     },
     "legitimate": {
-     "n": 110,
+     "n": 109,
      "escalated": 0,
      "stage": {
-      "Normal": 66,
+      "Normal": 65,
       "Behavioural deviation": 31,
       "Emerging anomaly": 8,
       "Sustained anomaly": 4,
       "Established pattern": 1
      },
      "consensus": {
-      "Low": 104,
+      "Low": 103,
       "Moderate": 5,
       "High": 1
      },
-     "mean_independent_families": 0.25
+     "mean_independent_families": 0.26
     },
     "legitimate_anomaly": {
      "n": 4,
@@ -570,6 +584,10 @@
     "Moderate": {
      "cases": 5,
      "precision": 0.8
+    },
+    "Low": {
+     "cases": 1,
+     "precision": 1.0
     }
    }
   }
@@ -577,8 +595,8 @@
  "calibration": [
   {
    "dataset": "demo world",
-   "brier": 0.0175,
-   "ece": 0.02,
+   "brier": 0.0169,
+   "ece": 0.015,
    "reliability": [
     {
      "mean_predicted": 0.005,
@@ -621,7 +639,7 @@
      "n": 13
     },
     {
-     "mean_predicted": 0.146,
+     "mean_predicted": 0.196,
      "observed": 0.231,
      "n": 13
     },
@@ -648,7 +666,7 @@
     },
     "Review (top 15%)": {
      "providers": 20,
-     "threshold": 0.005,
+     "threshold": 0.088,
      "precision": 0.75,
      "recall": 0.938,
      "false_positive_rate": 0.0431
@@ -656,20 +674,20 @@
    },
    "operating_points": {
     "low capacity (F0.5)": {
-     "review_top_k": 12,
-     "threshold": 0.85,
-     "precision": 1.0,
-     "recall": 0.75
+     "review_top_k": 16,
+     "threshold": 0.571,
+     "precision": 0.938,
+     "recall": 0.938
     },
     "balanced (F1)": {
      "review_top_k": 16,
-     "threshold": 0.5,
+     "threshold": 0.571,
      "precision": 0.938,
      "recall": 0.938
     },
     "high capacity (F2)": {
      "review_top_k": 16,
-     "threshold": 0.5,
+     "threshold": 0.571,
      "precision": 0.938,
      "recall": 0.938
     }
@@ -677,8 +695,8 @@
   },
   {
    "dataset": "held-out world 201",
-   "brier": 0.0174,
-   "ece": 0.0125,
+   "brier": 0.0258,
+   "ece": 0.015,
    "reliability": [
     {
      "mean_predicted": 0.005,
@@ -694,6 +712,101 @@
      "mean_predicted": 0.005,
      "observed": 0.0,
      "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.215,
+     "observed": 0.308,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.942,
+     "observed": 0.923,
+     "n": 13
+    }
+   ],
+   "tiers": {
+    "Critical (top 1%)": {
+     "providers": 1,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.062,
+     "false_positive_rate": 0.0
+    },
+    "High (top 5%)": {
+     "providers": 7,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.438,
+     "false_positive_rate": 0.0
+    },
+    "Review (top 15%)": {
+     "providers": 20,
+     "threshold": 0.088,
+     "precision": 0.75,
+     "recall": 0.938,
+     "false_positive_rate": 0.0431
+    }
+   },
+   "operating_points": {
+    "low capacity (F0.5)": {
+     "review_top_k": 13,
+     "threshold": 0.85,
+     "precision": 1.0,
+     "recall": 0.812
+    },
+    "balanced (F1)": {
+     "review_top_k": 13,
+     "threshold": 0.85,
+     "precision": 1.0,
+     "recall": 0.812
+    },
+    "high capacity (F2)": {
+     "review_top_k": 23,
+     "threshold": 0.088,
+     "precision": 0.696,
+     "recall": 1.0
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 202",
+   "brier": 0.0163,
+   "ece": 0.0138,
+   "reliability": [
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
     },
     {
      "mean_predicted": 0.005,
@@ -721,112 +834,17 @@
      "n": 13
     },
     {
-     "mean_predicted": 0.154,
-     "observed": 0.154,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.942,
-     "observed": 0.923,
-     "n": 13
-    }
-   ],
-   "tiers": {
-    "Critical (top 1%)": {
-     "providers": 1,
-     "threshold": 0.97,
-     "precision": 1.0,
-     "recall": 0.067,
-     "false_positive_rate": 0.0
-    },
-    "High (top 5%)": {
-     "providers": 7,
-     "threshold": 0.97,
-     "precision": 1.0,
-     "recall": 0.467,
-     "false_positive_rate": 0.0
-    },
-    "Review (top 15%)": {
-     "providers": 20,
-     "threshold": 0.005,
-     "precision": 0.7,
-     "recall": 0.933,
-     "false_positive_rate": 0.0513
-    }
-   },
-   "operating_points": {
-    "low capacity (F0.5)": {
-     "review_top_k": 12,
-     "threshold": 0.85,
-     "precision": 1.0,
-     "recall": 0.8
-    },
-    "balanced (F1)": {
-     "review_top_k": 15,
-     "threshold": 0.5,
-     "precision": 0.933,
-     "recall": 0.933
-    },
-    "high capacity (F2)": {
-     "review_top_k": 15,
-     "threshold": 0.5,
-     "precision": 0.933,
-     "recall": 0.933
-    }
-   }
-  },
-  {
-   "dataset": "held-out world 202",
-   "brier": 0.0099,
-   "ece": 0.0119,
-   "reliability": [
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 14
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 14
-    },
-    {
      "mean_predicted": 0.005,
      "observed": 0.0,
      "n": 13
     },
     {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.173,
+     "mean_predicted": 0.228,
      "observed": 0.231,
      "n": 13
     },
     {
-     "mean_predicted": 0.945,
+     "mean_predicted": 0.952,
      "observed": 0.923,
      "n": 13
     }
@@ -836,42 +854,42 @@
      "providers": 1,
      "threshold": 0.97,
      "precision": 1.0,
-     "recall": 0.067,
+     "recall": 0.062,
      "false_positive_rate": 0.0
     },
     "High (top 5%)": {
      "providers": 7,
      "threshold": 0.97,
      "precision": 1.0,
-     "recall": 0.467,
+     "recall": 0.438,
      "false_positive_rate": 0.0
     },
     "Review (top 15%)": {
      "providers": 20,
-     "threshold": 0.005,
+     "threshold": 0.088,
      "precision": 0.75,
-     "recall": 1.0,
-     "false_positive_rate": 0.0427
+     "recall": 0.938,
+     "false_positive_rate": 0.0431
     }
    },
    "operating_points": {
     "low capacity (F0.5)": {
      "review_top_k": 16,
-     "threshold": 0.5,
+     "threshold": 0.721,
      "precision": 0.938,
-     "recall": 1.0
+     "recall": 0.938
     },
     "balanced (F1)": {
      "review_top_k": 16,
-     "threshold": 0.5,
+     "threshold": 0.721,
      "precision": 0.938,
-     "recall": 1.0
+     "recall": 0.938
     },
     "high capacity (F2)": {
      "review_top_k": 16,
-     "threshold": 0.5,
+     "threshold": 0.721,
      "precision": 0.938,
-     "recall": 1.0
+     "recall": 0.938
     }
    }
   }
@@ -887,7 +905,7 @@
     "consensus_before": "High",
     "consensus_after": "Low",
     "risk_before": 60.5,
-    "risk_after": 61.6
+    "risk_after": 53.1
    },
    {
     "provider": "P-0004",
@@ -897,7 +915,7 @@
     "consensus_before": "Moderate",
     "consensus_after": "Low",
     "risk_before": 56.1,
-    "risk_after": 57.0
+    "risk_after": 39.8
    },
    {
     "provider": "P-0005",
@@ -907,7 +925,7 @@
     "consensus_before": "Moderate",
     "consensus_after": "Low",
     "risk_before": 51.7,
-    "risk_after": 54.5
+    "risk_after": 39.1
    },
    {
     "provider": "P-0009",
@@ -917,7 +935,7 @@
     "consensus_before": "Moderate",
     "consensus_after": "Low",
     "risk_before": 48.5,
-    "risk_after": 48.4
+    "risk_after": 41.3
    },
    {
     "provider": "P-0034",
@@ -927,7 +945,7 @@
     "consensus_before": "Low",
     "consensus_after": "Low",
     "risk_before": 1.0,
-    "risk_after": 5.8
+    "risk_after": 2.7
    },
    {
     "provider": "P-0074",
@@ -937,7 +955,7 @@
     "consensus_before": "Low",
     "consensus_after": "Low",
     "risk_before": 4.0,
-    "risk_after": 10.0
+    "risk_after": 6.2
    },
    {
     "provider": "P-0025",
@@ -947,7 +965,7 @@
     "consensus_before": "Low",
     "consensus_after": "Low",
     "risk_before": 0.0,
-    "risk_after": 1.1
+    "risk_after": 0.3
    },
    {
     "provider": "P-0029",
@@ -967,7 +985,7 @@
     "consensus_before": "Low",
     "consensus_after": "Low",
     "risk_before": 4.0,
-    "risk_after": 7.5
+    "risk_after": 2.2
    },
    {
     "provider": "P-0105",
@@ -977,14 +995,14 @@
     "consensus_before": "Low",
     "consensus_after": "Low",
     "risk_before": 11.2,
-    "risk_after": 22.3
+    "risk_after": 12.4
    }
   ],
   "confidence_never_high": true,
   "dq_dropped": true,
-  "legit_risk_inflated": 1
+  "legit_risk_inflated": 0
  },
- "generated": "2026-10-09 02:00:12",
+ "generated": "2026-10-09 02:09:18",
  "gap": {
   "reference_providers": 738,
   "datasets": {
@@ -2273,7 +2291,7 @@
    "+peer": 46,
    "+temporal+peer": 46
   },
-  "chosen": "base",
-  "rule": "Choose the variant with the most fraud caught minus false leads across datasets; ties \u2192 higher mean AP."
+  "chosen": "+temporal",
+  "rule": "Choose the variant with the most fraud caught minus false leads across datasets; ties \u2192 higher mean AP; full ties \u2192 keep the current configuration."
  }
 }

@@ -22,22 +22,22 @@
     "fraud_lines": 6218,
     "auc": 0.997,
     "ap": 0.979,
-    "rules_flagged": 5679,
-    "rules_precision": 0.818,
+    "rules_flagged": 5702,
+    "rules_precision": 0.815,
     "rules_recall": 0.747,
-    "model_precision_same_budget": 0.958,
-    "model_recall_same_budget": 0.875
+    "model_precision_same_budget": 0.957,
+    "model_recall_same_budget": 0.878
    },
    "held-out world (seed 202)": {
     "lines": 59268,
     "fraud_lines": 5974,
     "auc": 0.996,
     "ap": 0.976,
-    "rules_flagged": 5319,
-    "rules_precision": 0.82,
+    "rules_flagged": 5343,
+    "rules_precision": 0.816,
     "rules_recall": 0.73,
-    "model_precision_same_budget": 0.958,
-    "model_recall_same_budget": 0.853
+    "model_precision_same_budget": 0.956,
+    "model_recall_same_budget": 0.855
    }
   }
  },
@@ -88,11 +88,11 @@
    "held-out world (seed 201)": {
     "providers": 132,
     "positives": 14,
-    "auc": 0.992,
-    "ap": 0.87,
+    "auc": 0.993,
+    "ap": 0.912,
     "brain_auc": 0.987,
-    "brain_ap": 0.859,
-    "risk_auc": 0.99
+    "brain_ap": 0.856,
+    "risk_auc": 0.987
    },
    "held-out world (seed 202)": {
     "providers": 132,
@@ -101,7 +101,7 @@
     "ap": 1.0,
     "brain_auc": 0.997,
     "brain_ap": 0.97,
-    "risk_auc": 0.998
+    "risk_auc": 0.997
    }
   }
  },
@@ -110,8 +110,8 @@
   "held_out": {
    "demo world (seed 7)": {
     "fraud_providers": 16,
-    "accuracy": 0.938,
-    "top2_accuracy": 0.938,
+    "accuracy": 1.0,
+    "top2_accuracy": 1.0,
     "dominant_rule_baseline": 0.75,
     "types_present": [
      "duplicate",
@@ -123,18 +123,17 @@
      "unbundling",
      "upcoding"
     ],
-    "unseen_types": [
-     "excluded_provider"
-    ]
+    "unseen_types": []
    },
    "held-out world (seed 201)": {
-    "fraud_providers": 15,
+    "fraud_providers": 16,
     "accuracy": 1.0,
     "top2_accuracy": 1.0,
-    "dominant_rule_baseline": 0.8,
+    "dominant_rule_baseline": 0.75,
     "types_present": [
      "duplicate",
      "excessive_services",
+     "excluded_provider",
      "impossible_timing",
      "phantom",
      "recruitment",
@@ -144,13 +143,14 @@
     "unseen_types": []
    },
    "held-out world (seed 202)": {
-    "fraud_providers": 15,
+    "fraud_providers": 16,
     "accuracy": 1.0,
     "top2_accuracy": 1.0,
-    "dominant_rule_baseline": 0.733,
+    "dominant_rule_baseline": 0.688,
     "types_present": [
      "duplicate",
      "excessive_services",
+     "excluded_provider",
      "impossible_timing",
      "phantom",
      "recruitment",
@@ -168,25 +168,25 @@
     "providers": 132,
     "positives": 16,
     "ece_raw": 0.1737,
-    "ece_calibrated": 0.0109,
+    "ece_calibrated": 0.006,
     "brier_raw": 0.0771,
-    "brier_calibrated": 0.0175
+    "brier_calibrated": 0.0169
    },
    "held-out world (seed 201)": {
     "providers": 132,
-    "positives": 15,
-    "ece_raw": 0.1651,
-    "ece_calibrated": 0.0032,
+    "positives": 16,
+    "ece_raw": 0.1606,
+    "ece_calibrated": 0.0047,
     "brier_raw": 0.0692,
-    "brier_calibrated": 0.0174
+    "brier_calibrated": 0.0258
    },
    "held-out world (seed 202)": {
     "providers": 132,
-    "positives": 15,
-    "ece_raw": 0.1709,
-    "ece_calibrated": 0.0007,
-    "brier_raw": 0.0716,
-    "brier_calibrated": 0.0099
+    "positives": 16,
+    "ece_raw": 0.1662,
+    "ece_calibrated": 0.002,
+    "brier_raw": 0.0723,
+    "brier_calibrated": 0.0163
    }
   }
  }

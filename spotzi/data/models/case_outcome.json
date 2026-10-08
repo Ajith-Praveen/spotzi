@@ -16,16 +16,16 @@
   "log_lines"
  ],
  "coefficients": {
-  "rule_score": 1.866,
-  "anomaly_pct": 0.79,
-  "graph_score": 1.026,
-  "twin_pct": 0.124,
-  "path_pct": 0.284,
-  "drift_pct": 0.954,
-  "mix_pct": -0.155,
-  "panel_pct": 1.116,
-  "any_share": 0.254,
-  "log_lines": 0.304
+  "rule_score": 1.833,
+  "anomaly_pct": 0.934,
+  "graph_score": 1.077,
+  "twin_pct": 0.295,
+  "path_pct": 0.189,
+  "drift_pct": 0.988,
+  "mix_pct": -0.018,
+  "panel_pct": 1.094,
+  "any_share": 0.166,
+  "log_lines": 0.702
  },
  "held_out": {
   "demo world (seed 7)": {
@@ -40,11 +40,11 @@
   "held-out world (seed 201)": {
    "providers": 132,
    "positives": 14,
-   "auc": 0.992,
-   "ap": 0.87,
+   "auc": 0.993,
+   "ap": 0.912,
    "brain_auc": 0.987,
-   "brain_ap": 0.859,
-   "risk_auc": 0.99
+   "brain_ap": 0.856,
+   "risk_auc": 0.987
   },
   "held-out world (seed 202)": {
    "providers": 132,
@@ -53,7 +53,7 @@
    "ap": 1.0,
    "brain_auc": 0.997,
    "brain_ap": 0.97,
-   "risk_auc": 0.998
+   "risk_auc": 0.997
   }
  },
  "use": "Shown on cases and providers as a learned estimate from simulated closed cases. Not used to rank or decide; Nexus Brain keeps learning from your real decisions.",
@@ -61,7 +61,7 @@
   "Trained on simulated outcomes. Replace with your closed SIU cases when available (same script)."
  ],
  "name": "case_outcome",
- "trained": "2026-10-09 01:49:17",
+ "trained": "2026-10-09 02:06:28",
  "artifact": "case_outcome.joblib",
- "sha256": "33d45401ecf27bf1"
+ "sha256": "3dcd821799ea92f4"
 }

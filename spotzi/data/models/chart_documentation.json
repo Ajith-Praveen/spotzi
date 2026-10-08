@@ -25,7 +25,7 @@
   "Synthetic notes are far more regular than real charts; an LLM is expected to generalise better to real wording."
  ],
  "name": "chart_documentation",
- "trained": "2026-10-09 01:48:33",
+ "trained": "2026-10-09 02:05:47",
  "artifact": "chart_documentation.joblib",
- "sha256": "9390e1986d121d25"
+ "sha256": "20fadcf2772bc4b2"
 }

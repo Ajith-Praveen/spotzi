@@ -8,25 +8,25 @@
    "providers": 132,
    "positives": 16,
    "ece_raw": 0.1737,
-   "ece_calibrated": 0.0109,
+   "ece_calibrated": 0.006,
    "brier_raw": 0.0771,
-   "brier_calibrated": 0.0175
+   "brier_calibrated": 0.0169
   },
   "held-out world (seed 201)": {
    "providers": 132,
-   "positives": 15,
-   "ece_raw": 0.1651,
-   "ece_calibrated": 0.0032,
+   "positives": 16,
+   "ece_raw": 0.1606,
+   "ece_calibrated": 0.0047,
    "brier_raw": 0.0692,
-   "brier_calibrated": 0.0174
+   "brier_calibrated": 0.0258
   },
   "held-out world (seed 202)": {
    "providers": 132,
-   "positives": 15,
-   "ece_raw": 0.1709,
-   "ece_calibrated": 0.0007,
-   "brier_raw": 0.0716,
-   "brier_calibrated": 0.0099
+   "positives": 16,
+   "ece_raw": 0.1662,
+   "ece_calibrated": 0.002,
+   "brier_raw": 0.0723,
+   "brier_calibrated": 0.0163
   }
  },
  "use": "Backend: makes 'p = 0.9' mean roughly 9 in 10 under the evaluation distribution; tiers and capacity thresholds use it.",
@@ -34,7 +34,7 @@
   "Calibrated to synthetic base rates; real base rates differ \u2014 recalibrate on real outcomes."
  ],
  "name": "brain_calibrator",
- "trained": "2026-10-09 01:49:20",
+ "trained": "2026-10-09 02:06:30",
  "artifact": "brain_calibrator.joblib",
- "sha256": "104c950085a8db2b"
+ "sha256": "43fa92853c044da0"
 }

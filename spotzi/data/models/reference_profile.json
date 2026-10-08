@@ -9,7 +9,7 @@
   "Built from synthetic worlds: real data will look out-of-distribution until the reference is rebuilt from real history."
  ],
  "name": "reference_profile",
- "trained": "2026-10-09 01:48:03",
+ "trained": "2026-10-09 02:05:19",
  "artifact": "reference_profile.joblib",
  "sha256": "20230d3083a3f118"
 }

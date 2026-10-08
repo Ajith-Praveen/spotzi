@@ -308,9 +308,11 @@ def ablation(datasets):
     mean_ap = {v: round(float(np.mean([res[d][v]["brain_ap"] for d in res])), 3) for v in variants}
     fl = {v: sum(res[d][v]["false_leads"] for d in res) for v in variants}
     caught = {v: sum(res[d][v]["caught"] for d in res) for v in variants}
-    best = max(variants, key=lambda v: (caught[v] - fl[v], mean_ap[v]))
+    from detection.pipeline import EXTRA_DEFAULT
+    current = next((v for v, e in variants.items() if e == EXTRA_DEFAULT), "base")
+    best = max(variants, key=lambda v: (caught[v] - fl[v], mean_ap[v], v == current))
     return dict(results=res, mean_brain_ap=mean_ap, total_false_leads=fl, total_caught=caught, chosen=best,
-                rule="Choose the variant with the most fraud caught minus false leads across datasets; ties → higher mean AP.")
+                rule="Choose the variant with the most fraud caught minus false leads across datasets; ties → higher mean AP; full ties → keep the current configuration.")
 
 
 # ---------------------------------------------------------------- 7. synthetic-to-real gap
