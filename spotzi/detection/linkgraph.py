@@ -15,7 +15,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-from rules import RULES
+from detection.rules import RULES
 
 TYPE_OF_FAMILY = {"FAC": "hospital", "PRO": "doctor", "LAB": "lab", "PHARM": "pharmacy", "AMB": "ambulance", "BH": "behavioral", "HH": "homehealth", "DME": "dme"}
 ORDER_KIND = {"LAB": "ordered_tests", "PHARM": "prescribed", "DME": "ordered_equipment", "HH": "home_care", "BH": "behavioral_referral", "AMB": "transport", "PRO": "referred", "FAC": "referred"}

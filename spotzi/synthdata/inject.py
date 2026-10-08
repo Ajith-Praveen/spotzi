@@ -159,6 +159,10 @@ def inject(ws: Path, seed=21, n_per_scheme=3, n_benign=4, min_lines=200):
     hid = ws / "hidden"; hid.mkdir(exist_ok=True)
     truth.to_csv(hid / "scenario_truth.csv", index=False)
     pd.DataFrame(log).to_csv(hid / "scenario_providers.csv", index=False)
+    from synthdata import truth as TR
+    P = pd.read_csv(ws / "providers.csv")
+    lg = pd.DataFrame([dict(provider_id=r["provider_id"], legitimate=True) for r in log if r["scheme"] == "benign-growth"])
+    TR.build(L[["provider_id", "service_date", "paid", "truth", "scenario"]], list(P.provider_id), lg if len(lg) else None).to_csv(hid / "entity_truth.csv", index=False)
     L.drop(columns=["truth", "scenario"]).to_csv(ws / "claim_lines.csv", index=False)
     M.to_csv(ws / "members.csv", index=False)
     return dict(bad_providers=len(assign), benign_providers=len(benign), injected_lines=int(sum(len(r) for r in new_rows)), labelled_fraud_lines=int(truth.truth.sum()),

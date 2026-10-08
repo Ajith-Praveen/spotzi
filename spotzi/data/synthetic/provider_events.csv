@@ -1,0 +1,7 @@
+event_id,provider_id,event_date,event_type,detail,source
+EVT-0001,P-0010,2025-02-17,location_opened,New service location: Brookside Elm Street clinic,provider enrolment update
+EVT-0002,P-0010,2025-03-03,location_opened,New service location: Brookside Riverside clinic,provider enrolment update
+EVT-0003,P-0011,2025-01-06,clinician_joined,Cardiologist credentialed to the group (heart failure / arrhythmia clinic),credentialing roster
+EVT-0004,P-0012,2025-03-24,contract_started,"Attending-physician contract with Maplewood Care Center (nursing facility, 120 beds)",contract registry
+EVT-0005,P-0013,2025-02-03,acquisition,Acquired Crestline Family Doctors (P-0014); its patients transferred to Summit Ridge,ownership disclosure
+EVT-0006,P-0005,2025-01-20,location_opened,New service location: Pinnacle West clinic,provider enrolment update

@@ -1,0 +1,37 @@
+{
+ "task": "Tip triage",
+ "process": "Tips & referrals in \u2192 automatic structuring of each new tip",
+ "kind": "Ensemble: TF-IDF (word + char n-grams) \u2192 logistic regression + local sentence encoder (bge-small-en-v1.5, frozen) \u2192 logistic regression; 9 scheme types",
+ "trained_on": "8,000 synthetic tips (compositional generator + training templates)",
+ "classes": [
+  "upcoding",
+  "phantom services",
+  "duplicate billing",
+  "unbundling",
+  "kickbacks or referral steering",
+  "patient recruitment or identity misuse",
+  "excessive or medically unnecessary services",
+  "impossible timing",
+  "excluded provider"
+ ],
+ "held_out": {
+  "test_tips": 800,
+  "scheme_accuracy": 0.938,
+  "scheme_macro_f1": 0.943,
+  "tfidf_only_accuracy": 0.895,
+  "v1_accuracy": 0.535,
+  "keyword_baseline_scheme_accuracy": 0.197,
+  "encoder_used": true,
+  "note": "Test tips use sentence templates and provider names never seen in training."
+ },
+ "use": "Classifies every new tip offline; an LLM (if enabled) adds entity extraction and summaries. Supervisors triage every tip.",
+ "limitations": [
+  "Synthetic tips are short and templated; real tips are messier.",
+  "Urgency is keyword/LLM-based: a trained urgency model failed its held-out test (v1) and is not shipped.",
+  "Never decides anything \u2014 a tip is an allegation, not evidence."
+ ],
+ "name": "tip_triage",
+ "trained": "2026-10-08 23:14:39",
+ "artifact": "tip_triage.joblib",
+ "sha256": "816ba2f179e93401"
+}

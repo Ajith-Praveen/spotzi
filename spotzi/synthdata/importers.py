@@ -29,11 +29,12 @@ def _family_for_codes(codes: pd.Series) -> str:
     return "FAC"
 
 
-def synpuf(src: Path, out: Path, n_benes=4000, seed=11, states=None):
+def synpuf(src: Path, out: Path, n_benes=4000, seed=11, states=None, exclude_members=None):
     src, out = Path(src), Path(out); out.mkdir(parents=True, exist_ok=True)
     f = lambda pat: sorted(glob.glob(str(src / pat)))[0]
     ben = pd.read_csv(f("*2009_Beneficiary*"), dtype=str)
     if states: ben = ben[ben.SP_STATE_CODE.astype(int).isin(states)]
+    if exclude_members: ben = ben[~("B-" + ben.DESYNPUF_ID.str[:12]).isin(set(exclude_members))]   # disjoint patient sets (train vs test)
     rng = np.random.default_rng(seed)
     ip = pd.read_csv(f("*Inpatient*"), dtype=str, usecols=["DESYNPUF_ID", "CLM_ID", "CLM_FROM_DT", "CLM_THRU_DT", "PRVDR_NUM", "CLM_PMT_AMT", "CLM_ADMSN_DT",
                                                           "NCH_BENE_DSCHRG_DT", "CLM_UTLZTN_DAY_CNT", "ICD9_DGNS_CD_1", "CLM_DRG_CD"])

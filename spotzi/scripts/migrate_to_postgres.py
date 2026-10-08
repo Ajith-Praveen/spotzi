@@ -5,14 +5,14 @@ import sqlite3
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parents[1]
 src = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data" / "app.db"
 env = ROOT / "data" / "db.env"
 url = os.environ.get("SPOTZI_DB_URL") or [l.split("=", 1)[1].strip() for l in env.read_text().splitlines() if l.startswith("SPOTZI_DB_URL=")][0]
 os.environ["SPOTZI_DB_URL"] = url
 sys.path.insert(0, str(ROOT))
-import server  # noqa: E402  (creates the schema in Postgres)
-import dbcompat  # noqa: E402
+from api import app as server# noqa: E402  (creates the schema in Postgres)
+from infra import dbcompat# noqa: E402
 
 pg = server.db()
 lite = sqlite3.connect(src); lite.row_factory = sqlite3.Row

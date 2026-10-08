@@ -11,8 +11,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-import gen
-from rules import EXCESS_LIMIT, MIN_INTERVAL, MONITORING_DX, MUE_LIMIT, RULES
+from synthdata import gen
+from detection.rules import EXCESS_LIMIT, MIN_INTERVAL, MONITORING_DX, MUE_LIMIT, RULES
 
 COMPONENTS = {"82947", "82565", "84132"}
 
@@ -26,10 +26,31 @@ def schema(c):
     CREATE TABLE IF NOT EXISTS case_documents(id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, filename TEXT, mime TEXT, size INTEGER, path TEXT, sha256 TEXT, uploaded_by TEXT, ts TEXT, note TEXT);
     CREATE TABLE IF NOT EXISTS tips(id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, channel TEXT, subject_type TEXT, subject_id TEXT, allegation TEXT, received_by TEXT,
         status TEXT, case_id TEXT, triaged_by TEXT, triage_note TEXT);
+    CREATE TABLE IF NOT EXISTS plan_steps(case_id TEXT, step_key TEXT, status TEXT, note TEXT, user_name TEXT, ts TEXT, PRIMARY KEY(case_id, step_key));
+    CREATE TABLE IF NOT EXISTS tip_ai(tip_id INTEGER PRIMARY KEY, ts TEXT, result TEXT);
+    CREATE TABLE IF NOT EXISTS chart_reviews(id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, ts TEXT, user_name TEXT, engine TEXT, result TEXT);
     """)
 
 
 # =============================================================================== pre-payment claim check
+def _line_model(S, claim, mid, pid, fam, d, pos, dx):
+    """Trained pre-payment line-risk model (models/prepay_model.py) on this claim + the member's and provider's paid history."""
+    from ai.models import prepay_model as PM, registry as MR
+    art = MR.load("prepay_line_risk")
+    if art is None or not claim.get("lines"): return None
+    L = S["L"]
+    H = L[(L.member_id == mid) | (L.provider_id == pid)][["member_id", "provider_id", "code", "family", "units", "service_date", "pos", "dx", "duration_min"]]
+    cm = {k: v[3] for k, v in gen.CODES.items()}
+    new = pd.DataFrame([dict(member_id=mid, provider_id=pid, code=str(x.get("code", "")).strip(), family=fam or "OTHER", units=float(x.get("units") or 1), service_date=d,
+                             pos=pos, dx=dx, duration_min=cm.get(str(x.get("code", "")).strip(), 0) * float(x.get("units") or 1)) for x in claim["lines"]])
+    U = pd.concat([H, new], ignore_index=True)
+    X = PM.features(U, S["T"]["members"], S["T"]["stays"][S["T"]["stays"].member_id == mid] if len(S["T"]["stays"]) else S["T"]["stays"], art["stats"], cm).iloc[len(H):]
+    p = art["model"].predict_proba(X)[:, 1]
+    lines = [dict(p=round(float(pi), 3), drivers=PM.explain(art["model"], X.iloc[[i]])) for i, pi in enumerate(p)]
+    return dict(max=float(p.max()), lines=lines)
+
+
+
 def prepay_index(S):
     """Indexes over paid history, built once per run."""
     L = S["L"]
@@ -107,8 +128,13 @@ def prepay_score(S, IX, claim):
         if code == "99215" and IX["hi_share"].get(pid, 0) >= .3:
             hits.append("UPCODE"); why("UPCODE", f"Provider billed level-5 for {IX['hi_share'][pid]:.0%} of recent visits (peer ≈7%).", line=i)
         line_out.append(dict(code=code, description=gen.CODES.get(code, ("", "Unknown code"))[1], units=units, billed=billed, expected_paid=round(est, 2), flags=hits))
+    mdl = _line_model(S, claim, mid, pid, fam, d, pos, dx)
+    if mdl:
+        for lo, pr in zip(line_out, mdl["lines"]): lo["model_risk"] = pr["p"]; lo["model_drivers"] = pr["drivers"]
     if minutes > 16 * 60: why("TIMING", f"Provider would bill {minutes / 60:.1f} documented hours on {d:%Y-%m-%d}.", .95)
     ctx = []
+    if mdl and mdl["max"] >= .8:
+        ctx.append(f"Trained line-risk model: {mdl['max']:.0%} (" + ", ".join(x["feature"] for x in max(mdl["lines"], key=lambda z: z["p"])["drivers"]) + ").")
     if pid in PT.index:
         r = PT.loc[pid]
         case = next((c["case_id"] for c in S["cases"] if pid in c["primary"]), None)
@@ -122,6 +148,7 @@ def prepay_score(S, IX, claim):
     else: rec = "PAY"
     label = {"PEND": "Pend for human review", "PAY_MONITOR": "Pay — add to monitoring", "PAY": "Pay"}[rec]
     return dict(recommendation=rec, label=label, score=round(score, 1), reasons=reasons, context=ctx, lines=line_out, expected_paid=round(total, 2),
+                model=dict(name="prepay_line_risk", max=mdl["max"]) if mdl else None,
                 latency_ms=round((time.time() - t0) * 1000, 1),
                 note="Recommendation only. A pended claim waits for a human; SpotZⁱ never denies a claim automatically.")
 

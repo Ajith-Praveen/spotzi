@@ -8,6 +8,10 @@ spotzi/data/app.db
 spotzi/data/cache/
 spotzi/data/pg/
 spotzi/data/db.env
+spotzi/data/llm.env
 spotzi/data/.pg_su
 spotzi/data/external/
 spotzi/data/workspaces/
+spotzi/data/training/
+spotzi/data/secrets/
+spotzi/data/models/encoders/

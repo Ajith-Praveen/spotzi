@@ -2,6 +2,10 @@
 run the full SpotZⁱ pipeline, and score it. Writes data/evaluation/<dataset>.json and prints a scorecard."""
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _P
+_sys.path.insert(0, str(_P(__file__).resolve().parents[1]))   # allow `python3 evaluation/x.py` as well as `python3 -m`
+
 import json
 import sys
 import time
@@ -11,11 +15,11 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score, roc_auc_score
 
-import importers as IM
-import inject as INJ
-import pipeline as PL
+from synthdata import importers as IM
+from synthdata import inject as INJ
+from detection import pipeline as PL
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def run(dataset, patients=4000, seed=21):
@@ -33,7 +37,7 @@ def run(dataset, patients=4000, seed=21):
                                             ("Change-point", "drift_pct"), ("Code mix", "mix_pct"), ("Patient panel", "panel_pct"), ("Nexus Brain", "brain"), ("Combined risk", "risk")] if col in PT}
     det_ap = {"Nexus Brain": float(average_precision_score(y, PT["brain"].fillna(0))), "Combined risk": float(average_precision_score(y, PT["risk"].fillna(0)))}
     # ranking of the SIU queue (provider-level truth): precision@k of cases
-    import briefs
+    from intelligence import briefs
     q = briefs.rank(S)["queue"]
     prim = {c["case_id"]: c["primary"] for c in S["cases"]}
     hits = [bool(set(prim[r["case_id"]]) & bad) for r in q]

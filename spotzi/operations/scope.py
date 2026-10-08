@@ -38,7 +38,7 @@ def apply(base_cases, edit_rows):
 
 
 def rebuild(S, c):
-    import pipeline as PL
+    from detection import pipeline as PL
     rows = edits(c)
     if not rows:
         S["cases"] = S["base_cases"]; S["retired"] = {}; S["scope_problems"] = []; return

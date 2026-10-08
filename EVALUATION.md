@@ -128,7 +128,69 @@ Evaluation-setup corrections (not product changes):
 - Synthetic deaths are assigned only to patients with no later care.
 - A new held-out scheme (`scope`) replaces `influx` as the blind test.
 
+## Legitimate anomalies (look suspicious, are legitimate)
+The demo world now contains four providers whose behaviour changes sharply for legitimate reasons. Each has an **observable** explanation in `provider_events.csv`, the kind of record payers hold in enrolment updates, credentialing rosters, contract registries and ownership disclosures:
+
+| Provider | What happened | What it looks like |
+|---|---|---|
+| Brookside Family Practice | opened two new clinics | volume ~4×, many new patients |
+| Valley Internal Medicine | a cardiologist joined | more level-4/5 visits + ECGs (the upcoding rule fires) |
+| Evergreen House Calls | nursing-facility contract | wave of frail new patients, monthly visits |
+| Summit Ridge Medical | acquired another practice | new-patient wave, volume jump |
+
+There is also an **adversarial** case: a real upcoder (S4) that opened a genuine new location shortly before its scheme began.
+
+| | Naive volume-spike alarm (any month ≥ 2× usual) | SpotZⁱ |
+|---|---|---|
+| Legitimate providers escalated | 3 / 4 | **0 / 4** (1 shown as "Explained by context", 3 never become cases) |
+| Other innocent providers alarmed | 16 | — |
+| Upcoder with a genuine event | not alarmed | **still escalated** (Investigate) |
+
+**How it works** (`detection/context.py`):
+- An event can explain only the signals it could cause, and only when they started after it. For example, new locations explain volume, panel and mix; a new clinician explains case mix and visit level.
+- Billing-integrity findings are **never** explained by context: duplicates, services after death or during stays, impossible timing, unbundling, unit limits and exclusions.
+- A case whose rule findings are not covered by the event keeps its lane.
+- Context never closes a case. "Explained by context" cases are kept, down-ranked and visible, and a human decides.
+
+The fraud results on the demo world are unchanged: 14 cases, precision@5 / @10 = 100% / 100%. The held-out recruitment mill is now opened through a patient-panel lead; it had fallen just below the 0.97 consensus threshold once peer baselines became noisier. DE-SynPUF and Synthea results are identical to before.
+
+## Task models (trained per process) — held-out results
+Trained by `spotzi/ai/models/train_all.py` (`python3 -m ai.models.train_all`).
+- **Training data:** three generator worlds (seeds 101–103) plus DE-SynPUF patients disjoint from the evaluation patients, with schemes injected at a different seed.
+- **Tests:** the demo world, the DE-SynPUF evaluation workspace, and Synthea. Synthea is never used in training.
+
+**Pre-payment line-risk model**, compared with the rules at the rules' own flag budget:
+
+| Test set | Rules precision / recall | Model precision / recall | Model AUC |
+|---|---|---|---|
+| Demo world | 0.80 / 0.70 | **0.90 / 0.78** | 0.99 |
+| DE-SynPUF (disjoint patients) | 0.14 / 0.25 | **0.36 / 0.64** | 0.97 |
+| Synthea (never trained on) | 0.71 / 0.19 | **0.82 / 0.22** | 0.91 |
+
+**Case-outcome model** (provider substantiation):
+- DE-SynPUF: AP 0.80 vs 0.57 for Nexus Brain; AUC 0.99 for both.
+- Synthea: AP 1.00 vs 0.95.
+
+**Chart-documentation model**:
+- Notes in an unseen clinician wording: 100% correct vs 36% for a keyword reviewer.
+- Familiar wording: both 100%.
+- Caveat: synthetic notes share key clinical terms across wordings, so real charts would be harder.
+
+**Tip-triage model**:
+- Unseen templates and names: **94%** scheme accuracy (v1: 53%; keyword matching: 20%).
+- v2 changes: a compositional training corpus (TF-IDF alone reaches 89%), plus a local sentence encoder (bge-small, frozen, runs offline) in an ensemble.
+- Fine-tuning the encoder was also tried and gave no further gain, so it was not shipped.
+- An urgency model was trained, failed its test (33%) and was **not shipped**.
+
+**A failure we caught.** The first pre-payment model scored **AUC 0.3** on DE-SynPUF: it had learned the generator, not the fraud. We fixed it by removing generator-specific features (service-family flags, data-completeness artefacts) and adding real-format training patients.
+
+## LLM chart review
+`spotzi/evaluation/evaluate_llm.py` scores reviewers on 300 synthetic notes: half in the house wording, half in an unseen wording.
+- **Keyword reviewer:** 99% / 64%.
+- **Trained chart model:** 99% / 99%.
+- **LLM reviewer:** pending until a DeepSeek / z.ai key is configured (Settings → AI & LLM, then `python3 -m evaluation.evaluate_llm --llm`).
+
 ## Limits of this evidence
 All data is synthetic. Injected schemes are our own models of fraud. The results show SpotZⁱ detects *these* patterns against background data we did not generate; they are **not** real-world fraud detection rates. A payer's closed SIU outcomes would be the true test.
 
-*Reproduce:* `cd spotzi && python3 evaluate_public.py synthea synpuf` (seed 7 by default; results in `spotzi/data/evaluation/`).
+*Reproduce:* `cd spotzi && python3 -m evaluation.evaluate_public synthea synpuf` (seed 7 by default; results in `spotzi/data/evaluation/`).

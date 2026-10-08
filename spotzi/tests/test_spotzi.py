@@ -24,16 +24,18 @@ if os.environ.get("SPOTZI_TEST_BACKEND") == "postgres":
         _c.execute("DROP SCHEMA public CASCADE"); _c.execute("CREATE SCHEMA public")
     os.environ["SPOTZI_DB_URL"] = _url
 os.environ["SPOTZI_USERS_FILE"] = str(TMP / "users.json")
+os.environ["LLM_PROVIDER"] = "none"
+os.environ["SPOTZI_SECRETS_DIR"] = str(TMP / "secrets")   # tests never call a real LLM; LLM paths are exercised with a stub
 
 import numpy as np
 import pandas as pd
 
-import brain as BR
-import knowledge as KN
-import lab
-import pipeline as PL
-import precedents as PR
-from rules import apply_rules
+from detection import brain as BR
+from intelligence import knowledge as KN
+from intelligence import lab
+from detection import pipeline as PL
+from intelligence import precedents as PR
+from detection.rules import apply_rules
 
 _S = {}
 
@@ -68,7 +70,7 @@ class PipelineTests(unittest.TestCase):
             self.assertLessEqual(p[30], p[60] + 1e-9); self.assertLessEqual(p[60], p[90] + 1e-9)
 
     def test_every_case_has_cited_evidence(self):
-        import briefs
+        from intelligence import briefs
         S = run_once()
         for c in S["cases"]:
             d = briefs.case_detail(S, c["case_id"])
@@ -119,14 +121,14 @@ class KnowledgeTests(unittest.TestCase):
 
 class LabAndPrecedentTests(unittest.TestCase):
     def test_posterior_is_a_distribution_and_gain_non_negative(self):
-        import briefs
+        from intelligence import briefs
         S = run_once(); c = S["cases"][0]; d = briefs.case_detail(S, c["case_id"])
         a = lab.analyse(d, [], c["exposure"])
         self.assertAlmostEqual(sum(s["posterior"] for s in a["states"]), 1.0, places=6)
         self.assertTrue(all(r["eig_bits"] >= -1e-9 for r in a["ranking"]))
 
     def test_precedents_same_family_and_diverse(self):
-        import briefs
+        from intelligence import briefs
         S = run_once(); lib = PR.seed_library()
         for c in S["cases"]:
             fp = PR.fingerprint(c, briefs.case_detail(S, c["case_id"]))
@@ -140,7 +142,7 @@ class ApiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from fastapi.testclient import TestClient
-        import server
+        from api import app as server
         cls.server = server
         cls.client_ctx = TestClient(server.app); cls.c = cls.client_ctx.__enter__()
         for _ in range(120):
@@ -167,7 +169,7 @@ class ApiTests(unittest.TestCase):
 
     def test_identity_cannot_be_spoofed_and_four_eyes_holds(self):
         alex, sam = self.login("alex"), self.login("sam")
-        r = alex.post("/api/cases/CS-0085/decision", json={"outcome": "Recommend referral", "reason": "Transports during inpatient stays, no trip logs.", "reviewer": "Sam Rivera", "role": "supervisor"})
+        r = alex.post("/api/cases/CS-0085/decision", json={"outcome": "Recommend referral", "reason": "Transports during inpatient stays, no trip logs.", "reviewer": "Sam Rivera", "role": "supervisor", "acknowledge_gaps": True})
         self.assertEqual(r.status_code, 200)
         last = alex.get("/api/cases/CS-0085").json()["decisions"][-1]
         self.assertEqual((last["reviewer"], last["role"]), ("Alex Morgan", "investigator"))
@@ -194,7 +196,8 @@ if __name__ == "__main__":
 # ============================================================================ round 3: security, SSO, 837, notifications, scope
 class TotpTests(unittest.TestCase):
     def test_rfc6238_vector(self):
-        import auth as AU, base64
+        import base64
+        from infra import auth as AU
         secret = base64.b32encode(b"12345678901234567890").decode()
         self.assertEqual(AU.totp(secret, t=59, digits=8), "94287082")   # RFC 6238 appendix B (SHA-1)
         self.assertEqual(AU.totp(secret, t=1111111109, digits=8), "07081804")
@@ -202,7 +205,7 @@ class TotpTests(unittest.TestCase):
 
 class X12Tests(unittest.TestCase):
     def test_837p_round_trip(self):
-        import x12
+        from operations import x12
         t = PL.load_tables(PL.DATA); L = t["lines"]; L = L[L.family != "FAC"].head(2500)
         out, rep = x12.parse_837(x12.export_837(L, t["providers"], t["members"], "P"))
         self.assertEqual(rep["lines"], len(L)); self.assertFalse(rep["issues"])
@@ -215,19 +218,20 @@ class X12Tests(unittest.TestCase):
         self.assertTrue((fam == t["providers"].set_index("provider_id").family.reindex(fam.index)).all())
 
     def test_837i_stays(self):
-        import x12
+        from operations import x12
         t = PL.load_tables(PL.DATA); F = t["lines"][t["lines"].code == "INP-DAY"].head(40)
         out, rep = x12.parse_837(x12.export_837(F, t["providers"], t["members"], "I"))
         self.assertEqual(rep["kind"], "837I"); self.assertEqual(len(out["inpatient_stays"]), 40)
 
     def test_rejects_non_x12(self):
-        import x12
+        from operations import x12
         with self.assertRaises(ValueError): x12.parse_837("hello")
 
 
 class OidcTests(unittest.TestCase):
     def test_full_code_flow_with_fake_idp(self):
-        import auth as AU, base64, httpx, sqlite3, urllib.parse
+        import base64, httpx, sqlite3, urllib.parse
+        from infra import auth as AU
         from cryptography.hazmat.primitives import hashes, serialization
         from cryptography.hazmat.primitives.asymmetric import padding, rsa
         key = rsa.generate_private_key(public_exponent=65537, key_size=2048); pub = key.public_key().public_numbers()
@@ -268,7 +272,8 @@ class OidcTests(unittest.TestCase):
 
 class OutboxTests(unittest.TestCase):
     def test_webhook_delivery_and_retry(self):
-        import httpx, notify as NT, sqlite3
+        import httpx, sqlite3
+        from operations import notify as NT
         db_path = TMP / "outbox.db"
         def db():
             c = sqlite3.connect(db_path); c.row_factory = sqlite3.Row; return c
@@ -292,7 +297,7 @@ class OutboxTests(unittest.TestCase):
 
 class ScopeTests(unittest.TestCase):
     def test_merge_then_split(self):
-        import scope as SC
+        from operations import scope as SC
         S = run_once(); base = S["base_cases"]
         a, b = base[0]["case_id"], base[1]["case_id"]
         groups, retired, problems = SC.apply(base, [dict(id=1, kind="merge", target=a, other=b, providers="[]", new_id=None)])
@@ -326,7 +331,7 @@ class HardeningApiTests(unittest.TestCase):
         self.assertEqual(r.status_code, 409)
 
     def test_mfa_login_and_policy(self):
-        import auth as AU
+        from infra import auth as AU
         admin, sam = self.login("admin"), self.login("sam")
         self.assertEqual(admin.post("/api/security", json={"mfa_required_roles": ["supervisor"]}).status_code, 200)
         self.assertEqual(sam.get("/api/queue").json()["detail"], "mfa_enrollment_required")
@@ -358,7 +363,7 @@ class NewRuleTests(unittest.TestCase):
             self.assertFalse(sub[sub.service_date < d].f_EXCLUDED.any())
 
     def test_custom_rule_language(self):
-        from rules import custom_mask
+        from detection.rules import custom_mask
         S = run_once(); L = S["L"]
         m = custom_mask(L, [{"field": "code", "op": "in", "value": "RX-COMP"}, {"field": "paid", "op": ">", "value": "500"}])
         self.assertTrue(((L[m].code == "RX-COMP") & (L[m].paid > 500)).all())
@@ -367,7 +372,7 @@ class NewRuleTests(unittest.TestCase):
 
 class PrepayTests(unittest.TestCase):
     def test_recommendations(self):
-        import ops as OP
+        from operations import ops as OP
         S = run_once(); ix = OP.prepay_index(S); ex = {e["title"]: e["claim"] for e in OP.examples(S)}
         stay = OP.prepay_score(S, ix, ex["Wheelchair while the patient is in hospital"])
         self.assertEqual(stay["recommendation"], "PEND"); self.assertTrue(any(r["rule"] == "PHANTOM" for r in stay["reasons"]))
@@ -378,7 +383,7 @@ class PrepayTests(unittest.TestCase):
         self.assertNotIn("DENY", json.dumps(stay))   # never auto-denies
 
     def test_upload_checks(self):
-        import ops as OP
+        from operations import ops as OP
         OP.check_upload("a.pdf", b"%PDF-1.4 x")
         for name, data in (("a.pdf", b"MZ\x90"), ("a.exe", b"MZ"), ("a.html", b"<script>")):
             with self.assertRaises(ValueError): OP.check_upload(name, data)
@@ -392,7 +397,7 @@ EXT = ROOT / "data" / "external"
 @unittest.skipUnless((EXT / "synthea" / "patients.csv").exists(), "Synthea sample not downloaded")
 class SyntheaImportTests(unittest.TestCase):
     def test_import_and_analyse_without_labels(self):
-        import importers as IM
+        from synthdata import importers as IM
         ws = TMP / "synthea"; rep = IM.synthea(EXT / "synthea", ws)
         self.assertGreater(rep["lines"], 1000)
         members = pd.read_csv(ws / "members.csv")
@@ -404,9 +409,152 @@ class SyntheaImportTests(unittest.TestCase):
 @unittest.skipUnless(any((EXT / "synpuf").glob("*Inpatient*.csv")) if (EXT / "synpuf").exists() else False, "DE-SynPUF not downloaded")
 class SynpufImportTests(unittest.TestCase):
     def test_import_institutions_and_units(self):
-        import importers as IM
+        from synthdata import importers as IM
         ws = TMP / "synpuf"; rep = IM.synpuf(EXT / "synpuf", ws, n_benes=500)
         L = pd.read_csv(ws / "claim_lines.csv", dtype={"code": str})
         self.assertTrue(L.provider_id.str.startswith("INST-").all(), "scrambled physician IDs must not become providers")
         self.assertFalse(L.duplicated(["claim_id", "code"]).any(), "repeated HCPCS on a claim become units, not duplicate lines")
         self.assertGreater(rep["stays"], 0)
+
+
+# ============================================================================ LLM-assisted detection
+class LlmDetectTests(unittest.TestCase):
+    def setUp(self):
+        from ai import charts, llm, llm_detect
+        self.CH, self.llm, self.LD = charts, llm, llm_detect
+        self._avail, self._call, self._name, self._feat = llm.available, llm_detect._json_call, llm.model_name, llm.feature_enabled
+
+    def tearDown(self):
+        self.llm.available, self.LD._json_call, self.llm.model_name, self.llm.feature_enabled = self._avail, self._call, self._name, self._feat
+
+    def stub(self, result):
+        self.llm.available = lambda: True; self.llm.model_name = lambda: "stub-model"; self.llm.feature_enabled = lambda name: True
+        self.LD._json_call = lambda *a, **k: (result, False)
+
+    def test_notes_reflect_world_and_reviewer_reads_them(self):
+        up = self.CH.note(dict(line_id="X1", code="99215", service_date="2025-01-02", duration_min=20), "S4-upcoding")
+        ok = self.CH.note(dict(line_id="X2", code="99213", service_date="2025-01-02"), "")
+        self.assertFalse(self.LD.review_heuristic("99215", up["text"])["supports_billed"])
+        self.assertTrue(self.LD.review_heuristic("99213", ok["text"])["supports_billed"])
+        bh = self.CH.note(dict(line_id="X3", code="90837", service_date="2025-01-02", duration_min=35), "S3-bh-timing")
+        self.assertFalse(self.LD.review_heuristic("90837", bh["text"])["supports_billed"])
+        self.assertEqual(self.CH.note(dict(line_id="X1", code="99215"), "S4-upcoding"), self.CH.note(dict(line_id="X1", code="99215"), "S4-upcoding"))
+
+    def test_llm_findings_must_quote_the_note(self):
+        items = [dict(line_id="A", code="99215", note="Office visit. Assessment: minor rash, self-limited. Total time on the date of the encounter: 12 minutes."),
+                 dict(line_id="B", code="99213", note="Office visit. Assessment: two stable chronic illnesses. Plan: Prescription drug management.")]
+        self.stub({"findings": [
+            dict(line_id="A", documented_code="99212", supports_billed=False, basis="time", quote="total time on the date of the encounter: 12 minutes", rationale="12 min"),
+            dict(line_id="B", documented_code="99215", supports_billed=True, basis="MDM", quote="patient admitted to ICU", rationale="invented"),
+            dict(line_id="ZZZ", documented_code="99215", supports_billed=True, basis="MDM", quote="Office visit", rationale="unknown line")]})
+        r = self.LD.chart_review(items)
+        rows = {x["line_id"]: x for x in r["rows"]}
+        self.assertEqual(r["engine"], "llm"); self.assertEqual(r["ungrounded_dropped"], 1)
+        self.assertEqual(rows["A"]["engine"], "llm"); self.assertFalse(rows["A"]["supports_billed"])
+        self.assertNotEqual(rows["B"]["engine"], "llm")                    # invented quote replaced by the offline reviewer
+        self.assertNotIn("ZZZ", rows)
+
+    def test_tip_entities_resolved_by_code_not_model(self):
+        PT = run_once()["PT"]; name = PT["name"].iloc[5]; pid = PT.index[5]
+        self.stub(dict(scheme="phantom services", summary="s", urgency="high", checks=["c"], entities=[dict(name=name, kind="provider"), dict(name="P-9999", kind="provider")]))
+        r = self.LD.triage_tip(f"My mother never received the visits billed by {name}.", PT)
+        ids = [m["provider_id"] for m in r["matched_providers"]]
+        self.assertIn(pid, ids); self.assertNotIn("P-9999", ids)
+        self.llm.available = lambda: False; self.llm.feature_enabled = lambda name: False
+        r2 = self.LD.triage_tip(f"They billed twice for the same visit at {name}", PT)
+        self.assertNotEqual(r2["engine"], "llm"); self.assertEqual(r2["scheme"], "duplicate billing"); self.assertIn(pid, [m["provider_id"] for m in r2["matched_providers"]])
+
+    def test_rule_draft_is_schema_validated(self):
+        from detection.rules import CUSTOM_FIELDS, CUSTOM_OPS
+        self.stub(dict(name="Short 90837", conditions=[dict(field="code", op="=", value="90837"), dict(field="duration_min", op="<", value="53"),
+                                                         dict(field="drop table", op="=", value="x"), dict(field="paid", op=">", value="lots")]))
+        r = self.LD.draft_rule("flag 90837 under 53 minutes", CUSTOM_FIELDS, CUSTOM_OPS)
+        self.assertTrue(r["ok"]); self.assertEqual(len(r["conditions"]), 2); self.assertEqual(len(r["rejected"]), 2)
+
+
+def _chart_review_api(self):
+    alex = self.login("alex")
+    r = alex.post("/api/cases/CS-0004/chart-review", json={"n": 8})
+    self.assertEqual(r.status_code, 200, r.text); j = r.json()
+    self.assertIn(j["engine"], ("keyword rules", "trained model")); self.assertGreaterEqual(j["reviewed"], 4); self.assertGreater(j["not_supported"], 0)
+    self.assertEqual(alex.get("/api/cases/CS-0004").json()["chart_review"]["reviewed"], j["reviewed"])
+    self.assertIn("Chart review sample", alex.get("/api/cases/CS-0004/brief.md").text)
+    t = alex.post("/api/tips", json={"channel": "Hotline", "subject_type": "provider", "subject_id": "", "allegation": "Caller says P-0108 billed visits that never happened, she never received them."})
+    self.assertEqual(t.status_code, 200)
+    tip = next(x for x in alex.get("/api/tips").json() if x["id"] == t.json()["id"])
+    self.assertEqual(tip["ai"]["scheme"], "phantom services"); self.assertIn("P-0108", [m["provider_id"] for m in tip["ai"]["matched_providers"]])
+
+
+ApiTests.test_chart_review_and_tip_triage_offline = _chart_review_api
+
+
+def _task_models_api(self):
+    from ai.models import registry as MR
+    if MR.load("prepay_line_risk") is None: self.skipTest("task models not trained (python3 -m ai.models.train_all)")
+    alex = self.login("alex")
+    ms = alex.get("/api/models").json()["models"]
+    self.assertEqual({m["name"] for m in ms} >= {"prepay_line_risk", "chart_documentation", "tip_triage", "case_outcome"}, True)
+    self.assertTrue(all(m["held_out"] for m in ms))
+    ex = alex.get("/api/prepay/examples").json()
+    r = alex.post("/api/prepay/score", json=ex[0]["claim"]).json()
+    self.assertIsNotNone(r["model"]); self.assertTrue(all(0 <= l["model_risk"] <= 1 for l in r["lines"]))
+    self.assertIn(r["recommendation"], ("PAY", "PAY_MONITOR", "PEND"))
+
+
+ApiTests.test_task_models_served = _task_models_api
+
+
+def _llm_settings_api(self):
+    from ai import llm
+    from api import app as srv
+    adm, alex = self.login("admin"), self.login("alex")
+    self.assertEqual(alex.get("/api/settings/llm").status_code, 403)
+    try:
+        r = adm.put("/api/settings/llm", json={"enabled": True, "provider": "deepseek", "model": "", "api_key": "sk-test-0000-abcd",
+                                               "features": {"chart_review": False, "tip_triage": True, "rule_drafting": True, "copilot": True}})
+        self.assertEqual(r.status_code, 200, r.text); j = r.json()
+        self.assertNotIn("sk-test-0000-abcd", r.text); self.assertEqual((j["key_set"], j["key_hint"], j["active"]), (True, "…abcd", "deepseek"))
+        self.assertEqual(oct(srv.SECRET.stat().st_mode & 0o777), "0o600")
+        self.assertFalse(llm.feature_enabled("chart_review")); self.assertTrue(llm.feature_enabled("tip_triage"))
+        self.assertNotIn("sk-test-0000-abcd", json.dumps(adm.get("/api/audit").json()))
+        self.assertEqual(adm.put("/api/settings/llm", json={"enabled": True, "provider": "zai", "base_url": "http://evil.example.com"}).status_code, 400)
+        off = adm.put("/api/settings/llm", json={"enabled": False, "provider": "deepseek", "clear_key": True}).json()
+        self.assertEqual((off["key_set"], off["active"]), (False, None)); self.assertFalse(srv.SECRET.exists())
+    finally:
+        srv.SECRET.unlink(missing_ok=True); llm.configure({"enabled": False, "provider": "none"})
+
+
+ApiTests.test_llm_settings_admin_only_and_key_never_exposed = _llm_settings_api
+
+
+
+class LegitAnomalyTests(unittest.TestCase):
+    def test_legitimate_anomalies_not_escalated_and_context_cannot_hide_fraud(self):
+        ev = run_once()["run"]["evaluation"]["legit_anomalies"]
+        self.assertGreaterEqual(ev["total"], 4)
+        self.assertEqual(ev["escalated"], 0, ev["detail"])
+        self.assertGreater(ev["naive_alarms"], ev["escalated"])
+        self.assertEqual(ev["adversarial_still_escalated"], ev["adversarial"], "a business event must not excuse rule findings")
+
+    def test_detection_reads_events_not_hidden_labels(self):
+        import inspect
+        from detection import context as CX
+        self.assertNotIn("legit_anomalies", inspect.getsource(CX))
+
+
+def _readiness_api(self):
+    alex = self.login("alex")
+    r = alex.get("/api/cases/CS-0004/plan").json()
+    self.assertTrue(0 <= r["score"] <= 100); self.assertTrue(r["plan"]["steps"]); self.assertEqual(r["plan"]["steps"][-1]["key"], "decision")
+    keys = [i["key"] for i in r["items"]]; self.assertIn("documentation", keys)
+    self.assertEqual(alex.post("/api/cases/CS-0004/plan/context", json={"status": "done", "note": ""}).status_code, 400)
+    r2 = alex.post("/api/cases/CS-0004/plan/context", json={"status": "done", "note": "No enrolment or contract events on file."}).json()
+    self.assertTrue(next(i for i in r2["items"] if i["key"] == "context")["done"])
+    if r2["score"] < r2["referral_bar"]:
+        x = alex.post("/api/cases/CS-0004/decision", json={"outcome": "Recommend referral", "reason": "Pattern consistent with level-5 upcoding."})
+        self.assertEqual(x.status_code, 409); self.assertIn("readiness", x.json()["detail"].lower())
+    self.assertIn("Investigation readiness", alex.get("/api/cases/CS-0004/brief.md").text)
+    alex.post("/api/cases/CS-0004/plan/context", json={"status": "todo"})
+
+
+ApiTests.test_readiness_plan_and_referral_gate = _readiness_api

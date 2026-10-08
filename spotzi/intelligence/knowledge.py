@@ -19,7 +19,7 @@ import time
 import numpy as np
 import pandas as pd
 
-from rules import RULES
+from detection.rules import RULES
 
 LINK = re.compile(r"\[\[([a-z0-9\-/]+)\]\]")
 MEMBER = re.compile(r"\bM-\d{5}\b")

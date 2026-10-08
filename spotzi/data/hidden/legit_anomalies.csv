@@ -1,0 +1,6 @@
+provider_id,kind,onset,explanation,legitimate
+P-0010,new-clinics,2025-03-01,Opened two new clinics; new local patients with an ordinary visit mix.,True
+P-0011,specialist-joined,2025-01-06,A cardiologist joined; complex cardiac patients justify higher visit levels and ECGs.,True
+P-0012,nursing-contract,2025-04-01,Started covering a nursing facility; frail residents need monthly visits.,True
+P-0013,acquisition,2025-02-03,Acquired another practice; its existing patients moved over.,True
+P-0005,fraud-with-event,2025-02-01,Upcoding scheme (S4) that coincides with a real new location.,False

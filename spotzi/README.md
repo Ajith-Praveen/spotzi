@@ -1,47 +1,94 @@
 # SpotZⁱ
 
-End-to-end healthcare payer FWA (fraud, waste, abuse) intelligence prototype. **Synthetic data only.** Humans make every decision.
-
-The responsive internal web app is installable as a PWA. It uses standalone display mode and caches only the application shell for quick startup. Case data, evidence reveals, and human decisions remain server-authoritative; offline users may view an explicit cached shell but cannot submit workflow actions.
+Healthcare payer FWA (fraud, waste, abuse) intelligence for Special Investigations Units. **Synthetic data only.** Humans make every decision.
 
 ## Run
 
 ```bash
-pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy
-cd spotzi && python3 server.py      # → http://localhost:8000
+pip install fastapi uvicorn pandas numpy scipy scikit-learn networkx psycopg cryptography httpx joblib
+cd spotzi && ./start.sh            # PostgreSQL (data/pg, port 5544) + web app → http://localhost:8000
+./stop.sh
+```
+Demo accounts and passwords: `cat data/seed_users.json` (owner-readable only).
+
+## Project layout
+
+```
+spotzi/
+├── server.py                 entry point (python3 server.py / ./start.sh)
+├── start.sh · stop.sh        start/stop PostgreSQL + web server
+│
+├── api/                      HTTP layer
+│   └── app.py                FastAPI routes, auth middleware, CSRF/CSP, RBAC, audit
+├── detection/                detection engine
+│   ├── pipeline.py           load → validate → detect → connect → forecast → cases
+│   ├── rules.py              10 explainable rules + analyst custom-rule language
+│   ├── analytics.py          features, Isolation Forest, 30/60/90 hazard forecast, provider graph
+│   ├── sentinel.py           case-mix twin, care-pathway model
+│   ├── brain.py              change-point, code mix, patient panel, Nexus Brain fusion + learning
+│   └── linkgraph.py          link analysis (hospital ↔ doctor ↔ patient ↔ organisation)
+├── intelligence/             investigator reasoning
+│   ├── briefs.py             ranking, case detail, evidence, Markdown brief
+│   ├── lab.py                Challenge Lab (expected information gain)
+│   ├── precedents.py         difference-first precedent retrieval
+│   └── knowledge.py          knowledge wiki + decision chain
+├── ai/                       LLM layer + trained task models
+│   ├── llm.py                provider config (DeepSeek, z.ai, OpenAI-compatible, Anthropic, local), feature switches
+│   ├── llm_detect.py         chart review, tip structuring, rule drafting (grounded, schema-validated)
+│   ├── charts.py             synthetic medical-record system for chart review
+│   └── models/               trained per-process models
+│       ├── train_all.py      trains + evaluates every model, writes model cards
+│       ├── registry.py       versioned artifacts + cards (data/models/)
+│       ├── prepay_model.py · chart_model.py · tip_model.py · outcome_model.py
+│       └── tipgen.py         synthetic tip corpus
+├── operations/               SIU operations
+│   ├── ops.py                pre-payment check, recoveries/ROI, documents, tips
+│   ├── scope.py              case split / merge
+│   ├── notify.py             notifications + email/Slack/webhook outbox
+│   └── x12.py                837P / 837I import & export
+├── infra/                    platform
+│   ├── auth.py               PBKDF2 passwords, sessions, TOTP MFA, OIDC SSO
+│   └── dbcompat.py           PostgreSQL / SQLite compatibility layer
+├── synthdata/                synthetic data
+│   ├── gen.py                synthetic claims world generator (scenarios + decoys)
+│   ├── importers.py          CMS DE-SynPUF and Synthea importers (both synthetic)
+│   └── inject.py             labelled scheme injection for evaluation
+├── evaluation/               measurement
+│   ├── evaluate_public.py    accuracy on DE-SynPUF / Synthea backgrounds
+│   └── evaluate_llm.py       chart-review reviewer comparison
+├── scripts/migrate_to_postgres.py
+├── static/                   web app (PWA): index.html, app.js, styles.css, sw.js
+├── tests/test_spotzi.py      41 tests (run on PostgreSQL and SQLite)
+└── data/                     runtime data (mostly git-ignored)
+    ├── synthetic/ · hidden/  demo claims world · its hidden labels (evaluation only)
+    ├── pg/ · db.env          PostgreSQL cluster · connection string
+    ├── models/               trained model artifacts + cards (+ local sentence encoder)
+    ├── secrets/              LLM API key (owner-only file; never in the DB)
+    ├── llm.env               optional LLM settings via environment
+    ├── evaluation/           evaluation results (JSON)
+    ├── external/             downloaded synthetic datasets (DE-SynPUF, Synthea)
+    ├── workspaces/ · training/  imported datasets · generated training worlds
+    └── documents/ · cache/   case attachments · LLM response cache
 ```
 
-First start generates ~64k synthetic claim lines (8 service families, 132 providers, 2,500 members) and runs the whole pipeline in ~7s.
+## Database
+PostgreSQL 16 holds application state: users, sessions, MFA, decisions, four-eyes approvals, audit log, assignments, notes, notifications/outbox, case scope (split/merge), tips and AI triage, case documents metadata, chart reviews, custom rules, pre-payment log, recoveries, knowledge wiki and settings. Claims are loaded from CSV / X12 files into memory for each analysis run. SQLite is a zero-setup fallback (`SPOTZI_DB_URL` unset).
 
-## What it does
+## Common tasks
+```bash
+python3 -m pytest -q tests                      # or: python3 -m unittest tests.test_spotzi
+python3 -m ai.models.train_all                  # retrain all task models (~6 min)
+python3 -m evaluation.evaluate_public           # DE-SynPUF + Synthea accuracy
+python3 -m evaluation.evaluate_llm [--llm]      # chart reviewers (LLM needs a key)
+```
 
-| Step | Implementation |
-|---|---|
-| Load + validate | `pipeline.py` – 9 CSV tables, FK/date/null/coverage checks; a failing run keeps the previous analysis live |
-| Detect (rules) | `rules.py` – duplicate, repeat/early-refill, unbundling, upcoding/time mismatch, phantom (inpatient / post-termination / post-death), impossible timing, excessive utilisation. Each flag cites its source row + reason |
-| Detect (ML) | `analytics.py` – Isolation Forest (provider, peer-normalised; claim-line) |
-| Connect | `analytics.py` – provider graph (referral flow, shared ownership/address/bank, shared members), Louvain communities, "suspicious-tie" subgraph for case grouping |
-| Forecast | logistic + gradient-boosting ensemble per 30/60/90-day horizon, biweekly provider snapshots, temporal split without label leakage, calibration + baseline shown |
-| Rank | `briefs.rank` – weighted priority (risk, forecast, dollars, member impact, severity, evidence strength) + review-capacity packing; weights/capacity adjustable live |
-| Explain | `briefs.case_detail` – evidence w/ sources, timeline, network, competing explanations, confidence, limitations, recommended action; Markdown export |
-| Decide | sqlite audit + decisions; written rationale required; four-eyes referral approval; weak-evidence cases abstain and cannot be referred |
+## LLM (optional)
+An admin opens **Settings → AI & LLM** and chooses:
+- **on/off**;
+- the **provider** (DeepSeek, z.ai, OpenAI-compatible, Anthropic, or a local server) and the **model**;
+- the **API key** (stored on the server, never shown again);
+- which features to use: chart review, tip structuring, rule drafting and copilot.
 
-Screens: Overview · SIU queue · Case brief (Brief / Evidence / Network / Timeline / Forecast / Challenge lab / Claims / Decision) · Network explorer · Providers & claims · Data & pipeline (regenerate with new seed) · Governance.
+**Test connection** checks the setup. With the LLM off, everything runs on the trained models and rules.
 
-## Second brain (all in-house, no external model needed)
-
-| Layer | What it does | File |
-|---|---|---|
-| 7 detectors | rules · Isolation Forest · network graph · Sentinel case-mix twin · Sentinel care-pathway · behaviour change-point · peer code-mix divergence | `rules.py`, `analytics.py`, `sentinel.py`, `brain.py` |
-| Nexus Brain | one-sided evidence fusion; weights learn from human decisions (MAP update around expert priors, non-negative, steady); insight feed | `brain.py` |
-| Knowledge wiki | ingest (runs + decisions propose pages) → lint (citations, member IDs, contradictions) → human review → versioned pages → TF-IDF retrieval | `knowledge.py` |
-| Decision chain | Retrieve → Interpret → Apply rules → Propose → Score → Cite, per case | `knowledge.py` |
-| Challenge lab / precedents | information-gain evidence checks; difference-first precedent retrieval | `lab.py`, `precedents.py` |
-
-Held-out test: scenario `S9-recruitment-mill` is targeted by no rule. Rules score it ~0; the learned detectors open it as a "Brain lead" case.
-
-## Honest notes
-
-- Hidden scenario truth (`data/hidden/`) is used only for evaluation, forecast labels and the Challenge-Lab evidence vault — never for detection.
-- Decoys (oncology, dialysis, chain pharmacies) are benign look-alikes that exercise the uncertainty paths.
-- Synthetic performance does not transfer to real claims.
+See `../SPOTZI_PRODUCT.md` for the full feature list and `../EVALUATION.md` for measured accuracy.

@@ -14,5 +14,7 @@ fi
 if [ -d data/pg ]; then
   pg_ctl -D data/pg status >/dev/null 2>&1 || pg_ctl -D data/pg -l data/pg/server.log -w start
 fi
+# Optional LLM settings (owner-readable file, never committed): LLM_PROVIDER=deepseek|zai|openai|anthropic|none, LLM_API_KEY=..., LLM_MODEL=...
+if [ -f data/llm.env ]; then set -a; . data/llm.env; set +a; fi
 echo "Starting SpotZⁱ at http://localhost:$PORT"
 exec python3 server.py

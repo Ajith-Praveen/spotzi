@@ -1,0 +1,67 @@
+{
+ "task": "Case substantiation likelihood",
+ "process": "SIU queue \u2192 probability a case's providers are substantiated",
+ "kind": "Logistic regression (standardised), class-balanced",
+ "trained_on": "4747 providers: generator worlds + DE-SynPUF training patients (disjoint from test)",
+ "features": [
+  "rule_score",
+  "anomaly_pct",
+  "graph_score",
+  "twin_pct",
+  "path_pct",
+  "drift_pct",
+  "mix_pct",
+  "panel_pct",
+  "any_share",
+  "log_lines"
+ ],
+ "coefficients": {
+  "rule_score": 0.834,
+  "anomaly_pct": 1.988,
+  "graph_score": 0.836,
+  "twin_pct": 0.078,
+  "path_pct": 2.553,
+  "drift_pct": 0.447,
+  "mix_pct": -0.003,
+  "panel_pct": 0.491,
+  "any_share": 0.287,
+  "log_lines": -0.037
+ },
+ "held_out": {
+  "demo world (seed 7)": {
+   "providers": 132,
+   "positives": 15,
+   "auc": 0.994,
+   "ap": 0.964,
+   "brain_auc": 0.994,
+   "brain_ap": 0.961,
+   "risk_auc": 0.985
+  },
+  "synpuf + injected schemes": {
+   "providers": 4332,
+   "positives": 21,
+   "auc": 0.986,
+   "ap": 0.799,
+   "brain_auc": 0.991,
+   "brain_ap": 0.566,
+   "risk_auc": 0.991
+  },
+  "synthea + injected schemes": {
+   "providers": 200,
+   "positives": 14,
+   "auc": 1.0,
+   "ap": 1.0,
+   "brain_auc": 0.997,
+   "brain_ap": 0.953,
+   "risk_auc": 0.997
+  }
+ },
+ "use": "Shown on cases and providers as a learned estimate from simulated closed cases. Not used to rank or decide; Nexus Brain keeps learning from your real decisions.",
+ "limitations": [
+  "Trained on simulated outcomes. Replace with your closed SIU cases when available (same script)."
+ ],
+ "name": "case_outcome",
+ "trained": "2026-10-08 23:14:39",
+ "artifact": "case_outcome.joblib",
+ "sha256": "9e668f7a61e7b15b"
+}

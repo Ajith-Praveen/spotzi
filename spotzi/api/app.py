@@ -14,12 +14,12 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
-import analytics as A
-import briefs
-import pipeline as PL
-from rules import RULES
+from detection import analytics as A
+from intelligence import briefs
+from detection import pipeline as PL
+from detection.rules import RULES
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parents[1]
 import os
 _envf = ROOT / "data" / "db.env"
 if _envf.exists() and "SPOTZI_DB_URL" not in os.environ and "SPOTZI_DB" not in os.environ:
@@ -33,11 +33,13 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def _lifespan(app_):
     boot()
+    try: load_llm_settings()
+    except Exception as e: print("SpotZⁱ: LLM settings not loaded:", e)
     yield
 
 
 app = FastAPI(title="SpotZⁱ", lifespan=_lifespan)
-import auth as AU
+from infra import auth as AU
 from fastapi.responses import Response
 
 PUBLIC_API = {"/api/login", "/api/login/mfa", "/api/logout", "/api/me", "/api/sso/config", "/api/sso/login", "/api/sso/callback"}
@@ -99,7 +101,7 @@ async def body(req: Request):
 
 
 def notify(username, kind, text, link=""):
-    import notify as NT
+    from operations import notify as NT
     c = db(); c.execute("INSERT INTO notifications(username,ts,kind,text,link) VALUES(?,?,?,?,?)", (username, time.strftime("%Y-%m-%d %H:%M:%S"), kind, text, link))
     u = c.execute("SELECT * FROM users WHERE username=? AND active=1", (username,)).fetchone()
     if u: NT.enqueue(c, u, text, link)
@@ -134,7 +136,7 @@ def db_target():
 
 
 def db():
-    import dbcompat
+    from infra import dbcompat
     url = os.environ.get("SPOTZI_DB_URL")
     if not url: DB.parent.mkdir(parents=True, exist_ok=True)
     c = dbcompat.connect(url=url, path=DB)
@@ -153,16 +155,18 @@ def _schema(c):
     CREATE TABLE IF NOT EXISTS precedent_quality(case_id TEXT PRIMARY KEY, status TEXT, reviewer TEXT, reason TEXT, ts TEXT, snapshot TEXT);
     CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, actor TEXT, role TEXT, action TEXT, target TEXT, detail TEXT);
     """)
-    import knowledge as KN
+    from intelligence import knowledge as KN
     KN.schema(c)
-    import auth as AU
+    from infra import auth as AU
     AU.schema(c); AU.migrate(c)
-    import notify as NT
+    from operations import notify as NT
     NT.schema(c)
-    import scope as SC
+    from operations import scope as SC
     SC.schema(c)
-    import ops as OP
+    from operations import ops as OP
     OP.schema(c)
+    c.executescript("""
+    CREATE TABLE IF NOT EXISTS app_settings(key TEXT PRIMARY KEY, value TEXT, updated_by TEXT, ts TEXT);""")
     c.executescript("""
     CREATE TABLE IF NOT EXISTS case_assign(case_id TEXT PRIMARY KEY, assignee TEXT, assignee_name TEXT, assigned_by TEXT, ts TEXT, due TEXT);
     CREATE TABLE IF NOT EXISTS case_notes(id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, author TEXT, role TEXT, ts TEXT, text TEXT);
@@ -174,7 +178,7 @@ def audit(actor, role, action, target, detail=""):
     c = db(); c.execute("INSERT INTO audit(ts,actor,role,action,target,detail) VALUES(?,?,?,?,?,?)", (time.strftime("%Y-%m-%d %H:%M:%S"), actor, role, action, target, detail)); c.commit(); c.close()
 
 
-import brain as BR
+from detection import brain as BR
 
 
 def brain_now(s):
@@ -222,12 +226,12 @@ def start_run(seed=None, members=2500, data_dir=None):
 
 def boot():
     c = db()
-    import notify as NT
+    from operations import notify as NT
     NT.start_worker(db)
     if AU.seed(c, USERS_FILE): print(f"SpotZⁱ: created local demo accounts -> {USERS_FILE}")
     c.commit(); c.close()
     if not (PL.DATA / "claim_lines.csv").exists():
-        import gen; gen.generate(out_dir=PL.DATA)
+        from synthdata import gen; gen.generate(out_dir=PL.DATA)
     STATE["status"] = dict(state="running", step="initial analysis", started=time.time(), error=None)
     def first():
         try:
@@ -248,9 +252,9 @@ def _active_rules():
 
 
 def _ingest(s):
-    import scope as SC
+    from operations import scope as SC
     c0 = db(); SC.rebuild(s, c0); c0.close()
-    import knowledge as KN
+    from intelligence import knowledge as KN
     c = db(); KN.bootstrap(c); n = KN.ingest_run(c, s); c.commit(); c.close()
     if n: audit("system", "system", "wiki_ingest", s["run"]["run_id"], f"{n} proposed page update(s)")
 
@@ -329,17 +333,73 @@ def case(cid: str, horizon: int = 60):
     cx = db()
     d["tips"] = [dict(r) for r in cx.execute("SELECT id, ts, channel, allegation, status FROM tips WHERE case_id=? ORDER BY id", (cid,)).fetchall()]
     d["documents"] = [dict(r) for r in cx.execute("SELECT id, filename, size, uploaded_by, ts FROM case_documents WHERE case_id=? ORDER BY id", (cid,)).fetchall()]
+    cr = cx.execute("SELECT * FROM chart_reviews WHERE case_id=? ORDER BY id DESC LIMIT 1", (cid,)).fetchone()
+    d["chart_review"] = {**json.loads(cr["result"]), "ts": cr["ts"], "by": cr["user_name"]} if cr else None
     cx.close()
+    d["ai"] = LD.status()
+    d["readiness"] = _readiness(s, cid, d)
+    d["context"] = (_case_obj(s, cid) or {}).get("context") or {}
     return J(d)
+
+
+def _readiness(s, cid, d=None):
+    from intelligence import plan as PLN
+    c_ = _case_obj(s, cid)
+    if not c_: return None
+    d = d or briefs.case_detail(s, cid)
+    cx = db()
+    steps = {r["step_key"]: dict(r) for r in cx.execute("SELECT * FROM plan_steps WHERE case_id=?", (cid,)).fetchall()}
+    cr = cx.execute("SELECT result FROM chart_reviews WHERE case_id=? ORDER BY id DESC LIMIT 1", (cid,)).fetchone()
+    nd = cx.execute("SELECT COUNT(*) AS n FROM case_documents WHERE case_id=?", (cid,)).fetchone()["n"]
+    cx.close()
+    try:
+        fp = PR.fingerprint(c_, d); n_prec = len(PR.retrieve(fp, SEED_LIB + [p for p in _live_precedents(s) if p.get("source_case") != cid], 3))
+    except Exception:
+        n_prec = 0
+    return PLN.assess(c_, d, dict(steps=steps, chart=json.loads(cr["result"]) if cr else None, documents=int(nd), precedents=n_prec))
+
+
+@app.get("/api/cases/{cid}/plan")
+def case_plan(cid: str):
+    r = _readiness(S(), cid)
+    if r is None: raise HTTPException(404)
+    return J(r)
+
+
+@app.post("/api/cases/{cid}/plan/{key}")
+async def case_plan_step(cid: str, key: str, req: Request):
+    u = need(req, "investigate"); b = json.loads(await req.body() or b"{}")
+    st, note = b.get("status"), (b.get("note") or "").strip()
+    if st not in ("done", "skipped", "todo"): raise HTTPException(400, "status must be done, skipped or todo")
+    if st != "todo" and len(note) < 5: raise HTTPException(400, "Add a note (5+ characters) saying what was done or why it was skipped")
+    if not _re.match(r"^[a-z_A-Z]{3,40}$", key) or not _case_obj(S(), cid): raise HTTPException(404)
+    c = db(); c.execute("DELETE FROM plan_steps WHERE case_id=? AND step_key=?", (cid, key))
+    if st != "todo":
+        c.execute("INSERT INTO plan_steps(case_id,step_key,status,note,user_name,ts) VALUES(?,?,?,?,?,?)", (cid, key, st, note[:500], u["name"], time.strftime("%Y-%m-%d %H:%M:%S")))
+    c.commit(); c.close()
+    audit(u["name"], u["role"], f"plan_step_{st}", cid, f"{key}: {note[:150]}")
+    return J(_readiness(S(), cid))
 
 
 @app.get("/api/cases/{cid}/brief.md")
 def brief_md(cid: str):
     s = S(); d = briefs.case_detail(s, cid)
     if d is None: raise HTTPException(404)
-    c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM decisions WHERE case_id=? ORDER BY id", (cid,)).fetchall()]; c.close()
+    c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM decisions WHERE case_id=? ORDER BY id", (cid,)).fetchall()]
+    cr = c.execute("SELECT * FROM chart_reviews WHERE case_id=? ORDER BY id DESC LIMIT 1", (cid,)).fetchone(); c.close()
+    md = briefs.brief_markdown(d, rows)
+    rd = _readiness(s, cid, d)
+    if rd:
+        md += (f"\n\n## Investigation readiness: {rd['score']}% (referral bar {rd['referral_bar']}%)\n\n**Recommendation:** {rd['recommendation']}\n\n"
+               + "\n".join(f"- [{'x' if i['done'] else ' '}] {i['label']} — {i['detail']}" for i in rd["items"])
+               + "\n\n### Action plan\n\n" + "\n".join(f"{st['order']}. **{st['title']}** ({st['owner']}, ~{st['minutes']} min) — {st['how']}" for st in rd["plan"]["steps"]) + "\n")
+    if cr:
+        r = json.loads(cr["result"])
+        md += (f"\n\n## Chart review sample ({cr['ts']}, {r['engine']}{' · ' + r['model'] if r.get('model') else ''})\n\n{r['summary']}\n\n| Line | Billed | Documented | Supports billed | Quote |\n|---|---|---|---|---|\n"
+               + "\n".join(f"| {x['line_id']} | {x['code']} | {x.get('documented_code') or '-'} | {'yes' if x['supports_billed'] else 'no'} | {str(x['quote']).replace('|', '/')[:120]} |" for x in r["rows"])
+               + "\n\n_A sample, not the population; findings are for human review._\n")
     audit("viewer", "investigator", "export_brief", cid)
-    return PlainTextResponse(briefs.brief_markdown(d, rows), media_type="text/markdown", headers={"Content-Disposition": f"attachment; filename={cid}-brief.md"})
+    return PlainTextResponse(md, media_type="text/markdown", headers={"Content-Disposition": f"attachment; filename={cid}-brief.md"})
 
 
 OUTCOMES = ["Open investigation", "Request more information", "Monitor", "Close - insufficient evidence", "Close - legitimate explanation", "Recommend referral", "Approve referral", "Reject referral"]
@@ -366,6 +426,13 @@ async def decide(cid: str, req: Request):
     if outcome == "Recommend referral" and case["lane"] == "Needs more data":
         c.close(); raise HTTPException(409, "Evidence is below the referral threshold; request more information first.")
     d = briefs.case_detail(s, cid)
+    if outcome == "Recommend referral":
+        rd = _readiness(s, cid, d)
+        if rd and rd["score"] < rd["referral_bar"] and not b.get("acknowledge_gaps"):
+            c.close(); raise HTTPException(409, f"Investigation readiness is {rd['score']}% (bar {rd['referral_bar']}%). Missing: {', '.join(rd['missing'])}. "
+                                                 "Complete the action plan, or acknowledge the gaps explicitly to refer anyway.")
+        if rd and rd["score"] < rd["referral_bar"]:
+            reason = f"{reason} [Referred below readiness bar ({rd['score']}%); gaps acknowledged: {', '.join(rd['missing'])}]"
     c.execute("INSERT INTO decisions(case_id,outcome,reason,reviewer,role,ts,run_id,priority,evidence,confidence,checks) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
               (cid, outcome, reason, reviewer, role, time.strftime("%Y-%m-%d %H:%M:%S"), s["run"]["run_id"], case["risk"], case["evidence"], d["confidence"]["label"], json.dumps(b.get("checks", []))))
     c.commit(); c.close()
@@ -373,7 +440,7 @@ async def decide(cid: str, req: Request):
     if outcome == "Recommend referral":
         cn = db(); sups = [r["username"] for r in cn.execute("SELECT username FROM users WHERE role IN ('supervisor','admin') AND active=1").fetchall()]; cn.close()
         for su in sups: notify(su, "approval", f"{reviewer} recommends referral for {cid}: approval needed", f"case/{cid}/decision")
-    import knowledge as KN
+    from intelligence import knowledge as KN
     cx = db(); last = dict(cx.execute("SELECT * FROM decisions WHERE case_id=? ORDER BY id DESC LIMIT 1", (cid,)).fetchone())
     n = KN.ingest_decision(cx, case, last); cx.commit(); cx.close()
     return J(dict(ok=True, status=briefs.STATUS_FROM_OUTCOME[outcome], wiki_proposals=n))
@@ -425,7 +492,7 @@ def provider(pid: str):
     codes = sub.groupby("code").agg(lines=("line_id", "size"), paid=("paid", "sum"), flagged=("any_flag", "sum")).reset_index().sort_values("paid", ascending=False).head(10)
     r = PT.loc[pid]
     return J(dict(provider_id=pid, profile={k: r[k] for k in ["name", "family", "specialty", "city", "npi", "org_id", "address_id", "bank_id", "context_note"]},
-                  scores={k: r[k] for k in ["risk", "rule_score", "anomaly_pct", "graph_score", "sentinel", "twin_pct", "path_pct", "oe_paid", "panel_pct", "fc30", "fc60", "fc90"]},
+                  scores={k: r[k] for k in ["risk", "rule_score", "anomaly_pct", "graph_score", "sentinel", "twin_pct", "path_pct", "oe_paid", "panel_pct", "outcome_p", "fc30", "fc60", "fc90"]},
                   rules={k: dict(name=RULES[k]["name"], lines=int(r[f"n_{k}"]), share=float(r[f"s_{k}"])) for k in RULES},
                   monthly=mg.to_dict("records"), codes=codes.to_dict("records"), network=PL.ego_graph(s, [pid], True, 12),
                   anomaly_drivers=s["adrivers"].get(pid, []), forecast_why=s["fc"]["why"].get(pid, {})))
@@ -483,22 +550,92 @@ def data_overview():
     for k, v in T.items():
         if v is None or k == "truth": continue
         tabs.append(dict(name=k, rows=int(len(v)), columns=list(v.columns), sample=clean(v.head(5).astype(str).to_dict("records"))))
-    return J(dict(tables=tabs, validation=s["run"]["validation"], log=s["run"]["log"], codes=[dict(code=c, family=v[0], description=v[1], price=v[2]) for c, v in __import__("gen").CODES.items()]))
+    return J(dict(tables=tabs, validation=s["run"]["validation"], log=s["run"]["log"], codes=[dict(code=c, family=v[0], description=v[1], price=v[2]) for c, v in __import__("synthdata.gen", fromlist=["CODES"]).CODES.items()]))
 
 
 
 # ---------------------------------------------------------------- LLM (grounded, optional)
-import llm
+from ai import llm
 NARR: dict = {}
 
 
 @app.get("/api/llm/status")
 def llm_status():
-    return J(dict(available=llm.available(), model=llm.model_name(), provider=llm.provider()))
+    return J(dict(available=llm.feature_enabled("copilot"), model=llm.model_name(), provider=llm.provider()))
 
 
 def _llm_guard():
-    if not llm.available(): raise HTTPException(503, "No LLM available. Start a local model server (see README: mlx_lm.server on :8080) or set a valid ANTHROPIC_API_KEY. Deterministic briefs still work.")
+    if not llm.feature_enabled("copilot"): raise HTTPException(503, "The AI copilot is off. An admin can enable an LLM under Settings → AI & LLM. Deterministic briefs still work.")
+
+
+# ---------------------------------------------------------------- LLM settings (admin): provider, model, key, per-feature switches
+SECRET = Path(os.environ.get("SPOTZI_SECRETS_DIR", ROOT / "data" / "secrets")) / "llm_api_key"
+
+
+def _read_secret():
+    try: return SECRET.read_text().strip()
+    except FileNotFoundError: return ""
+
+
+def _write_secret(v: str | None):
+    SECRET.parent.mkdir(parents=True, exist_ok=True); SECRET.parent.chmod(0o700)
+    if not v:
+        SECRET.unlink(missing_ok=True); return
+    SECRET.touch(mode=0o600); SECRET.chmod(0o600); SECRET.write_text(v)
+
+
+def load_llm_settings():
+    """Apply settings saved in the app (DB + secret file). Nothing saved → environment / data/llm.env."""
+    c = db(); r = c.execute("SELECT value FROM app_settings WHERE key='llm'").fetchone(); c.close()
+    if not r: llm.configure(None); return
+    cfg = json.loads(r["value"]); cfg["api_key"] = _read_secret() or (llm._env_cfg()["api_key"] if cfg.get("provider") == llm._env_cfg()["provider"] else "")
+    llm.configure(cfg)
+
+
+def _llm_public():
+    c = llm.config(); k = c.get("api_key") or ""
+    return dict(enabled=bool(c.get("enabled")), provider=c.get("provider") or "none", model=c.get("model") or "", base_url=c.get("base_url") or "",
+                key_set=bool(k), key_hint=("…" + k[-4:]) if len(k) >= 8 else ("set" if k else ""), features=c.get("features", {}),
+                feature_labels=llm.FEATURES, active=llm.provider(), active_model=llm.model_name() if llm.available() else None,
+                providers={**{p: dict(base_url=b, model=m) for p, (b, m) in llm.PRESETS.items()}, "anthropic": dict(base_url=llm.ANTHROPIC_DEFAULT[0], model=llm.ANTHROPIC_DEFAULT[1]),
+                           "local": dict(base_url=llm.LOCAL_URL, model="")},
+                note="The API key is stored on the server in an owner-only file, never in the database, never returned to the browser and never written to the audit log.")
+
+
+@app.get("/api/settings/llm")
+def llm_settings_get(req: Request):
+    need(req, "manage_users"); return J(_llm_public())
+
+
+@app.put("/api/settings/llm")
+async def llm_settings_put(req: Request):
+    u = need(req, "manage_users"); b = json.loads(await req.body() or b"{}")
+    prov = (b.get("provider") or "none").lower()
+    if prov not in ("none", "local", "anthropic", *llm.PRESETS): raise HTTPException(400, "Unknown provider")
+    base = (b.get("base_url") or "").strip()
+    if base and not _re.match(r"^https?://[\w.\-:]+(/[\w.\-/]*)?$", base): raise HTTPException(400, "Base URL must be an http(s) URL")
+    if base.startswith("http://") and not _re.match(r"^http://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(/|$)", base): raise HTTPException(400, "Plain http is allowed only for a local server; use https")
+    feats = {k: bool((b.get("features") or {}).get(k, True)) for k in llm.FEATURES}
+    cfg = dict(enabled=bool(b.get("enabled")), provider=prov, model=(b.get("model") or "").strip()[:80], base_url=base, features=feats)
+    if b.get("clear_key"): _write_secret(None)
+    elif b.get("api_key"):
+        k = str(b["api_key"]).strip()
+        if len(k) < 8 or len(k) > 400 or any(ch.isspace() for ch in k): raise HTTPException(400, "That does not look like an API key")
+        _write_secret(k)
+    c = db()
+    c.execute("DELETE FROM app_settings WHERE key='llm'")
+    c.execute("INSERT INTO app_settings(key,value,updated_by,ts) VALUES(?,?,?,?)", ("llm", json.dumps(cfg), u["name"], time.strftime("%Y-%m-%d %H:%M:%S")))
+    c.commit(); c.close()
+    load_llm_settings()
+    audit(u["name"], u["role"], "llm_settings_changed", prov, json.dumps({**cfg, "key": "changed" if b.get("api_key") else ("cleared" if b.get("clear_key") else "unchanged")}))
+    return J(_llm_public())
+
+
+@app.post("/api/settings/llm/test")
+async def llm_settings_test(req: Request):
+    u = need(req, "manage_users"); r = await asyncio.to_thread(llm.test_connection)
+    audit(u["name"], u["role"], "llm_connection_test", r.get("provider") or "none", "ok" if r["ok"] else "failed")
+    return J(r)
 
 
 @app.post("/api/cases/{cid}/narrative")
@@ -530,8 +667,8 @@ async def ask_case(cid: str, req: Request):
 
 
 # ---------------------------------------------------------------- Evidence Challenge Lab (doc 21)
-import lab
-import precedents as PR
+from intelligence import lab
+from intelligence import precedents as PR
 SEED_LIB = PR.seed_library()
 
 
@@ -721,7 +858,7 @@ def brain_api():
 
 
 # ---------------------------------------------------------------- Knowledge wiki + decision chain
-import knowledge as KN
+from intelligence import knowledge as KN
 
 
 @app.get("/api/wiki")
@@ -1068,7 +1205,7 @@ async def upload(req: Request, files: list[UploadFile] = File(...)):
     edi = [n for n in names if n.endswith((".837", ".edi", ".x12", ".txt"))]
     x12_report = None
     if edi:  # X12 837 files -> SpotZⁱ tables (CSV files of the same table override)
-        import x12
+        from operations import x12
         frames = {}
         for n in edi:
             raw = (await names[n].read()).decode("latin-1")
@@ -1118,7 +1255,7 @@ async def use_synth(req: Request):
 @app.get("/api/data/sample.837")
 def sample_837(req: Request, kind: str = "P", n: int = 3000):
     """Export current synthetic claims as an 837 file (demo / integration testing)."""
-    need(req, "run_models"); import x12
+    need(req, "run_models"); from operations import x12
     t = PL.load_tables(PL.DATA); L = t["lines"]
     L = L[L.code == "INP-DAY"] if kind == "I" else L[L.family != "FAC"]
     txt = x12.export_837(L.head(min(n, 20000)), t["providers"], t["members"], kind)
@@ -1144,7 +1281,7 @@ async def my_prefs(req: Request):
 
 @app.get("/api/outbox")
 def outbox(req: Request):
-    need(req, "manage_users"); import notify as NT
+    need(req, "manage_users"); from operations import notify as NT
     c = db(); rows = [dict(r) for r in c.execute("SELECT id, channel, recipient, subject, status, attempts, last_error, created, sent FROM outbox ORDER BY id DESC LIMIT 100").fetchall()]; c.close()
     return J(dict(channels=NT.channels(), rows=rows))
 
@@ -1161,7 +1298,7 @@ async def case_merge(cid: str, req: Request):
     other, reason = b.get("other", ""), (b.get("reason") or "").strip()
     if len(reason) < 10: raise HTTPException(400, "Explain why these cases belong together (10+ characters).")
     if not _case_obj(s, cid) or not _case_obj(s, other) or cid == other: raise HTTPException(400, "Pick two different existing cases")
-    import scope as SC
+    from operations import scope as SC
     c = db(); c.execute("INSERT INTO case_scope(kind,target,other,providers,new_id,actor,role,reason,ts) VALUES(?,?,?,?,?,?,?,?,?)", ("merge", cid, other, "[]", None, u["name"], u["role"], reason, time.strftime("%Y-%m-%d %H:%M:%S")))
     c.commit(); SC.rebuild(s, c); c.close()
     audit(u["name"], u["role"], "case_merged", cid, f"{other} merged in: {reason[:120]}")
@@ -1176,7 +1313,7 @@ async def case_split(cid: str, req: Request):
     if not c0: raise HTTPException(404)
     if len(reason) < 10: raise HTTPException(400, "Explain why these providers need a separate case (10+ characters).")
     if not move or not set(move) < set(c0["primary"]): raise HTTPException(400, "Move some, but not all, of the case's primary providers.")
-    import scope as SC
+    from operations import scope as SC
     c = db(); n = c.execute("SELECT COUNT(*) FROM case_scope WHERE kind='split' AND target=?", (cid,)).fetchone()[0] + 1
     new_id = f"{cid}-S{n}"
     c.execute("INSERT INTO case_scope(kind,target,other,providers,new_id,actor,role,reason,ts) VALUES(?,?,?,?,?,?,?,?,?)", ("split", cid, None, json.dumps(move), new_id, u["name"], u["role"], reason, time.strftime("%Y-%m-%d %H:%M:%S")))
@@ -1187,20 +1324,20 @@ async def case_split(cid: str, req: Request):
 
 @app.get("/api/cases/{cid}/scope")
 def case_scope(cid: str):
-    s = S(); import scope as SC
+    s = S(); from operations import scope as SC
     c = db(); rows = [e for e in SC.edits(c) if cid in (e["target"], e["other"], e["new_id"])]; c.close()
     return J(dict(edits=rows, retired_to=s.get("retired", {}).get(cid), problems=s.get("scope_problems", [])))
 
 
 @app.post("/api/scope/{eid}/undo")
 def scope_undo(eid: int, req: Request):
-    u = need(req, "assign"); s = S(); import scope as SC
+    u = need(req, "assign"); s = S(); from operations import scope as SC
     c = db(); c.execute("UPDATE case_scope SET active=0 WHERE id=?", (eid,)); c.commit(); SC.rebuild(s, c); c.close()
     audit(u["name"], u["role"], "case_scope_undo", str(eid)); return J(dict(ok=True))
 
 
 # ---------------------------------------------------------------- link analysis (entity graph)
-import linkgraph as LGM
+from detection import linkgraph as LGM
 
 
 def _lg():
@@ -1246,7 +1383,12 @@ def graph_path(a: str, b: str):
 
 
 # ---------------------------------------------------------------- operations: pre-payment, outcomes, rules, documents, tips
-import ops as OP
+from operations import ops as OP
+import asyncio
+import logging
+from ai import charts as CH
+from ai import llm_detect as LD
+log = logging.getLogger("spotzi")
 from fastapi import UploadFile as _UF, File as _File
 
 
@@ -1334,14 +1476,14 @@ def siu_csv(req: Request, rate: float = 65, frm: str = "", to: str = ""):
 def rules_list():
     c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM custom_rules ORDER BY id DESC").fetchall()]; c.close()
     for r in rows: r["conditions"] = json.loads(r["conditions"])
-    from rules import CUSTOM_FIELDS, CUSTOM_OPS
+    from detection.rules import CUSTOM_FIELDS, CUSTOM_OPS
     return J(dict(rules=rows, fields=CUSTOM_FIELDS, ops=sorted(CUSTOM_OPS)))
 
 
 @app.post("/api/rules/preview")
 async def rules_preview(req: Request):
     need(req, "run_models"); s = S(); b = json.loads(await req.body() or b"{}")
-    from rules import custom_mask
+    from detection.rules import custom_mask
     L = s["L"].assign(_age=s["L"].member_id.map(s["T"]["members"].set_index("member_id").age))
     try: m = custom_mask(L, b.get("conditions") or [])
     except Exception as e: raise HTTPException(400, str(e))
@@ -1423,6 +1565,11 @@ async def tip_create(req: Request):
     c = db(); cur = c.execute("INSERT INTO tips(ts,channel,subject_type,subject_id,allegation,received_by,status) VALUES(?,?,?,?,?,?,?)",
                               (time.strftime("%Y-%m-%d %H:%M:%S"), b["channel"], b.get("subject_type") or "provider", (b.get("subject_id") or "").strip(), b["allegation"].strip()[:4000], u["name"], "new"))
     tid = cur.lastrowid
+    try:
+        tri = LD.triage_tip(b["allegation"].strip()[:4000], S()["PT"])
+        c.execute("INSERT INTO tip_ai(tip_id,ts,result) VALUES(?,?,?)", (tid, time.strftime("%Y-%m-%d %H:%M:%S"), json.dumps(tri, default=str)))
+    except Exception as e:
+        log.warning("tip triage failed: %s", e)
     sups = [r["username"] for r in c.execute("SELECT username FROM users WHERE role IN ('supervisor','admin') AND active=1").fetchall()]; c.commit(); c.close()
     for su in sups: notify(su, "tip", f"New tip #{tid} received ({b['channel']})", "tips")
     audit(u["name"], u["role"], "tip_received", str(tid), b["channel"])
@@ -1431,14 +1578,64 @@ async def tip_create(req: Request):
 
 @app.get("/api/tips")
 def tip_list():
-    s = S(); c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM tips ORDER BY id DESC").fetchall()]; c.close()
+    s = S(); c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM tips ORDER BY id DESC").fetchall()]
+    ai = {r["tip_id"]: json.loads(r["result"]) for r in c.execute("SELECT * FROM tip_ai").fetchall()}; c.close()
     case_of = {p: c_["case_id"] for c_ in s["cases"] for p in c_["providers"]}
     for r in rows:
         sid = r["subject_id"]
         r["subject_name"] = s["PT"].at[sid, "name"] if sid in s["PT"].index else sid
         r["suggested_case"] = case_of.get(sid)
         r["subject_risk"] = float(s["PT"].at[sid, "risk"]) if sid in s["PT"].index else None
+        r["ai"] = ai.get(r["id"])
+        if r["ai"] and not r["suggested_case"]:
+            r["suggested_case"] = next((case_of[m["provider_id"]] for m in r["ai"].get("matched_providers", []) if m["provider_id"] in case_of), None)
     return J(rows)
+
+
+# ---------------------------------------------------------------- LLM-assisted detection (chart review, tip triage, rule drafting)
+@app.get("/api/ai/status")
+def ai_status():
+    return J(LD.status())
+
+
+@app.get("/api/models")
+def models_list():
+    from ai.models import registry as MR
+    return J(dict(models=MR.cards(), llm=LD.status()))
+
+
+@app.post("/api/cases/{cid}/chart-review")
+async def chart_review(cid: str, req: Request):
+    u = need(req, "investigate"); b = json.loads(await req.body() or b"{}"); s = S()
+    c_ = _case_obj(s, cid)
+    if not c_: raise HTTPException(404, "Unknown case")
+    n = max(4, min(int(b.get("n", 8)), 16))
+    L = s["L"]; END = L.service_date.max()
+    W = L[L.service_date > END - pd.Timedelta(days=PL.LOOKBACK)]
+    smp = CH.sample_lines(W, c_["primary"], n=n, seed=int(b.get("seed", 0)))
+    if smp.empty: raise HTTPException(400, "No reviewable lines (E/M, psychotherapy or flagged) for this case")
+    items = []
+    for _, r in smp.iterrows():   # the synthetic record system answers the records request
+        nt = CH.note(r.to_dict(), r.get("_scenario", "") if r.get("_truth", False) else "")
+        items.append(dict(line_id=r.line_id, code=str(r.code), note=nt["text"], date=str(r.service_date.date()), provider_id=r.provider_id, paid=float(r.paid)))
+    res = await asyncio.to_thread(LD.chart_review, items, b.get("use_llm", True))
+    meta = {i["line_id"]: i for i in items}
+    for row in res["rows"]: row.update(date=meta[row["line_id"]]["date"], provider_id=meta[row["line_id"]]["provider_id"], paid=meta[row["line_id"]]["paid"])
+    c = db(); c.execute("INSERT INTO chart_reviews(case_id,ts,user_name,engine,result) VALUES(?,?,?,?,?)", (cid, time.strftime("%Y-%m-%d %H:%M:%S"), u["name"], res["engine"], json.dumps(res, default=str)))
+    c.commit(); c.close()
+    audit(u["name"], u["role"], "chart_review", cid, f"{res['engine']}: {res['summary']}")
+    return J(res)
+
+
+@app.post("/api/rules/draft")
+async def rules_draft(req: Request):
+    u = need(req, "run_models"); b = json.loads(await req.body() or b"{}")
+    text = (b.get("text") or "").strip()
+    if len(text) < 10: raise HTTPException(400, "Describe the rule (10+ characters)")
+    from detection.rules import CUSTOM_FIELDS, CUSTOM_OPS
+    res = await asyncio.to_thread(LD.draft_rule, text, CUSTOM_FIELDS, CUSTOM_OPS)
+    audit(u["name"], u["role"], "rule_drafted", res.get("name", ""), text[:200])
+    return J(res)
 
 
 @app.post("/api/tips/{tid}/triage")
@@ -1466,7 +1663,7 @@ def public_list():
 @app.post("/api/data/public")
 async def public_load(req: Request):
     u = need(req, "run_models"); b = json.loads(await req.body() or b"{}")
-    import importers as IM
+    from synthdata import importers as IM
     key = b.get("dataset"); ext = ROOT / "data" / "external"; ws = ROOT / "data" / "workspaces" / f"{key}-sample"
     try:
         if key == "synpuf": rep = IM.synpuf(ext / "synpuf", ws, n_benes=max(500, min(int(b.get("patients", 4000)), 20000)))

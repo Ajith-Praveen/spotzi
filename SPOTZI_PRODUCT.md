@@ -172,10 +172,30 @@ Detector weights start at expert priors and update from every recorded decision 
 - Held-out results: AUC 0.951 / 0.950 / 0.935 · Brier 0.055 / 0.039 / 0.032 · calibration error 0.070 / 0.050 / 0.028 (30 / 60 / 90 days). Probabilities capped at 1–97 %.
 - Local drivers shown per provider.
 
-### Optional models
-| Model | Status |
+### Task models (trained per SIU process) — `spotzi/ai/models/`
+Each model is trained by `python3 -m ai.models.train_all` on synthetic data only, saved as a versioned artifact with a model card (`data/models/*.json`), shown in **Governance → Task models**, and tested on data it never saw. Training data: three generator worlds (seeds 101–103) plus DE-SynPUF patients disjoint from the test set. Tests: the demo world, DE-SynPUF evaluation patients, and Synthea, which is never used in training.
+
+| Model | Process | Method | Held-out result |
+|---|---|---|---|
+| **Pre-payment line risk** | Operations → Pre-payment | Gradient-boosted trees on 18 behaviour features (units vs norm, after death, during stay, repeat interval, busy-day ratio, level-5 share, first-visit share…) | Same flag budget as the rules — DE-SynPUF precision 0.36 vs 0.14, recall 0.64 vs 0.25 (AUC 0.97); Synthea (never trained on) precision 0.82 vs 0.71 (AUC 0.91); demo 0.90 / 0.78 vs 0.80 / 0.70 |
+| **Chart documentation** | Case → Chart review | TF-IDF (word + char) → logistic regression over documented E/M level; parsed time rules | Unseen clinician wording: 100% vs 36% for a keyword reviewer |
+| **Tip triage** | Tips → automatic structuring | Ensemble: TF-IDF → logistic regression + local sentence encoder (bge-small, frozen) → logistic regression; 9 scheme types | Unseen templates and names: **94%** (v1 was 53%; keyword matching 20%). An urgency model failed its test and was not shipped |
+| **Case outcome** | Cases / providers | Logistic regression on detector outputs, learned from simulated closed cases | DE-SynPUF AP 0.80 vs 0.57 for Nexus Brain; Synthea AP 1.00 vs 0.95 |
+
+Lesson kept in the code: the first pre-payment model scored AUC 0.3 on DE-SynPUF. It had learned the generator, not the fraud. Generator-specific features were removed and real-format training data was added.
+
+### LLM-assisted detection (where a language model is genuinely needed) — `ai/llm_detect.py`
+| Use | Why an LLM | Guardrails |
+|---|---|---|
+| **Chart review** (Case → Chart review) | Reads free-text clinical documentation and applies coding judgement (MDM / time / record present) | Structured output only; every finding must quote the note verbatim (string-checked, else discarded); the trained chart model gives a second opinion and disagreements are flagged |
+| **Tip structuring** (Tips) | Extracts the allegation type, named entities and timeframe from messy free text | Entities are matched to providers by deterministic code, so the model cannot invent IDs; supervisors triage every tip |
+| **Rule drafting** (Rule studio) | Turns an analyst's plain-English rule into conditions | Schema-validated against the rule language; draft only, previewed, then saved and activated by a human |
+
+Providers: DeepSeek, z.ai (GLM), any OpenAI-compatible endpoint, Anthropic or a local server, configured by an admin in **Settings → AI & LLM**: on/off, provider, model, API key and a switch for each feature. Environment settings in `spotzi/data/llm.env` are the fallback. With none configured, every feature runs on the trained models and rules. The LLM never scores, ranks, opens cases or decides. Synthetic medical records come from `ai/charts.py` (a simulated record system). `evaluation/evaluate_llm.py` measures each reviewer.
+
+| Supporting model | Status |
 |---|---|
-| **AI narrative & copilot** | Code ready; grounded in the case evidence package, citation-verified. Not required. |
+| **AI narrative & copilot** | Grounded in the case evidence package, citation-verified. Uses the same LLM configuration. |
 
 ---
 
@@ -237,6 +257,28 @@ Helps the investigator test legitimate against suspicious explanations before de
 - **Replay:** revealed checks persist and feed the decision record.
 
 ---
+
+## 8b. Investigation readiness & action plan
+**Investigation readiness** (Case → Brief) is a checklist score, not a fraud probability. It answers the question: is the investigation complete enough to support a referral? Items apply by case type:
+- billing-pattern evidence;
+- peer comparison;
+- provider documentation reviewed (a chart review or uploaded records);
+- member / service verification (phantom, recruitment, excess and timing cases);
+- referral relationships verified (network cases);
+- legitimate context ruled out;
+- historical precedent;
+- data completeness.
+
+It produces a clear recommendation, for example: *"Do not refer yet. Next: obtain provider documentation."* If the sampled charts support the billing, it says: *"Do not refer — consider closing or education."*
+
+**Investigation action plan** (Case → Action plan) answers *"what should I actually do next?"*:
+- The gaps become ordered steps. Each has an owner, a time estimate, why it matters, what it adds to readiness, and the benign explanations to test.
+- Each step has a button: request a chart sample, mark done or not applicable (with a required note), or go to the decision.
+- Steps are stored in PostgreSQL and audited.
+
+**Referral gate:** "Recommend referral" below 70% readiness is refused unless the reviewer explicitly acknowledges the listed gaps; the acknowledgement is written into the decision record. The exported brief includes readiness and the plan.
+
+**Business context on file** (Case → Brief) lists provider events — new locations, clinicians, contracts, acquisitions — and shows which signals each event explains and which it does not.
 
 ## 9. SIU queue & prioritisation
 
@@ -300,25 +342,22 @@ Helps the investigator test legitimate against suspicious explanations before de
 
 ## 13. Architecture
 
+The full folder layout is in `spotzi/README.md`. Main parts:
+
 ```
-gen.py ──► data/synthetic/*.csv ──► pipeline.py
-                                     ├─ rules.py          (rules engine)
-                                     ├─ analytics.py      (features, Isolation Forest, hazard forecast, graph)
-                                     ├─ sentinel.py       (case-mix twin, care pathway)
-                                     └─ brain.py          (change-point, code mix, patient panel, fusion, learning, feed)
-server.py (FastAPI) ─┬─ briefs.py      (ranking, case detail, Markdown brief)
-                     ├─ lab.py         (Challenge Lab)
-                     ├─ precedents.py  (Precedent Intelligence)
-                     ├─ knowledge.py   (wiki, lint, retrieval, decision chain)
-                     ├─ llm.py         (optional LLM layer)
-                     ├─ auth.py        (accounts, sessions, roles, TOTP two-factor, OIDC SSO)
-                     ├─ x12.py         (837P / 837I parser and exporter)
-                     ├─ notify.py      (email / Slack outbox)
-                     ├─ scope.py       (case split / merge)
-                     ├─ dbcompat.py    (one SQL API over PostgreSQL / SQLite)
-                     └─ PostgreSQL: decisions, audit, users, sessions, lab events, blueprints, wiki, precedents, notes, outbox, scope edits
-static/ (vanilla JS single-page app, no build step)
-tests/test_spotzi.py (34 product-guarantee tests, standard-library unittest)
+synthdata/gen.py ──► data/synthetic/*.csv ──► detection/pipeline.py
+                                                ├─ detection/rules.py       rules engine + custom-rule language
+                                                ├─ detection/analytics.py   features, Isolation Forest, hazard forecast, graph
+                                                ├─ detection/sentinel.py    case-mix twin, care pathway
+                                                ├─ detection/brain.py       change-point, code mix, patient panel, fusion, learning
+                                                └─ ai/models/               trained task models (prepay, chart, tips, outcome)
+api/app.py (FastAPI) ─┬─ intelligence/  briefs · lab · precedents · knowledge
+                      ├─ ai/            llm (provider + switches) · llm_detect (chart review, tips, rule drafting) · charts (record system)
+                      ├─ operations/    ops (pre-payment, recoveries, documents, tips) · scope · notify · x12
+                      ├─ infra/         auth (sessions, roles, TOTP, OIDC) · dbcompat (PostgreSQL / SQLite)
+                      └─ PostgreSQL     users, sessions, decisions, audit, assignments, notes, outbox, scope, tips + AI triage,
+                                        documents, chart reviews, custom rules, pre-payment log, recoveries, wiki, settings
+static/  vanilla JS PWA, no build step  ·  tests/test_spotzi.py  41 tests  ·  evaluation/  accuracy scripts
 ```
 
 **Main API groups:** `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/llm/status`.

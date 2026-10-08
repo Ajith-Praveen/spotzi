@@ -1,4 +1,4 @@
-"""Grounded LLM layer (Claude). The model only words and answers over the deterministic evidence package;
+"""Grounded LLM layer (DeepSeek, z.ai, OpenAI-compatible, Anthropic or local). The model only words and answers over the deterministic evidence package;
 it never scores, ranks, or decides. Outputs are citation-checked and fall back to deterministic text on failure."""
 from __future__ import annotations
 
@@ -15,10 +15,15 @@ _client = None
 _probe = {"t": 0, "ok": False, "model": None}
 
 
+def local_url() -> str:
+    c = _CFG or {}
+    return ((c.get("base_url") if c.get("provider") == "local" else "") or LOCAL_URL).rstrip("/")
+
+
 def _local_up() -> bool:
     if time.time() - _probe["t"] < 5: return _probe["ok"]
     try:
-        with urllib.request.urlopen(LOCAL_URL + "/models", timeout=1.5) as r:
+        with urllib.request.urlopen(local_url() + "/models", timeout=1.5) as r:
             data = json.loads(r.read()); ms = data.get("data") or data.get("models") or []
             _probe.update(ok=True, model=(ms[0].get("id") or ms[0].get("name")) if ms else None)
     except Exception:
@@ -27,13 +32,53 @@ def _local_up() -> bool:
     return _probe["ok"]
 
 
+# Providers. Hosted ones speak the OpenAI-compatible API except Anthropic. Defaults can be overridden per install.
+PRESETS = {"deepseek": ("https://api.deepseek.com/v1", "deepseek-chat"), "zai": ("https://api.z.ai/api/paas/v4", "glm-4.6"),
+           "openai": ("https://api.openai.com/v1", "gpt-4o-mini")}
+ANTHROPIC_DEFAULT = ("https://api.anthropic.com", "claude-sonnet-5-5")
+FEATURES = {"chart_review": "Chart review (reads clinical notes)", "tip_triage": "Tip structuring (entities, summary)",
+            "rule_drafting": "Rule drafting from plain English", "copilot": "Case narrative & copilot"}
+
+# Effective configuration. Set at startup / from the admin Settings page via configure(); environment variables
+# (data/llm.env) are the fallback when nothing has been saved in the app.
+_CFG: dict | None = None
+
+
+def _env_cfg() -> dict:
+    pref = os.environ.get("LLM_PROVIDER", "none").lower()
+    key = os.environ.get("LLM_API_KEY", "") or (os.environ.get("ANTHROPIC_API_KEY", "") if pref == "anthropic" else "")
+    return dict(enabled=pref not in ("none", "auto", ""), provider=pref if pref not in ("auto", "") else "none", model=os.environ.get("LLM_MODEL", ""),
+                base_url=os.environ.get("LLM_BASE_URL", ""), api_key=key, features={k: True for k in FEATURES})
+
+
+def configure(cfg: dict | None):
+    """cfg: {enabled, provider, model, base_url, api_key, features}. None → back to environment settings."""
+    global _CFG, _client
+    _CFG = None if cfg is None else {**_env_cfg(), **{k: v for k, v in cfg.items() if v is not None}}
+    _client = None
+
+
+def config() -> dict:
+    return _CFG if _CFG is not None else _env_cfg()
+
+
 def provider() -> str | None:
-    """LLM_PROVIDER = auto | local | anthropic. auto prefers a real Anthropic key, else a local OpenAI-compatible server."""
-    pref = os.environ.get("LLM_PROVIDER", "auto")
-    key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if pref in ("auto", "anthropic") and key.startswith("sk-ant"): return "anthropic"
-    if pref in ("auto", "local") and _local_up(): return "local"
+    c = config(); p = (c.get("provider") or "none").lower()
+    if not c.get("enabled") or p == "none": return None
+    if p in PRESETS or p == "anthropic": return p if c.get("api_key") else None
+    if p == "local": return "local" if _local_up() else None
     return None
+
+
+def feature_enabled(name: str) -> bool:
+    return provider() is not None and bool(config().get("features", {}).get(name, True))
+
+
+def hosted() -> tuple[str, str, str] | None:
+    p = provider()
+    if p not in PRESETS: return None
+    c = config(); base, model = PRESETS[p]
+    return (c.get("base_url") or base).rstrip("/"), c.get("model") or model, c["api_key"]
 
 
 def available() -> bool:
@@ -42,8 +87,9 @@ def available() -> bool:
 
 def model_name() -> str:
     p = provider()
-    if p == "anthropic": return os.environ.get("LLM_MODEL", "claude-sonnet-5-5")
-    if p == "local": return os.environ.get("LLM_LOCAL_MODEL") or _probe["model"] or "local"
+    if p == "anthropic": return config().get("model") or ANTHROPIC_DEFAULT[1]
+    if p == "local": return config().get("model") or os.environ.get("LLM_LOCAL_MODEL") or _probe["model"] or "local"
+    if p in PRESETS: return hosted()[1]
     return "none"
 
 
@@ -55,7 +101,8 @@ def client():
     global _client
     if _client is None:
         import anthropic
-        _client = anthropic.Anthropic(timeout=60)
+        c = config()
+        _client = anthropic.Anthropic(api_key=c["api_key"], base_url=c.get("base_url") or ANTHROPIC_DEFAULT[0], timeout=60)
     return _client
 
 
@@ -92,16 +139,38 @@ You receive a JSON evidence package for ONE case. Rules:
 6. Be concise and plain. State uncertainty and data gaps honestly."""
 
 
+def chat(system, messages, max_tokens=1100, json_mode=False):
+    """OpenAI-compatible chat completion (hosted presets or local server)."""
+    import httpx
+    h = hosted()
+    url, model, key = (h[0], h[1], h[2]) if h else (local_url(), model_name() if provider() == "local" else LOCAL_MODEL, None)
+    body = {"model": model, "temperature": 0.1, "max_tokens": max_tokens, "messages": [{"role": "system", "content": system}] + messages}
+    if json_mode: body["response_format"] = {"type": "json_object"}
+    hdr = {"Authorization": f"Bearer {key}"} if key else {}
+    r = httpx.post(url + "/chat/completions", json=body, headers=hdr, timeout=300)
+    if r.status_code == 400 and json_mode:                     # some servers lack JSON mode: retry plain
+        body.pop("response_format"); r = httpx.post(url + "/chat/completions", json=body, headers=hdr, timeout=300)
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"].strip()
+
+
 def _call(system, messages, max_tokens=1100):
-    if provider() == "local":
-        import httpx
-        body = {"model": os.environ.get("LLM_LOCAL_MODEL") or _probe["model"] or LOCAL_MODEL, "temperature": 0.1, "max_tokens": max_tokens,
-                "messages": [{"role": "system", "content": system}] + messages}
-        r = httpx.post(LOCAL_URL + "/chat/completions", json=body, timeout=300)
-        r.raise_for_status()
-        return r.json()["choices"][0]["message"]["content"].strip()
+    if provider() != "anthropic": return chat(system, messages, max_tokens)
     r = client().messages.create(model=model_name(), max_tokens=max_tokens, system=system, messages=messages)
     return "".join(b.text for b in r.content if b.type == "text").strip()
+
+
+def test_connection() -> dict:
+    """Tiny round trip used by the Settings page. Sends no case data."""
+    t = time.time()
+    if provider() is None: return dict(ok=False, error="LLM is off, or the provider has no API key / is unreachable.")
+    try:
+        out = _call("Reply with exactly: OK", [{"role": "user", "content": "Connection test from SpotZi. Reply OK."}], 10)
+        return dict(ok=True, provider=provider(), model=model_name(), reply=out[:40], latency_ms=round((time.time() - t) * 1000))
+    except Exception as e:
+        msg = str(e); key = config().get("api_key") or ""
+        if key: msg = msg.replace(key, "***")
+        return dict(ok=False, provider=provider(), model=model_name(), error=f"{type(e).__name__}: {msg[:200]}")
 
 
 def _check(text: str, pkg: dict):

@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
-from rules import RULES
+from detection.rules import RULES
 
 RULE_KEYS = list(RULES)
 FAMILIES = ["PRO", "LAB", "FAC", "PHARM", "AMB", "BH", "HH", "DME"]

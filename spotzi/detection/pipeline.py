@@ -9,19 +9,21 @@ import numpy as np
 import pandas as pd
 
 import sys
-import analytics as A
-import gen
-import sentinel as SN
-import brain as BR
+from detection import analytics as A
+from synthdata import gen
+from detection import sentinel as SN
+from detection import brain as BR
+from detection import context as CX
 import hashlib
-from rules import RULES, RULESET_VERSION, apply_rules
+from detection.rules import RULES, RULESET_VERSION, apply_rules
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "synthetic"
 LOOKBACK = 180
 PRIMARY_RISK = 35
 BRAIN_LEAD = .97   # a lead with no rule finding needs near-unanimous detector consensus (0.90 produced too many leads in large portfolios)
-MODEL_VERSION = "nexus-models-1.1"
+PANEL_LEAD = .75   # patient-panel detector (recruitment typology) strong + fused score >= .9
+MODEL_VERSION = "nexus-models-1.3"
 
 
 # ---------------------------------------------------------------- load + validate
@@ -36,6 +38,7 @@ OPTIONAL = {
     "investigations": ["investigation_id", "provider_id", "opened_date", "closed_date", "outcome", "recovered_amount"],
     "inpatient_stays": ["stay_id", "member_id", "admit_date", "discharge_date", "facility_id"],
     "facilities": ["facility_id", "name", "city"],
+    "provider_events": ["event_id", "provider_id", "event_date", "event_type", "detail", "source"],
 }
 LINE_DEFAULTS = dict(service_end_date=None, paid_date=None, billed=None, pos="11", dx=None, modifier="", start_min=540, duration_min=0, referring_provider_id=None, facility_id=None, line_no=1)
 
@@ -78,11 +81,14 @@ def load_tables(data_dir=DATA):
     t["stays"] = _opt(d, "inpatient_stays", parse_dates=["admit_date", "discharge_date"])
     t["stays"]["admit_date"] = pd.to_datetime(t["stays"].admit_date); t["stays"]["discharge_date"] = pd.to_datetime(t["stays"].discharge_date)
     t["facilities"] = _opt(d, "facilities")
+    t["provider_events"] = _opt(d, "provider_events")
     ex = d / "exclusions.csv"
     t["exclusions"] = pd.read_csv(ex) if ex.exists() else pd.DataFrame(columns=["provider_id", "excl_date", "reinstate_date", "source"])
     tp = d / "hidden" / "scenario_truth.csv"            # per-workspace labels (injected evaluation scenarios)
     if not tp.exists(): tp = d.parent / "hidden" / "scenario_truth.csv"   # built-in synthetic dataset
     t["truth"] = pd.read_csv(tp) if tp.exists() else None
+    lg = tp.parent / "legit_anomalies.csv"     # hidden: legitimate look-alikes (evaluation only)
+    t["legit"] = pd.read_csv(lg) if lg.exists() else None
     return t
 
 
@@ -238,6 +244,7 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     L["path_p"] = L.line_id.map(paths.set_index("line_id").p)
     step("SpotZ Sentinel", f"case-mix twin (R² {sen_fit['r2_paid']:.2f}) + care-pathway model on {len(paths):,} journey steps")
     cps = BR.change_points(L, M, P)
+    PT["cp_onset"] = pd.Series({k: v.get("onset") for k, v in cps.items()}, dtype=object).reindex(PT.index)
     PT["drift_raw"] = pd.Series({k: v["score"] for k, v in cps.items()}).reindex(PT.index).fillna(0)
     PT["mix_raw"] = BR.code_mix(L, P, END).reindex(PT.index).fillna(0)
     panel = BR.panel_shift(L, M, END)
@@ -258,6 +265,15 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
         PT[f"fc{h}"] = pd.Series({p: v.get(h, 0) for p, v in fc["pred"].items()}, dtype=float).reindex(PT.index)
     PT["escalation"] = X_end.escalation.reindex(PT.index).fillna(0)
     PT["flag_paid30"] = X_end.flag_paid30.reindex(PT.index).fillna(0)
+    PT["outcome_p"] = np.nan
+    from ai.models import outcome_model as OMOD, registry as MREG
+    om = MREG.load("case_outcome")
+    if om is not None:
+        try:
+            PT["outcome_p"] = OMOD.score(PT, om)
+            step("Case-outcome model", "trained task model scored every provider (see Governance → Task models)")
+        except Exception as e:   # stale artifact (feature set changed): run without it until retrained
+            step("Case-outcome model", f"skipped: {type(e).__name__}; retrain with python3 -m ai.models.train_all")
     comms = A.communities(G)
     step("Graph analytics", f"{G.number_of_nodes()} providers, {G.number_of_edges()} relationships, {len(comms)} communities")
 
@@ -285,7 +301,10 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
     W = L[L.service_date > END - pd.Timedelta(days=LOOKBACK)]
     # concentrated findings: most of a (possibly small) provider's recent billing is flagged by a material rule
     concentrated = (PT.flagged_lines >= 5) & (PT.any_share >= .4)
-    primary = set(PT.index[(PT.risk >= PRIMARY_RISK) | ((PT.brain >= BRAIN_LEAD) & (PT.n_lines >= 30)) | concentrated])
+    # patient-panel lead: the recruitment-specific detector is strong and the fused view agrees
+    panel_lead = (PT.panel_pct >= PANEL_LEAD) & (PT.brain >= .9) & (PT.n_lines >= 30)
+    primary = set(PT.index[(PT.risk >= PRIMARY_RISK) | ((PT.brain >= BRAIN_LEAD) & (PT.n_lines >= 30)) | concentrated | panel_lead])
+    E = CX.load(T)
     conc_set = set(PT.index[concentrated])
     groups, seen = [], set()
     for comp in nx.connected_components(H):
@@ -331,6 +350,17 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         prior_conf = int(inv[inv.provider_id.isin(prim) & inv.outcome.str.startswith("Confirmed")].shape[0])
         ev += 6 * min(prior_conf, 1)
         ctx = [PT.at[p, "context_note"] for p in prim if PT.at[p, "context_note"]]
+        context = {}
+        for p in prim:   # observable business events (new sites, clinicians, contracts, acquisitions)
+            onsets = {k: str(W.loc[W.provider_id.eq(p) & W[f"f_{k}"], "service_date"].min().date()) for k in RULES if (W.provider_id.eq(p) & W[f"f_{k}"]).any()}
+            cp = PT.at[p, "cp_onset"] if "cp_onset" in PT and isinstance(PT.at[p, "cp_onset"], str) else None
+            a = CX.assess(p, PT, onsets, CX.events_for(E, p, END), cp)
+            if a["events"]: context[p] = a
+        ctx_status = "full" if context and all(a["status"] == "full" for a in context.values()) and len(context) == len(prim) else \
+                     "partial" if any(a["status"] in ("full", "partial") for a in context.values()) else "none"
+        ev_text = [f"{w['event']['date']}: {w['event']['detail']} — {w['reason']} (explains {', '.join(w['explains'])})" for a in context.values() for w in a.get("why", [])]
+        rule_unexplained = any(set(a["unexplained"]) & set(RULES) for a in context.values())
+        if ctx_status == "full" or (ctx_status == "partial" and not rule_unexplained): ctx += ev_text   # only a context that covers the rule findings softens the case
         benign_ctx = bool(ctx) and not has_graph
         if benign_ctx: ev -= 22
         ev = float(np.clip(ev, 5, 98))
@@ -355,11 +385,14 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         if brain_lead: lane = "Brain lead"
         elif ev < 35: lane = "Needs more data"
         elif benign_ctx and ev < 60: lane = "Validate context first"
+        if ctx_status == "full" and not has_graph: lane = "Explained by context"     # a human can still open it; never auto-closed
+        elif ctx_status == "partial" and lane in ("Investigate", "Brain lead") and not rule_unexplained:
+            lane = "Validate context first"     # only learned signals remain unexplained; an unexplained rule finding keeps the case live
         cases.append(dict(
             case_id=cid, title=title, type=ctype, primary=prim, providers=comp, families=fam, network=net,
             risk=risk, exposure=exposure, members=int(members), vulnerable=n_vuln, severity=float(severity), evidence=ev,
             forecast=fcs, forecast_why=why, flagged_lines=flagged_lines, effort_hours=effort, rules=rules_sorted,
-            rule_counts=rule_counts, rule_paid=rule_paid, signals=signals, lane=lane, benign_context=ctx,
+            rule_counts=rule_counts, rule_paid=rule_paid, signals=signals, lane=lane, benign_context=ctx, context=context, context_status=ctx_status,
             brain_lead=bool(brain_lead), anomalous=bool(anomalous), has_graph=bool(has_graph), escalating=bool(escal), dx_missing=dx_missing,
             signal_flags=dict(rules=bool(rule_counts), anomaly=bool(anomalous), graph=bool(has_graph), temporal=bool(escal), sentinel=bool(learned)),
         ))
@@ -373,8 +406,21 @@ def evaluate(L, PT, cases, fc, T):
     truth_prov = set(tp[tp >= 20].index)
     flagged = L.any_flag
     prec = float(L[flagged]._truth.mean()); rec = float(L[L._truth].any_flag.mean())
-    queue = sorted(cases, key=lambda c: -(c["risk"] * .5 + c["evidence"] * .3 + c["exposure"] ** .3))
+    queue = sorted([c for c in cases if c["lane"] != "Explained by context"], key=lambda c: -(c["risk"] * .5 + c["evidence"] * .3 + c["exposure"] ** .3))
     hit = [bool(set(c["primary"]) & truth_prov) for c in queue]
+    legit = None
+    if T.get("legit") is not None and len(T["legit"]):
+        lane_of = {p: c["lane"] for c in cases for p in c["primary"]}
+        end = L.service_date.max(); mon = L.assign(m=L.service_date.dt.to_period("M")).groupby(["provider_id", "m"]).size().unstack(fill_value=0)
+        recent = mon.iloc[:, -6:].max(axis=1); before = mon.iloc[:, :-6].replace(0, np.nan).median(axis=1).fillna(1)
+        naive = set(mon.index[recent >= 2 * before])            # naive volume-spike alarm: any recent month >= 2x the usual
+        rows = [dict(provider_id=r.provider_id, kind=r.kind, legitimate=getattr(r, "legitimate", True), naive_alarm=r.provider_id in naive, lane=lane_of.get(r.provider_id, "not a case")) for r in T["legit"].itertuples()]
+        adv = [x for x in rows if not x["legitimate"]]; rows_l = [x for x in rows if x["legitimate"]]
+        legit = dict(total=len(rows_l), naive_alarms=sum(x["naive_alarm"] for x in rows_l),
+                     escalated=sum(x["lane"] in ("Investigate", "Brain lead") for x in rows_l),
+                     explained=sum(x["lane"] == "Explained by context" for x in rows_l),
+                     adversarial=len(adv), adversarial_still_escalated=sum(x["lane"] in ("Investigate", "Brain lead") for x in adv), detail=rows,
+                     naive_false_alarms_portfolio=int(len(naive - truth_prov)))
     out = dict(
         line_precision=prec, line_recall=rec, raw_flagged_lines=int(flagged.sum()), total_lines=int(len(L)),
         truth_providers=len(truth_prov), cases=len(cases),
@@ -382,7 +428,8 @@ def evaluate(L, PT, cases, fc, T):
         provider_recall=float(len(truth_prov & {p for c in cases for p in c["primary"]}) / max(1, len(truth_prov))),
         case_precision=float(np.mean(hit)) if hit else 0,
         flagged_providers=int((PT.any_share > 0).sum()),
-        decoys_in_cases=[p for c in cases for p in c["primary"] if p not in truth_prov],
+        decoys_in_cases=[p for c in cases for p in c["primary"] if p not in truth_prov and c["lane"] != "Explained by context"],
+        legit_anomalies=legit,
         note="Computed against hidden synthetic scenario labels. Not evidence of real-world performance.")
     from sklearn.metrics import roc_auc_score
     y = [int(p in truth_prov) for p in PT.index]

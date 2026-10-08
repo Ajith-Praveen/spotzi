@@ -1,0 +1,104 @@
+[
+ {
+  "name": "prepay_line_risk",
+  "held_out": {
+   "demo world (seed 7)": {
+    "lines": 66121,
+    "fraud_lines": 6144,
+    "auc": 0.985,
+    "ap": 0.926,
+    "rules_flagged": 5387,
+    "rules_precision": 0.794,
+    "rules_recall": 0.696,
+    "model_precision_same_budget": 0.895,
+    "model_recall_same_budget": 0.785
+   },
+   "synpuf + injected schemes": {
+    "lines": 148437,
+    "fraud_lines": 1805,
+    "auc": 0.97,
+    "ap": 0.563,
+    "rules_flagged": 3226,
+    "rules_precision": 0.138,
+    "rules_recall": 0.246,
+    "model_precision_same_budget": 0.339,
+    "model_recall_same_budget": 0.606
+   },
+   "synthea + injected schemes": {
+    "lines": 9393,
+    "fraud_lines": 1272,
+    "auc": 0.897,
+    "ap": 0.6,
+    "rules_flagged": 334,
+    "rules_precision": 0.71,
+    "rules_recall": 0.186,
+    "model_precision_same_budget": 0.766,
+    "model_recall_same_budget": 0.201
+   }
+  }
+ },
+ {
+  "name": "chart_documentation",
+  "held_out": {
+   "demo world, wording A": {
+    "notes": 600,
+    "model_accuracy": 1.0,
+    "model_f1": 1.0,
+    "keyword_reviewer_accuracy": 1.0,
+    "keyword_reviewer_f1": 1.0
+   },
+   "demo world, wording B (unseen)": {
+    "notes": 600,
+    "model_accuracy": 1.0,
+    "model_f1": 1.0,
+    "keyword_reviewer_accuracy": 0.388,
+    "keyword_reviewer_f1": 0.429
+   }
+  }
+ },
+ {
+  "name": "tip_triage",
+  "held_out": {
+   "test_tips": 800,
+   "scheme_accuracy": 0.938,
+   "scheme_macro_f1": 0.943,
+   "tfidf_only_accuracy": 0.895,
+   "v1_accuracy": 0.535,
+   "keyword_baseline_scheme_accuracy": 0.197,
+   "encoder_used": true,
+   "note": "Test tips use sentence templates and provider names never seen in training."
+  }
+ },
+ {
+  "name": "case_outcome",
+  "held_out": {
+   "demo world (seed 7)": {
+    "providers": 132,
+    "positives": 15,
+    "auc": 0.994,
+    "ap": 0.964,
+    "brain_auc": 0.994,
+    "brain_ap": 0.961,
+    "risk_auc": 0.985
+   },
+   "synpuf + injected schemes": {
+    "providers": 4332,
+    "positives": 21,
+    "auc": 0.986,
+    "ap": 0.799,
+    "brain_auc": 0.991,
+    "brain_ap": 0.566,
+    "risk_auc": 0.991
+   },
+   "synthea + injected schemes": {
+    "providers": 200,
+    "positives": 14,
+    "auc": 1.0,
+    "ap": 1.0,
+    "brain_auc": 0.997,
+    "brain_ap": 0.953,
+    "risk_auc": 0.997
+   }
+  }
+ }
+]

@@ -95,7 +95,7 @@ def _weekday_shift(dates: pd.Series, rng, families: pd.Series):
     return dates + pd.to_timedelta(np.where(move, shift, 0), unit="D")
 
 
-def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = "data/synthetic") -> dict:
+def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__file__).resolve().parents[1] / "data" / "synthetic") -> dict:
     rng = np.random.default_rng(seed)
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -492,6 +492,71 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = "data/s
     rv["code"] = rng.choice(["99212", "99213", "99214", "99215"], len(rv), p=[.12, .45, .35, .08])
     inject(rv, "decoy-volume", truth=False)
 
+    # ---------------- legitimate anomalies (look suspicious, are legitimate) ----------------
+    # Each has an OBSERVABLE explanation in provider_events.csv (enrolment updates, credentialing, contracts) and a
+    # hidden ground-truth label in hidden/legit_anomalies.csv. A separate RNG keeps every other scenario unchanged.
+    r2 = np.random.default_rng(seed + 991)
+    events, legit = [], []
+
+    def ev(pid, date, kind, detail, source):
+        events.append(dict(provider_id=pid, event_date=str(ST(date).date()), event_type=kind, detail=detail, source=source))
+
+    def visits(pid, members_idx, start, per_member, codes, probs, pos="11", dx=None, gap=None):
+        rows = []
+        for mi in members_idx:
+            k = int(r2.integers(*per_member)); d0 = ST(start) + pd.Timedelta(days=int(r2.integers(0, 45)))
+            ds = [d0 + pd.Timedelta(days=int(gap or r2.integers(20, 75)) * j) for j in range(k)]
+            ds = [d for d in ds if d <= END]
+            if not ds: continue
+            x = line([mi] * len(ds), pid, "PRO", "99213", ds, pos=pos)
+            x["code"] = r2.choice(codes, len(x), p=probs)
+            x["duration_min"] = [CODES[c][3] for c in x.code]
+            if dx is not None: x["dx"] = r2.choice(dx, len(x))
+            rows.append(x)
+        return pd.concat(rows) if rows else None
+
+    alive = m.death_date.isna().values & m.term_date.isna().values
+    # LA1 — opened two new clinics: volume ~4x from March 2025, new LOCAL patients with ordinary visit mix
+    la1 = P("PRO", 9); setp(la1, name="Brookside Family Practice", specialty="Family medicine")
+    reg1 = int(prov.loc[prov.provider_id == la1, "region"].iat[0])
+    pool = np.where((m.region.values == reg1) & alive & (m.pcp.values != la1))[0]
+    x = visits(la1, r2.choice(pool, min(len(pool), 230), replace=False), "2025-03-01", (2, 4), ["99212", "99213", "99214", "99215", "93000"], [.12, .48, .30, .06, .04])
+    inject(x, "legit-new-clinics", truth=False)
+    ev(la1, "2025-02-17", "location_opened", "New service location: Brookside Elm Street clinic", "provider enrolment update")
+    ev(la1, "2025-03-03", "location_opened", "New service location: Brookside Riverside clinic", "provider enrolment update")
+    legit.append((la1, "new-clinics", "2025-03-01", "Opened two new clinics; new local patients with an ordinary visit mix.", True))
+    # LA2 — cardiologist joined an internal-medicine group: more level-4/5 visits + ECGs for older cardiac patients
+    la2 = P("PRO", 10); setp(la2, name="Valley Internal Medicine", specialty="Internal medicine")
+    reg2 = int(prov.loc[prov.provider_id == la2, "region"].iat[0])
+    pool = np.where((m.region.values == reg2) & alive & (m.age.values >= 60))[0]
+    x = visits(la2, r2.choice(pool, min(len(pool), 110), replace=False), "2025-01-06", (3, 6), ["99214", "99215", "93000"], [.45, .38, .17],
+               dx=["I50.9", "I25.10", "I48.91", "I10"])
+    inject(x, "legit-specialist-joined", truth=False)
+    ev(la2, "2025-01-06", "clinician_joined", "Cardiologist credentialed to the group (heart failure / arrhythmia clinic)", "credentialing roster")
+    legit.append((la2, "specialist-joined", "2025-01-06", "A cardiologist joined; complex cardiac patients justify higher visit levels and ECGs.", True))
+    # LA3 — nursing-facility contract: wave of frail new patients, similar monthly visit bundle, all with other care in the plan
+    la3 = P("PRO", 11); setp(la3, name="Evergreen House Calls", specialty="Geriatric medicine")
+    reg3 = int(prov.loc[prov.provider_id == la3, "region"].iat[0])
+    pool = np.where((m.region.values == reg3) & alive & (m.age.values >= 70))[0]
+    x = visits(la3, r2.choice(pool, min(len(pool), 70), replace=False), "2025-04-01", (3, 6), ["99213", "99214", "99215"], [.30, .55, .15], pos="32",
+               dx=["I10", "E11.9", "J44.9", "F03.90"], gap=30)
+    inject(x, "legit-nursing-contract", truth=False)
+    ev(la3, "2025-03-24", "contract_started", "Attending-physician contract with Maplewood Care Center (nursing facility, 120 beds)", "contract registry")
+    legit.append((la3, "nursing-contract", "2025-04-01", "Started covering a nursing facility; frail residents need monthly visits.", True))
+    # LA4 — practice acquisition: the acquired practice's patients move to the acquirer, whose new-patient count jumps
+    la4, la4b = P("PRO", 12), P("PRO", 13)
+    setp(la4, name="Summit Ridge Medical", specialty="Family medicine"); setp(la4b, name="Crestline Family Doctors", specialty="Family medicine")
+    acq = ST("2025-02-03")
+    moved = (base.provider_id == la4b) & (base.service_date >= acq)
+    base.loc[moved, "provider_id"] = la4; base.loc[moved, "scenario"] = "legit-acquisition"
+    m.loc[m.pcp == la4b, "pcp"] = la4
+    ev(la4, "2025-02-03", "acquisition", f"Acquired Crestline Family Doctors ({la4b}); its patients transferred to Summit Ridge", "ownership disclosure")
+    setp(la4b, org_id=prov.loc[prov.provider_id == la4, "org_id"].iat[0])
+    legit.append((la4, "acquisition", "2025-02-03", "Acquired another practice; its existing patients moved over.", True))
+    # adversarial check: a provider that IS upcoding also has a genuine-looking business event. Context must not hide it.
+    ev(P("PRO", 4), "2025-01-20", "location_opened", "New service location: Pinnacle West clinic", "provider enrolment update")
+    legit.append((P("PRO", 4), "fraud-with-event", "2025-02-01", "Upcoding scheme (S4) that coincides with a real new location.", False))
+
     allx = pd.concat([base] + new, ignore_index=True)
     allx["service_date"] = allx.service_date.clip(upper=END)
     allx["service_end_date"] = allx.service_end_date.fillna(allx.service_date).clip(upper=END)
@@ -569,8 +634,13 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = "data/s
     relationships.to_csv(out / "relationships.csv", index=False)
     inv.to_csv(out / "investigations.csv", index=False)
     stay_out.to_csv(out / "inpatient_stays.csv", index=False)
+    pe = pd.DataFrame(events); pe.insert(0, "event_id", [f"EVT-{i + 1:04d}" for i in range(len(pe))])
+    pe.to_csv(out / "provider_events.csv", index=False)
     hid = out.parent / "hidden"; hid.mkdir(parents=True, exist_ok=True)
     truth.to_csv(hid / "scenario_truth.csv", index=False)
+    lg = pd.DataFrame(legit, columns=["provider_id", "kind", "onset", "explanation", "legitimate"]); lg.to_csv(hid / "legit_anomalies.csv", index=False)
+    from synthdata import truth as TR
+    TR.build(allx, list(providers_out.provider_id), lg).to_csv(hid / "entity_truth.csv", index=False)
     return dict(lines=len(lines), providers=len(providers_out), members=len(members_out), truth_lines=int(truth.truth.sum()))
 
 

@@ -4,8 +4,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from pipeline import ACTIONS, LOOKBACK, ego_graph
-from rules import RULES
+from detection.pipeline import ACTIONS, LOOKBACK, ego_graph
+from detection.rules import RULES
 
 DEFAULT_WEIGHTS = dict(risk=.22, forecast=.15, dollars=.20, members=.10, severity=.15, evidence=.18)
 WEIGHT_LABELS = dict(risk="Risk", forecast="Forecast", dollars="Potential dollars", members="Member impact", severity="Severity", evidence="Evidence strength")
@@ -40,7 +40,7 @@ def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None, sb=None,
         comp = dict(risk=risk_eff, forecast=c["forecast"].get(horizon) or 0.0, dollars=np.log1p(c["exposure"]) / mx_d,
                     members=np.log1p(c["members"] + .5 * c["vulnerable"]) / mx_m, severity=c["severity"] / 100, evidence=ev_now / 100)
         pr = 100 * sum(w[k] * comp[k] for k in w) / tw
-        gate = .65 if c["lane"] == "Needs more data" else .9 if c["lane"] in ("Validate context first", "Brain lead") else 1.0
+        gate = .3 if c["lane"] == "Explained by context" else .65 if c["lane"] == "Needs more data" else .9 if c["lane"] in ("Validate context first", "Brain lead") else 1.0
         rows.append(dict(case_id=c["case_id"], title=c["title"], type=c["type"], priority=round(pr * gate, 1), raw_priority=round(pr, 1), gate=gate,
                          components={k: round(100 * comp[k], 1) for k in comp},
                          contributions={k: round(100 * w[k] * comp[k] / tw, 1) for k in w},
@@ -57,6 +57,8 @@ def rank(S, weights=None, horizon=60, capacity_hours=96, statuses=None, sb=None,
         r["rank"] = i
         if r["status"] == "Closed":
             r["capacity"] = "closed"; continue
+        if r["lane"] == "Explained by context":
+            r["capacity"] = "explained"; continue
         if used + r["effort_hours"] <= capacity_hours and r["lane"] != "Needs more data":
             used += r["effort_hours"]; r["capacity"] = "within"
         else:
@@ -99,8 +101,8 @@ def case_detail(S, cid, horizon=60):
             items.append(dict(id=f"EV-{n_id:03d}", kind="anomaly", label=f"Provider behaviour unusual vs. {PT.at[p, 'family']} peers", provider=p,
                               strength="Moderate" if pct >= .93 else "Context", pct=pct, drivers=S["adrivers"].get(p, []),
                               source="Isolation Forest on 90-day provider features (peer-normalised)"))
-    import sentinel as SN
-    import brain as BR
+    from detection import sentinel as SN
+    from detection import brain as BR
     bc = S["brain_contrib"]
     for p in prim:
         n_id += 1
@@ -122,6 +124,13 @@ def case_detail(S, cid, horizon=60):
             items.append(dict(id=f"EV-{n_id:03d}", kind="sentinel", label="SpotZ Sentinel (in-house learned models)", provider=p, strength="Strong" if PT.at[p, "twin_pct"] >= .85 and PT.at[p, "path_pct"] >= .85 else "Moderate",
                               detail=f"{PT.at[p, 'name']}: billed {PT.at[p, 'oe_paid']:.1f}× what its own patients' case mix predicts (≈${PT.at[p, 'unexplained_paid']:,.0f} unexplained, case-mix twin {PT.at[p, 'twin_pct'] * 100:.0f}th pct); care-pathway improbability {PT.at[p, 'path_pct'] * 100:.0f}th pct.",
                               transitions=tr, source="sentinel.py · cross-fitted case-mix twin + leave-provider-out care-pathway model (no rules, no labels)"))
+    for p in prim:
+        op = PT.at[p, "outcome_p"] if "outcome_p" in PT.columns else float("nan")
+        if op == op:
+            n_id += 1
+            items.append(dict(id=f"EV-{n_id:03d}", kind="outcome", label="Case-outcome model (trained task model)", provider=p, strength="Moderate" if op >= .7 else "Context",
+                              detail=f"{PT.at[p, 'name']}: {op * 100:.0f}% estimated likelihood of substantiation, learned from simulated closed cases in independent training worlds. An estimate for prioritising review, not a finding.",
+                              source="data/models/case_outcome.joblib · logistic regression on detector outputs (see Governance → Task models)"))
     for p in prim:
         pn = (S.get("panel") or {}).get(p)
         if pn and PT.at[p, "panel_pct"] >= .75:
