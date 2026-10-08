@@ -48,7 +48,7 @@ EM_ALL = {"99212", "99213", "99214", "99215"}
 COMPONENTS = {"82947", "82565", "84132"}
 MIN_INTERVAL = {"80053": 7, "85025": 7, "83036": 30, "80305": 3, "80307": 7, "RX-OPI": 21, "RX-COMP": 21, "RX-BRAND": 21,
                 "RX-GEN": 21, "K0823": 365 * 3, "L1832": 180}
-CROSS_PROVIDER_REPEAT = {"K0823", "L1832"}
+CROSS_PROVIDER_REPEAT = {"K0823", "L1832", "RX-COMP", "RX-OPI"}   # equipment once per period; high-risk drugs across pharmacies ("pharmacy shopping")
 EXCESS_LIMIT = {"90837": 3, "90834": 3, "G0299": 7, "G0151": 5, "99213": 2, "99214": 2, "99215": 2, "80305": 3}
 MONITORING_DX = {"N18.6"}
 COMMUNITY_FAMILIES = {"DME", "HH", "AMB", "PHARM", "BH"}
@@ -141,11 +141,13 @@ def apply_rules(lines: pd.DataFrame, members: pd.DataFrame, stays: pd.DataFrame,
             if len(base) < 2: continue
             b = float(np.average(base.lvl, weights=base.n)); post = g[g.index > base.index.max()]
             best = None
-            for k in range(1, len(post) + 1):            # most recent k quarters pooled: is the mean level shift statistically real?
-                w = post.iloc[-k:]; n = float(w.n.sum())
-                if n < 30: continue
-                mu = float(np.average(w.lvl, weights=w.n)); z = (mu - b) / (sd_all[pid] / np.sqrt(n))
-                if mu - b >= .3 and mu >= peer_lvl + .3 and z >= 4 and (best is None or z > best[0]): best = (z, list(w.index), mu)
+            for k in range(1, len(post) + 1):            # most recent k quarters vs ALL earlier quarters: two-sample test of the level shift
+                w, pre = g.iloc[-k:], g.iloc[:-k]; n, n0 = float(w.n.sum()), float(pre.n.sum())
+                if n < 30 or n0 < 40: continue
+                mu, b0 = float(np.average(w.lvl, weights=w.n)), float(np.average(pre.lvl, weights=pre.n))
+                z = (mu - b0) / (sd_all[pid] * np.sqrt(1 / n + 1 / n0))
+                if mu - b0 >= .25 and mu >= peer_lvl + .3 and z >= 3.5 and (best is None or z > best[0]): best = (z, list(w.index), mu, b0)
+            if best: b = best[3]
             if best: rows += [(pid, q, b, best[2]) for q in best[1]]
         if rows:
             sh = pd.DataFrame(rows, columns=["provider_id", "q", "base", "now"])

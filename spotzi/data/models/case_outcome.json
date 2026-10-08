@@ -16,16 +16,16 @@
   "log_lines"
  ],
  "coefficients": {
-  "rule_score": 1.253,
-  "anomaly_pct": 0.806,
-  "graph_score": 1.083,
-  "twin_pct": 0.266,
-  "path_pct": -0.046,
-  "drift_pct": 1.171,
-  "mix_pct": -0.54,
-  "panel_pct": 1.013,
-  "any_share": 0.394,
-  "log_lines": 1.119
+  "rule_score": 1.866,
+  "anomaly_pct": 0.79,
+  "graph_score": 1.026,
+  "twin_pct": 0.124,
+  "path_pct": 0.284,
+  "drift_pct": 0.954,
+  "mix_pct": -0.155,
+  "panel_pct": 1.116,
+  "any_share": 0.254,
+  "log_lines": 0.304
  },
  "held_out": {
   "demo world (seed 7)": {
@@ -33,27 +33,27 @@
    "positives": 15,
    "auc": 1.0,
    "ap": 1.0,
-   "brain_auc": 0.993,
-   "brain_ap": 0.962,
-   "risk_auc": 0.993
+   "brain_auc": 0.998,
+   "brain_ap": 0.987,
+   "risk_auc": 0.997
   },
   "held-out world (seed 201)": {
    "providers": 132,
    "positives": 14,
-   "auc": 0.993,
-   "ap": 0.912,
-   "brain_auc": 0.982,
-   "brain_ap": 0.815,
-   "risk_auc": 0.988
+   "auc": 0.992,
+   "ap": 0.87,
+   "brain_auc": 0.987,
+   "brain_ap": 0.859,
+   "risk_auc": 0.99
   },
   "held-out world (seed 202)": {
    "providers": 132,
    "positives": 15,
-   "auc": 0.999,
-   "ap": 0.996,
-   "brain_auc": 0.995,
-   "brain_ap": 0.963,
-   "risk_auc": 0.997
+   "auc": 1.0,
+   "ap": 1.0,
+   "brain_auc": 0.997,
+   "brain_ap": 0.97,
+   "risk_auc": 0.998
   }
  },
  "use": "Shown on cases and providers as a learned estimate from simulated closed cases. Not used to rank or decide; Nexus Brain keeps learning from your real decisions.",
@@ -61,7 +61,7 @@
   "Trained on simulated outcomes. Replace with your closed SIU cases when available (same script)."
  ],
  "name": "case_outcome",
- "trained": "2026-10-09 00:55:57",
+ "trained": "2026-10-09 01:49:17",
  "artifact": "case_outcome.joblib",
- "sha256": "61ab932df1e4ecce"
+ "sha256": "33d45401ecf27bf1"
 }

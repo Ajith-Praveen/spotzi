@@ -23,7 +23,7 @@ def _type(scen: str) -> str | None:
     return SCENARIO_TYPE.get(s.split("-")[0]) or SCENARIO_TYPE.get(s)
 
 
-def build(lines: pd.DataFrame, providers: list, legit: pd.DataFrame | None = None, min_lines=20, exclusions: pd.DataFrame | None = None) -> pd.DataFrame:
+def build(lines: pd.DataFrame, providers: list, legit: pd.DataFrame | None = None, min_lines=5, exclusions: pd.DataFrame | None = None) -> pd.DataFrame:
     """lines: provider_id, service_date, paid, truth, scenario."""
     L = lines.copy(); L["service_date"] = pd.to_datetime(L.service_date)
     t = L[L.truth.astype(bool)]

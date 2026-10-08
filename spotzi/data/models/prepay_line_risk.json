@@ -26,36 +26,36 @@
  "held_out": {
   "demo world (seed 7)": {
    "lines": 62507,
-   "fraud_lines": 6076,
+   "fraud_lines": 6159,
    "auc": 0.988,
-   "ap": 0.947,
-   "rules_flagged": 5491,
-   "rules_precision": 0.804,
-   "rules_recall": 0.726,
-   "model_precision_same_budget": 0.925,
-   "model_recall_same_budget": 0.836
+   "ap": 0.948,
+   "rules_flagged": 5577,
+   "rules_precision": 0.817,
+   "rules_recall": 0.739,
+   "model_precision_same_budget": 0.931,
+   "model_recall_same_budget": 0.843
   },
   "held-out world (seed 201)": {
    "lines": 62588,
-   "fraud_lines": 6165,
+   "fraud_lines": 6218,
    "auc": 0.997,
-   "ap": 0.98,
-   "rules_flagged": 5372,
-   "rules_precision": 0.819,
-   "rules_recall": 0.714,
-   "model_precision_same_budget": 0.971,
-   "model_recall_same_budget": 0.846
+   "ap": 0.979,
+   "rules_flagged": 5679,
+   "rules_precision": 0.818,
+   "rules_recall": 0.747,
+   "model_precision_same_budget": 0.958,
+   "model_recall_same_budget": 0.875
   },
   "held-out world (seed 202)": {
    "lines": 59268,
-   "fraud_lines": 5932,
-   "auc": 0.997,
+   "fraud_lines": 5974,
+   "auc": 0.996,
    "ap": 0.976,
-   "rules_flagged": 5210,
-   "rules_precision": 0.811,
-   "rules_recall": 0.712,
-   "model_precision_same_budget": 0.96,
-   "model_recall_same_budget": 0.843
+   "rules_flagged": 5319,
+   "rules_precision": 0.82,
+   "rules_recall": 0.73,
+   "model_precision_same_budget": 0.958,
+   "model_recall_same_budget": 0.853
   }
  },
  "use": "Adds a line-risk probability and its local drivers to every pre-payment check. Recommendation only; a human resolves every pended claim.",
@@ -64,7 +64,7 @@
   "Training worlds share the generator's scheme templates; the public-data test is the stronger check."
  ],
  "name": "prepay_line_risk",
- "trained": "2026-10-09 00:54:51",
+ "trained": "2026-10-09 01:48:11",
  "artifact": "prepay_line_risk.joblib",
- "sha256": "7b27cbd7f81fc92c"
+ "sha256": "069c82f3b0d30d28"
 }

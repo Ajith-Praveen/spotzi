@@ -6,37 +6,37 @@
    "fraudulent": 16,
    "cases": 13,
    "claim": {
-    "precision": 0.804,
-    "recall": 0.726
+    "precision": 0.812,
+    "recall": 0.739
    },
    "provider_detectors": {
     "risk": {
-     "auc": 0.995,
-     "ap": 0.971
-    },
-    "brain": {
-     "auc": 0.989,
-     "ap": 0.942
-    },
-    "p_fraud": {
-     "auc": 0.958,
-     "ap": 0.88
-    },
-    "outcome_p": {
      "auc": 0.999,
      "ap": 0.993
     },
+    "brain": {
+     "auc": 0.993,
+     "ap": 0.963
+    },
+    "p_fraud": {
+     "auc": 0.966,
+     "ap": 0.919
+    },
+    "outcome_p": {
+     "auc": 0.999,
+     "ap": 0.996
+    },
     "rule_score": {
-     "auc": 0.947,
-     "ap": 0.897
+     "auc": 0.963,
+     "ap": 0.933
     },
     "anomaly_pct": {
-     "auc": 0.953,
-     "ap": 0.71
+     "auc": 0.961,
+     "ap": 0.721
     },
     "temporal_pct": {
-     "auc": 0.957,
-     "ap": 0.733
+     "auc": 0.96,
+     "ap": 0.743
     },
     "peer_pct": {
      "auc": 0.763,
@@ -58,11 +58,11 @@
     },
     "@10": {
      "precision": 1.0,
-     "recall": 0.875
+     "recall": 0.938
     },
     "@20": {
      "precision": 0.917,
-     "recall": 0.938
+     "recall": 1.0
     }
    },
    "rings": {
@@ -78,7 +78,7 @@
     },
     "S5": {
      "members": 2,
-     "in_cases": 1,
+     "in_cases": 2,
      "largest_together": 2
     },
     "S9": {
@@ -94,7 +94,7 @@
     },
     "excessive_services": {
      "n": 2,
-     "caught": 1
+     "caught": 2
     },
     "excluded_provider": {
      "n": 1,
@@ -124,7 +124,7 @@
    "by_true_state": {
     "decoy": {
      "n": 3,
-     "escalated": 1,
+     "escalated": 0,
      "stage": {
       "Normal": 3
      },
@@ -132,29 +132,29 @@
       "Low": 2,
       "High": 1
      },
-     "mean_independent_families": 2.0
+     "mean_independent_families": 1.67
     },
     "fraudulent": {
      "n": 16,
-     "escalated": 15,
+     "escalated": 16,
      "stage": {
       "Established pattern": 12,
       "Sustained anomaly": 3,
       "Behavioural deviation": 1
      },
      "consensus": {
-      "High": 9,
-      "Moderate": 6,
+      "High": 10,
+      "Moderate": 5,
       "Low": 1
      },
-     "mean_independent_families": 4.31
+     "mean_independent_families": 4.44
     },
     "legitimate": {
      "n": 109,
      "escalated": 0,
      "stage": {
-      "Normal": 68,
-      "Behavioural deviation": 29,
+      "Normal": 71,
+      "Behavioural deviation": 26,
       "Emerging anomaly": 9,
       "Established pattern": 2,
       "Sustained anomaly": 1
@@ -163,14 +163,14 @@
       "Low": 106,
       "Moderate": 3
      },
-     "mean_independent_families": 0.23
+     "mean_independent_families": 0.24
     },
     "legitimate_anomaly": {
      "n": 4,
      "escalated": 0,
      "stage": {
-      "Emerging anomaly": 2,
-      "Behavioural deviation": 1,
+      "Behavioural deviation": 2,
+      "Established pattern": 1,
       "Sustained anomaly": 1
      },
      "consensus": {
@@ -199,241 +199,52 @@
   {
    "dataset": "held-out world 201",
    "providers": 132,
-   "fraudulent": 14,
-   "cases": 12,
-   "claim": {
-    "precision": 0.819,
-    "recall": 0.714
-   },
-   "provider_detectors": {
-    "risk": {
-     "auc": 0.988,
-     "ap": 0.844
-    },
-    "brain": {
-     "auc": 0.982,
-     "ap": 0.815
-    },
-    "p_fraud": {
-     "auc": 0.983,
-     "ap": 0.804
-    },
-    "outcome_p": {
-     "auc": 0.993,
-     "ap": 0.912
-    },
-    "rule_score": {
-     "auc": 0.948,
-     "ap": 0.861
-    },
-    "anomaly_pct": {
-     "auc": 0.953,
-     "ap": 0.684
-    },
-    "temporal_pct": {
-     "auc": 0.967,
-     "ap": 0.834
-    },
-    "peer_pct": {
-     "auc": 0.746,
-     "ap": 0.464
-    },
-    "drift_pct": {
-     "auc": 0.937,
-     "ap": 0.57
-    },
-    "panel_pct": {
-     "auc": 0.71,
-     "ap": 0.485
-    }
-   },
-   "queue": {
-    "@5": {
-     "precision": 1.0,
-     "recall": 0.5
-    },
-    "@10": {
-     "precision": 0.9,
-     "recall": 0.857
-    },
-    "@20": {
-     "precision": 0.833,
-     "recall": 0.929
-    }
-   },
-   "rings": {
-    "S1": {
-     "members": 2,
-     "in_cases": 2,
-     "largest_together": 2
-    },
-    "S2": {
-     "members": 2,
-     "in_cases": 2,
-     "largest_together": 2
-    },
-    "S5": {
-     "members": 2,
-     "in_cases": 1,
-     "largest_together": 2
-    },
-    "S9": {
-     "members": 2,
-     "in_cases": 2,
-     "largest_together": 2
-    }
-   },
-   "fraud_types": {
-    "duplicate": {
-     "n": 1,
-     "caught": 1
-    },
-    "excessive_services": {
-     "n": 2,
-     "caught": 1
-    },
-    "impossible_timing": {
-     "n": 1,
-     "caught": 1
-    },
-    "phantom": {
-     "n": 3,
-     "caught": 3
-    },
-    "recruitment": {
-     "n": 2,
-     "caught": 2
-    },
-    "unbundling": {
-     "n": 2,
-     "caught": 2
-    },
-    "upcoding": {
-     "n": 3,
-     "caught": 3
-    }
-   },
-   "by_true_state": {
-    "decoy": {
-     "n": 3,
-     "escalated": 0,
-     "stage": {
-      "Normal": 2,
-      "Emerging anomaly": 1
-     },
-     "consensus": {
-      "Low": 2,
-      "Moderate": 1
-     },
-     "mean_independent_families": 1.0
-    },
-    "fraudulent": {
-     "n": 14,
-     "escalated": 13,
-     "stage": {
-      "Established pattern": 11,
-      "Behavioural deviation": 2,
-      "Sustained anomaly": 1
-     },
-     "consensus": {
-      "High": 7,
-      "Moderate": 7
-     },
-     "mean_independent_families": 4.21
-    },
-    "legitimate": {
-     "n": 111,
-     "escalated": 1,
-     "stage": {
-      "Normal": 71,
-      "Behavioural deviation": 28,
-      "Emerging anomaly": 9,
-      "Sustained anomaly": 2,
-      "Established pattern": 1
-     },
-     "consensus": {
-      "Low": 107,
-      "Moderate": 3,
-      "High": 1
-     },
-     "mean_independent_families": 0.25
-    },
-    "legitimate_anomaly": {
-     "n": 4,
-     "escalated": 1,
-     "stage": {
-      "Established pattern": 2,
-      "Behavioural deviation": 1,
-      "Normal": 1
-     },
-     "consensus": {
-      "Low": 2,
-      "High": 1,
-      "Moderate": 1
-     },
-     "mean_independent_families": 1.75
-    }
-   },
-   "case_precision_by_consensus": {
-    "High": {
-     "cases": 7,
-     "precision": 0.857
-    },
-    "Moderate": {
-     "cases": 4,
-     "precision": 1.0
-    }
-   }
-  },
-  {
-   "dataset": "held-out world 202",
-   "providers": 132,
    "fraudulent": 15,
    "cases": 12,
    "claim": {
-    "precision": 0.811,
-    "recall": 0.712
+    "precision": 0.809,
+    "recall": 0.747
    },
    "provider_detectors": {
     "risk": {
      "auc": 0.997,
-     "ap": 0.974
+     "ap": 0.975
     },
     "brain": {
-     "auc": 0.995,
-     "ap": 0.963
+     "auc": 0.994,
+     "ap": 0.962
     },
     "p_fraud": {
-     "auc": 0.995,
-     "ap": 0.942
+     "auc": 0.964,
+     "ap": 0.915
     },
     "outcome_p": {
-     "auc": 0.999,
-     "ap": 0.996
+     "auc": 1.0,
+     "ap": 1.0
     },
     "rule_score": {
-     "auc": 0.978,
-     "ap": 0.905
+     "auc": 0.959,
+     "ap": 0.893
     },
     "anomaly_pct": {
-     "auc": 0.958,
-     "ap": 0.722
+     "auc": 0.975,
+     "ap": 0.762
     },
     "temporal_pct": {
-     "auc": 0.91,
-     "ap": 0.627
+     "auc": 0.974,
+     "ap": 0.888
     },
     "peer_pct": {
-     "auc": 0.777,
-     "ap": 0.535
+     "auc": 0.768,
+     "ap": 0.536
     },
     "drift_pct": {
      "auc": 0.944,
-     "ap": 0.655
+     "ap": 0.615
     },
     "panel_pct": {
-     "auc": 0.798,
-     "ap": 0.599
+     "auc": 0.733,
+     "ap": 0.547
     }
    },
    "queue": {
@@ -443,11 +254,11 @@
     },
     "@10": {
      "precision": 1.0,
-     "recall": 0.933
+     "recall": 1.0
     },
     "@20": {
      "precision": 0.909,
-     "recall": 0.933
+     "recall": 1.0
     }
    },
    "rings": {
@@ -463,7 +274,7 @@
     },
     "S5": {
      "members": 2,
-     "in_cases": 1,
+     "in_cases": 2,
      "largest_together": 2
     },
     "S9": {
@@ -479,7 +290,7 @@
     },
     "excessive_services": {
      "n": 2,
-     "caught": 1
+     "caught": 2
     },
     "impossible_timing": {
      "n": 1,
@@ -505,47 +316,232 @@
    "by_true_state": {
     "decoy": {
      "n": 3,
-     "escalated": 1,
+     "escalated": 0,
      "stage": {
       "Normal": 2,
-      "Behavioural deviation": 1
+      "Sustained anomaly": 1
      },
      "consensus": {
-      "High": 1,
-      "Low": 1,
+      "Low": 2,
       "Moderate": 1
      },
-     "mean_independent_families": 2.0
+     "mean_independent_families": 1.33
     },
     "fraudulent": {
      "n": 15,
-     "escalated": 14,
+     "escalated": 15,
      "stage": {
-      "Established pattern": 10,
-      "Sustained anomaly": 2,
-      "Behavioural deviation": 1,
-      "Emerging anomaly": 1,
-      "Normal": 1
+      "Established pattern": 12,
+      "Behavioural deviation": 2,
+      "Sustained anomaly": 1
      },
      "consensus": {
       "High": 9,
       "Moderate": 6
      },
-     "mean_independent_families": 4.33
+     "mean_independent_families": 4.47
     },
     "legitimate": {
      "n": 110,
      "escalated": 0,
      "stage": {
-      "Normal": 65,
+      "Normal": 72,
+      "Behavioural deviation": 27,
+      "Emerging anomaly": 9,
+      "Sustained anomaly": 2
+     },
+     "consensus": {
+      "Low": 107,
+      "Moderate": 3
+     },
+     "mean_independent_families": 0.2
+    },
+    "legitimate_anomaly": {
+     "n": 4,
+     "escalated": 0,
+     "stage": {
+      "Established pattern": 3,
+      "Normal": 1
+     },
+     "consensus": {
+      "Low": 2,
+      "High": 1,
+      "Moderate": 1
+     },
+     "mean_independent_families": 1.5
+    }
+   },
+   "case_precision_by_consensus": {
+    "High": {
+     "cases": 6,
+     "precision": 1.0
+    },
+    "Moderate": {
+     "cases": 5,
+     "precision": 0.8
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 202",
+   "providers": 132,
+   "fraudulent": 15,
+   "cases": 12,
+   "claim": {
+    "precision": 0.82,
+    "recall": 0.73
+   },
+   "provider_detectors": {
+    "risk": {
+     "auc": 0.998,
+     "ap": 0.983
+    },
+    "brain": {
+     "auc": 0.997,
+     "ap": 0.97
+    },
+    "p_fraud": {
+     "auc": 0.994,
+     "ap": 0.912
+    },
+    "outcome_p": {
+     "auc": 1.0,
+     "ap": 1.0
+    },
+    "rule_score": {
+     "auc": 0.991,
+     "ap": 0.946
+    },
+    "anomaly_pct": {
+     "auc": 0.968,
+     "ap": 0.734
+    },
+    "temporal_pct": {
+     "auc": 0.91,
+     "ap": 0.627
+    },
+    "peer_pct": {
+     "auc": 0.777,
+     "ap": 0.535
+    },
+    "drift_pct": {
+     "auc": 0.944,
+     "ap": 0.655
+    },
+    "panel_pct": {
+     "auc": 0.798,
+     "ap": 0.599
+    }
+   },
+   "queue": {
+    "@5": {
+     "precision": 1.0,
+     "recall": 0.6
+    },
+    "@10": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "@20": {
+     "precision": 0.909,
+     "recall": 1.0
+    }
+   },
+   "rings": {
+    "S1": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    },
+    "S2": {
+     "members": 3,
+     "in_cases": 3,
+     "largest_together": 3
+    },
+    "S5": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    },
+    "S9": {
+     "members": 2,
+     "in_cases": 2,
+     "largest_together": 2
+    }
+   },
+   "fraud_types": {
+    "duplicate": {
+     "n": 1,
+     "caught": 1
+    },
+    "excessive_services": {
+     "n": 2,
+     "caught": 2
+    },
+    "impossible_timing": {
+     "n": 1,
+     "caught": 1
+    },
+    "phantom": {
+     "n": 4,
+     "caught": 4
+    },
+    "recruitment": {
+     "n": 2,
+     "caught": 2
+    },
+    "unbundling": {
+     "n": 2,
+     "caught": 2
+    },
+    "upcoding": {
+     "n": 3,
+     "caught": 3
+    }
+   },
+   "by_true_state": {
+    "decoy": {
+     "n": 3,
+     "escalated": 0,
+     "stage": {
+      "Normal": 2,
+      "Behavioural deviation": 1
+     },
+     "consensus": {
+      "Moderate": 2,
+      "Low": 1
+     },
+     "mean_independent_families": 2.0
+    },
+    "fraudulent": {
+     "n": 15,
+     "escalated": 15,
+     "stage": {
+      "Established pattern": 11,
+      "Behavioural deviation": 1,
+      "Emerging anomaly": 1,
+      "Normal": 1,
+      "Sustained anomaly": 1
+     },
+     "consensus": {
+      "High": 9,
+      "Moderate": 6
+     },
+     "mean_independent_families": 4.4
+    },
+    "legitimate": {
+     "n": 110,
+     "escalated": 0,
+     "stage": {
+      "Normal": 66,
       "Behavioural deviation": 31,
       "Emerging anomaly": 8,
-      "Sustained anomaly": 5,
+      "Sustained anomaly": 4,
       "Established pattern": 1
      },
      "consensus": {
-      "Low": 105,
-      "Moderate": 4,
+      "Low": 104,
+      "Moderate": 5,
       "High": 1
      },
      "mean_independent_families": 0.25
@@ -568,12 +564,12 @@
    },
    "case_precision_by_consensus": {
     "High": {
-     "cases": 7,
-     "precision": 0.857
+     "cases": 6,
+     "precision": 1.0
     },
     "Moderate": {
-     "cases": 4,
-     "precision": 1.0
+     "cases": 5,
+     "precision": 0.8
     }
    }
   }
@@ -581,8 +577,8 @@
  "calibration": [
   {
    "dataset": "demo world",
-   "brier": 0.0297,
-   "ece": 0.0199,
+   "brier": 0.0175,
+   "ece": 0.02,
    "reliability": [
     {
      "mean_predicted": 0.005,
@@ -596,6 +592,11 @@
     },
     {
      "mean_predicted": 0.005,
+     "observed": 0.077,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
      "observed": 0.0,
      "n": 13
     },
@@ -603,6 +604,91 @@
      "mean_predicted": 0.005,
      "observed": 0.0,
      "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.146,
+     "observed": 0.231,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.933,
+     "observed": 0.923,
+     "n": 13
+    }
+   ],
+   "tiers": {
+    "Critical (top 1%)": {
+     "providers": 1,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.062,
+     "false_positive_rate": 0.0
+    },
+    "High (top 5%)": {
+     "providers": 7,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.438,
+     "false_positive_rate": 0.0
+    },
+    "Review (top 15%)": {
+     "providers": 20,
+     "threshold": 0.005,
+     "precision": 0.75,
+     "recall": 0.938,
+     "false_positive_rate": 0.0431
+    }
+   },
+   "operating_points": {
+    "low capacity (F0.5)": {
+     "review_top_k": 12,
+     "threshold": 0.85,
+     "precision": 1.0,
+     "recall": 0.75
+    },
+    "balanced (F1)": {
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.938,
+     "recall": 0.938
+    },
+    "high capacity (F2)": {
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.938,
+     "recall": 0.938
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 201",
+   "brier": 0.0193,
+   "ece": 0.0154,
+   "reliability": [
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
     },
     {
      "mean_predicted": 0.005,
@@ -625,76 +711,6 @@
      "n": 13
     },
     {
-     "mean_predicted": 0.168,
-     "observed": 0.231,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.892,
-     "observed": 0.923,
-     "n": 13
-    }
-   ],
-   "tiers": {
-    "Critical (top 1%)": {
-     "providers": 1,
-     "threshold": 0.97,
-     "precision": 1.0,
-     "recall": 0.062,
-     "false_positive_rate": 0.0
-    },
-    "High (top 5%)": {
-     "providers": 7,
-     "threshold": 0.929,
-     "precision": 1.0,
-     "recall": 0.438,
-     "false_positive_rate": 0.0
-    },
-    "Review (top 15%)": {
-     "providers": 20,
-     "threshold": 0.143,
-     "precision": 0.7,
-     "recall": 0.875,
-     "false_positive_rate": 0.0517
-    }
-   },
-   "operating_points": {
-    "low capacity (F0.5)": {
-     "review_top_k": 12,
-     "threshold": 0.774,
-     "precision": 1.0,
-     "recall": 0.75
-    },
-    "balanced (F1)": {
-     "review_top_k": 16,
-     "threshold": 0.143,
-     "precision": 0.875,
-     "recall": 0.875
-    },
-    "high capacity (F2)": {
-     "review_top_k": 16,
-     "threshold": 0.143,
-     "precision": 0.875,
-     "recall": 0.875
-    }
-   }
-  },
-  {
-   "dataset": "held-out world 201",
-   "brier": 0.0278,
-   "ece": 0.0159,
-   "reliability": [
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 14
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 14
-    },
-    {
      "mean_predicted": 0.005,
      "observed": 0.0,
      "n": 13
@@ -705,132 +721,12 @@
      "n": 13
     },
     {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
+     "mean_predicted": 0.184,
+     "observed": 0.154,
      "n": 13
     },
     {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.18,
-     "observed": 0.231,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.916,
-     "observed": 0.846,
-     "n": 13
-    }
-   ],
-   "tiers": {
-    "Critical (top 1%)": {
-     "providers": 1,
-     "threshold": 0.97,
-     "precision": 1.0,
-     "recall": 0.071,
-     "false_positive_rate": 0.0
-    },
-    "High (top 5%)": {
-     "providers": 7,
-     "threshold": 0.929,
-     "precision": 0.857,
-     "recall": 0.429,
-     "false_positive_rate": 0.0085
-    },
-    "Review (top 15%)": {
-     "providers": 20,
-     "threshold": 0.143,
-     "precision": 0.65,
-     "recall": 0.929,
-     "false_positive_rate": 0.0593
-    }
-   },
-   "operating_points": {
-    "low capacity (F0.5)": {
-     "review_top_k": 12,
-     "threshold": 0.774,
-     "precision": 0.917,
-     "recall": 0.786
-    },
-    "balanced (F1)": {
-     "review_top_k": 14,
-     "threshold": 0.632,
-     "precision": 0.857,
-     "recall": 0.857
-    },
-    "high capacity (F2)": {
-     "review_top_k": 18,
-     "threshold": 0.143,
-     "precision": 0.722,
-     "recall": 0.929
-    }
-   }
-  },
-  {
-   "dataset": "held-out world 202",
-   "brier": 0.0146,
-   "ece": 0.0065,
-   "reliability": [
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 14
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 14
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.005,
-     "observed": 0.0,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.211,
-     "observed": 0.231,
-     "n": 13
-    },
-    {
-     "mean_predicted": 0.928,
+     "mean_predicted": 0.942,
      "observed": 0.923,
      "n": 13
     }
@@ -845,14 +741,114 @@
     },
     "High (top 5%)": {
      "providers": 7,
-     "threshold": 0.929,
+     "threshold": 0.97,
      "precision": 1.0,
      "recall": 0.467,
      "false_positive_rate": 0.0
     },
     "Review (top 15%)": {
      "providers": 20,
-     "threshold": 0.143,
+     "threshold": 0.005,
+     "precision": 0.7,
+     "recall": 0.933,
+     "false_positive_rate": 0.0513
+    }
+   },
+   "operating_points": {
+    "low capacity (F0.5)": {
+     "review_top_k": 12,
+     "threshold": 0.85,
+     "precision": 1.0,
+     "recall": 0.8
+    },
+    "balanced (F1)": {
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.875,
+     "recall": 0.933
+    },
+    "high capacity (F2)": {
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.875,
+     "recall": 0.933
+    }
+   }
+  },
+  {
+   "dataset": "held-out world 202",
+   "brier": 0.0099,
+   "ece": 0.0119,
+   "reliability": [
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 14
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.005,
+     "observed": 0.0,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.173,
+     "observed": 0.231,
+     "n": 13
+    },
+    {
+     "mean_predicted": 0.945,
+     "observed": 0.923,
+     "n": 13
+    }
+   ],
+   "tiers": {
+    "Critical (top 1%)": {
+     "providers": 1,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.067,
+     "false_positive_rate": 0.0
+    },
+    "High (top 5%)": {
+     "providers": 7,
+     "threshold": 0.97,
+     "precision": 1.0,
+     "recall": 0.467,
+     "false_positive_rate": 0.0
+    },
+    "Review (top 15%)": {
+     "providers": 20,
+     "threshold": 0.005,
      "precision": 0.75,
      "recall": 1.0,
      "false_positive_rate": 0.0427
@@ -860,21 +856,21 @@
    },
    "operating_points": {
     "low capacity (F0.5)": {
-     "review_top_k": 15,
-     "threshold": 0.774,
-     "precision": 0.933,
-     "recall": 0.933
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.938,
+     "recall": 1.0
     },
     "balanced (F1)": {
-     "review_top_k": 15,
-     "threshold": 0.774,
-     "precision": 0.933,
-     "recall": 0.933
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.938,
+     "recall": 1.0
     },
     "high capacity (F2)": {
-     "review_top_k": 18,
-     "threshold": 0.143,
-     "precision": 0.833,
+     "review_top_k": 16,
+     "threshold": 0.5,
+     "precision": 0.938,
      "recall": 1.0
     }
    }
@@ -890,8 +886,8 @@
     "dq_after": 0.45,
     "consensus_before": "High",
     "consensus_after": "Low",
-    "risk_before": 61.4,
-    "risk_after": 62.7
+    "risk_before": 60.5,
+    "risk_after": 61.6
    },
    {
     "provider": "P-0004",
@@ -910,8 +906,8 @@
     "dq_after": 0.463,
     "consensus_before": "Moderate",
     "consensus_after": "Low",
-    "risk_before": 53.7,
-    "risk_after": 56.6
+    "risk_before": 51.7,
+    "risk_after": 54.5
    },
    {
     "provider": "P-0009",
@@ -920,8 +916,8 @@
     "dq_after": 0.528,
     "consensus_before": "Moderate",
     "consensus_after": "Low",
-    "risk_before": 49.4,
-    "risk_after": 11.3
+    "risk_before": 48.5,
+    "risk_after": 48.4
    },
    {
     "provider": "P-0034",
@@ -930,8 +926,8 @@
     "dq_after": 0.514,
     "consensus_before": "Low",
     "consensus_after": "Low",
-    "risk_before": 2.1,
-    "risk_after": 6.9
+    "risk_before": 1.0,
+    "risk_after": 5.8
    },
    {
     "provider": "P-0074",
@@ -950,8 +946,8 @@
     "dq_after": 0.454,
     "consensus_before": "Low",
     "consensus_after": "Low",
-    "risk_before": 0.9,
-    "risk_after": 2.3
+    "risk_before": 0.0,
+    "risk_after": 1.1
    },
    {
     "provider": "P-0029",
@@ -960,8 +956,8 @@
     "dq_after": 0.488,
     "consensus_before": "Low",
     "consensus_after": "Low",
-    "risk_before": 1.0,
-    "risk_after": 1.0
+    "risk_before": 0.0,
+    "risk_after": 0.0
    },
    {
     "provider": "P-0035",
@@ -970,8 +966,8 @@
     "dq_after": 0.479,
     "consensus_before": "Low",
     "consensus_after": "Low",
-    "risk_before": 5.8,
-    "risk_after": 9.4
+    "risk_before": 4.0,
+    "risk_after": 7.5
    },
    {
     "provider": "P-0105",
@@ -980,15 +976,15 @@
     "dq_after": 0.484,
     "consensus_before": "Low",
     "consensus_after": "Low",
-    "risk_before": 10.7,
-    "risk_after": 22.0
+    "risk_before": 11.2,
+    "risk_after": 22.3
    }
   ],
   "confidence_never_high": true,
   "dq_dropped": true,
   "legit_risk_inflated": 1
  },
- "generated": "2026-10-09 01:07:22",
+ "generated": "2026-10-09 01:35:40",
  "gap": {
   "reference_providers": 738,
   "datasets": {
@@ -1086,7 +1082,7 @@
  "counterfactual": {
   "summary": {
    "remove_fraud_lines": {
-    "passed": 14,
+    "passed": 15,
     "total": 15
    },
    "inject_duplicates": {
@@ -1098,8 +1094,8 @@
     "total": 2
    },
    "add_fake_event": {
-    "passed": 31,
-    "total": 31
+    "passed": 32,
+    "total": 32
    },
    "remove_context": {
     "passed": 5,
@@ -1114,7 +1110,7 @@
     "total": 8
    }
   },
-  "pass_rate": 0.987,
+  "pass_rate": 1.0,
   "tests": [
    {
     "test": "remove_fraud_lines",
@@ -1122,8 +1118,8 @@
     "provider": "P-0001",
     "metric": "risk",
     "expected": "down",
-    "before": 61.448,
-    "after": 12.182,
+    "before": 60.539,
+    "after": 12.636,
     "passed": true
    },
    {
@@ -1133,7 +1129,7 @@
     "metric": "risk",
     "expected": "down",
     "before": 56.137,
-    "after": 8.864,
+    "after": 9.318,
     "passed": true
    },
    {
@@ -1142,8 +1138,8 @@
     "provider": "P-0005",
     "metric": "risk",
     "expected": "down",
-    "before": 53.747,
-    "after": 11.818,
+    "before": 51.666,
+    "after": 12.045,
     "passed": true
    },
    {
@@ -1152,7 +1148,7 @@
     "provider": "P-0009",
     "metric": "risk",
     "expected": "down",
-    "before": 49.429,
+    "before": 48.52,
     "after": 11.364,
     "passed": true
    },
@@ -1163,7 +1159,7 @@
     "metric": "risk",
     "expected": "down",
     "before": 94.441,
-    "after": 36.46,
+    "after": 36.687,
     "passed": true
    },
    {
@@ -1173,7 +1169,7 @@
     "metric": "risk",
     "expected": "down",
     "before": 28.856,
-    "after": 4.064,
+    "after": 4.746,
     "passed": true
    },
    {
@@ -1182,8 +1178,8 @@
     "provider": "P-0063",
     "metric": "risk",
     "expected": "down",
-    "before": 65.859,
-    "after": 9.545,
+    "before": 66.768,
+    "after": 14.514,
     "passed": true
    },
    {
@@ -1192,7 +1188,7 @@
     "provider": "P-0071",
     "metric": "risk",
     "expected": "down",
-    "before": 68.781,
+    "before": 78.781,
     "after": 17.636,
     "passed": true
    },
@@ -1202,7 +1198,7 @@
     "provider": "P-0072",
     "metric": "risk",
     "expected": "down",
-    "before": 22.04,
+    "before": 57.191,
     "after": 4.0,
     "passed": true
    },
@@ -1212,8 +1208,8 @@
     "provider": "P-0085",
     "metric": "risk",
     "expected": "down",
-    "before": 78.687,
-    "after": 45.995,
+    "before": 78.914,
+    "after": 46.582,
     "passed": true
    },
    {
@@ -1242,9 +1238,9 @@
     "provider": "P-0108",
     "metric": "risk",
     "expected": "down",
-    "before": 57.212,
-    "after": 70.601,
-    "passed": false
+    "before": 57.439,
+    "after": 29.875,
+    "passed": true
    },
    {
     "test": "remove_fraud_lines",
@@ -1253,7 +1249,7 @@
     "metric": "risk",
     "expected": "down",
     "before": 87.535,
-    "after": 37.049,
+    "after": 23.931,
     "passed": true
    },
    {
@@ -1262,8 +1258,8 @@
     "provider": "P-0120",
     "metric": "risk",
     "expected": "down",
-    "before": 72.278,
-    "after": 33.23,
+    "before": 72.733,
+    "after": 22.072,
     "passed": true
    },
    {
@@ -1272,8 +1268,8 @@
     "provider": "P-0029",
     "metric": "risk",
     "expected": "up",
-    "before": 0.96,
-    "after": 40.048,
+    "before": 0.0,
+    "after": 39.974,
     "passed": true
    },
    {
@@ -1282,8 +1278,8 @@
     "provider": "P-0096",
     "metric": "risk",
     "expected": "up",
-    "before": 4.128,
-    "after": 51.389,
+    "before": 4.81,
+    "after": 50.934,
     "passed": true
    },
    {
@@ -1293,7 +1289,7 @@
     "metric": "risk",
     "expected": "up",
     "before": 5.059,
-    "after": 49.5,
+    "after": 50.636,
     "passed": true
    },
    {
@@ -1303,7 +1299,7 @@
     "metric": "risk",
     "expected": "up",
     "before": 2.619,
-    "after": 48.185,
+    "after": 48.412,
     "passed": true
    },
    {
@@ -1312,8 +1308,8 @@
     "provider": "P-0025",
     "metric": "risk",
     "expected": "up",
-    "before": 0.909,
-    "after": 40.461,
+    "before": 0.0,
+    "after": 40.234,
     "passed": true
    },
    {
@@ -1323,7 +1319,7 @@
     "metric": "risk",
     "expected": "up",
     "before": 0.0,
-    "after": 39.539,
+    "after": 38.403,
     "passed": true
    },
    {
@@ -1333,7 +1329,7 @@
     "metric": "risk",
     "expected": "up",
     "before": 2.39,
-    "after": 51.694,
+    "after": 63.164,
     "passed": true
    },
    {
@@ -1362,8 +1358,8 @@
     "provider": "P-0005",
     "metric": "rule_score",
     "expected": "down",
-    "before": 0.7,
-    "after": 0.166,
+    "before": 0.667,
+    "after": 0.076,
     "passed": true
    },
    {
@@ -1372,8 +1368,8 @@
     "provider": "P-0001",
     "metric": "risk",
     "expected": "same",
-    "before": 61.448,
-    "after": 61.448,
+    "before": 60.539,
+    "after": 60.539,
     "passed": true
    },
    {
@@ -1392,8 +1388,8 @@
     "provider": "P-0005",
     "metric": "risk",
     "expected": "same",
-    "before": 53.747,
-    "after": 53.747,
+    "before": 51.666,
+    "after": 51.666,
     "passed": true
    },
    {
@@ -1402,8 +1398,8 @@
     "provider": "P-0009",
     "metric": "risk",
     "expected": "same",
-    "before": 49.429,
-    "after": 49.429,
+    "before": 48.52,
+    "after": 48.52,
     "passed": true
    },
    {
@@ -1432,8 +1428,8 @@
     "provider": "P-0063",
     "metric": "risk",
     "expected": "same",
-    "before": 65.859,
-    "after": 65.859,
+    "before": 66.768,
+    "after": 66.768,
     "passed": true
    },
    {
@@ -1442,8 +1438,8 @@
     "provider": "P-0071",
     "metric": "risk",
     "expected": "same",
-    "before": 68.781,
-    "after": 68.781,
+    "before": 78.781,
+    "after": 78.781,
     "passed": true
    },
    {
@@ -1452,8 +1448,8 @@
     "provider": "P-0072",
     "metric": "risk",
     "expected": "same",
-    "before": 22.04,
-    "after": 22.04,
+    "before": 57.191,
+    "after": 57.191,
     "passed": true
    },
    {
@@ -1462,8 +1458,8 @@
     "provider": "P-0085",
     "metric": "risk",
     "expected": "same",
-    "before": 78.687,
-    "after": 78.687,
+    "before": 78.914,
+    "after": 78.914,
     "passed": true
    },
    {
@@ -1492,8 +1488,8 @@
     "provider": "P-0108",
     "metric": "risk",
     "expected": "same",
-    "before": 57.212,
-    "after": 57.212,
+    "before": 57.439,
+    "after": 57.439,
     "passed": true
    },
    {
@@ -1512,8 +1508,8 @@
     "provider": "P-0120",
     "metric": "risk",
     "expected": "same",
-    "before": 72.278,
-    "after": 72.278,
+    "before": 72.733,
+    "after": 72.733,
     "passed": true
    },
    {
@@ -1522,8 +1518,8 @@
     "provider": "P-0124",
     "metric": "risk",
     "expected": "same",
-    "before": 53.417,
-    "after": 53.417,
+    "before": 53.644,
+    "after": 53.644,
     "passed": true
    },
    {
@@ -1600,6 +1596,16 @@
     "test": "add_fake_event",
     "change": "still escalated after a business event is added",
     "provider": "P-0071",
+    "metric": "escalated",
+    "expected": "same",
+    "before": true,
+    "after": true,
+    "passed": true
+   },
+   {
+    "test": "add_fake_event",
+    "change": "still escalated after a business event is added",
+    "provider": "P-0072",
     "metric": "escalated",
     "expected": "same",
     "before": true,
@@ -1682,8 +1688,8 @@
     "provider": "P-0010",
     "metric": "brain",
     "expected": "same",
-    "before": 0.806,
-    "after": 0.806,
+    "before": 0.903,
+    "after": 0.903,
     "passed": true
    },
    {
@@ -1692,8 +1698,8 @@
     "provider": "P-0011",
     "metric": "brain",
     "expected": "same",
-    "before": 0.916,
-    "after": 0.916,
+    "before": 0.977,
+    "after": 0.977,
     "passed": true
    },
    {
@@ -1702,8 +1708,8 @@
     "provider": "P-0012",
     "metric": "brain",
     "expected": "same",
-    "before": 0.753,
-    "after": 0.753,
+    "before": 0.885,
+    "after": 0.885,
     "passed": true
    },
    {
@@ -1712,8 +1718,8 @@
     "provider": "P-0013",
     "metric": "brain",
     "expected": "same",
-    "before": 0.146,
-    "after": 0.146,
+    "before": 0.181,
+    "after": 0.181,
     "passed": true
    },
    {
@@ -1772,8 +1778,8 @@
     "provider": "P-0071",
     "metric": "graph_score",
     "expected": "down",
-    "before": 0.4,
-    "after": 0.4,
+    "before": 0.9,
+    "after": 0.6,
     "passed": true
    },
    {
@@ -1783,7 +1789,7 @@
     "metric": "graph_score",
     "expected": "down",
     "before": 0.9,
-    "after": 0.06,
+    "after": 0.6,
     "passed": true
    },
    {
@@ -1822,8 +1828,8 @@
     "provider": "P-0029",
     "metric": "rule_score",
     "expected": "same",
-    "before": 0.019,
-    "after": 0.01,
+    "before": 0.0,
+    "after": 0.0,
     "passed": true
    },
    {
@@ -1901,11 +1907,11 @@
  "adversarial": [
   {
    "attack": "scheme intensity 100%",
-   "detected": 15,
+   "detected": 16,
    "of": 16,
    "by_type": {
     "duplicate": "1/1",
-    "excessive_services": "1/2",
+    "excessive_services": "2/2",
     "excluded_provider": "1/1",
     "impossible_timing": "1/1",
     "phantom": "4/4",
@@ -1916,7 +1922,7 @@
   },
   {
    "attack": "scheme intensity 50%",
-   "detected": 13,
+   "detected": 14,
    "of": 16,
    "by_type": {
     "duplicate": "1/1",
@@ -1924,14 +1930,14 @@
     "excluded_provider": "1/1",
     "impossible_timing": "1/1",
     "phantom": "4/4",
-    "recruitment": "0/2",
+    "recruitment": "1/2",
     "unbundling": "2/2",
     "upcoding": "3/3"
    }
   },
   {
    "attack": "scheme intensity 25%",
-   "detected": 11,
+   "detected": 12,
    "of": 16,
    "by_type": {
     "duplicate": "1/1",
@@ -1939,14 +1945,14 @@
     "excluded_provider": "1/1",
     "impossible_timing": "1/1",
     "phantom": "3/4",
-    "recruitment": "0/2",
+    "recruitment": "1/2",
     "unbundling": "1/2",
     "upcoding": "3/3"
    }
   },
   {
    "attack": "scheme intensity 10%",
-   "detected": 9,
+   "detected": 10,
    "of": 16,
    "by_type": {
     "duplicate": "0/1",
@@ -1956,20 +1962,20 @@
     "phantom": "3/4",
     "recruitment": "0/2",
     "unbundling": "1/2",
-    "upcoding": "2/3"
+    "upcoding": "3/3"
    }
   },
   {
    "attack": "mimicry: upcode to level 4 instead of 5",
-   "detected": 0,
+   "detected": 1,
    "of": 2,
    "note": "Level-5 rule no longer fires; learned detectors must carry it"
   },
   {
    "attack": "split billing across a second identity (shared owner/address/bank)",
-   "detected": 13,
+   "detected": 14,
    "of": 16,
-   "both_identities_in_one_case": 13
+   "both_identities_in_one_case": 15
   }
  ],
  "delay": {
@@ -2049,8 +2055,8 @@
     "provider_id": "P-0071",
     "fraud_type": "excessive_services",
     "fraud_start": "2025-02-03",
-    "first_case_cutoff": "2025-04-30",
-    "days_to_case": 86,
+    "first_case_cutoff": "2025-02-28",
+    "days_to_case": 25,
     "first_stage_cutoff": "2025-02-28",
     "days_to_early_warning": 25
    },
@@ -2058,8 +2064,8 @@
     "provider_id": "P-0072",
     "fraud_type": "excessive_services",
     "fraud_start": "2025-03-05",
-    "first_case_cutoff": null,
-    "days_to_case": null,
+    "first_case_cutoff": "2025-04-30",
+    "days_to_case": 56,
     "first_stage_cutoff": "2025-04-30",
     "days_to_early_warning": 56
    },
@@ -2127,7 +2133,7 @@
     "days_to_early_warning": -121
    }
   ],
-  "median_days_to_case": 58.0,
+  "median_days_to_case": 54.5,
   "median_days_to_early_warning": 50.0,
   "note": "Cutoffs are every ~2 months, so delays are upper bounds with 2-month resolution. 'Early warning' = temporal stage \u2265 Emerging anomaly."
  },
@@ -2135,136 +2141,136 @@
   "results": {
    "demo world": {
     "base": {
-     "brain_auc": 0.989,
-     "brain_ap": 0.942,
+     "brain_auc": 0.992,
+     "brain_ap": 0.958,
      "cases": 13,
-     "caught": 15,
+     "caught": 16,
      "of": 16,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+temporal": {
-     "brain_auc": 0.991,
-     "brain_ap": 0.954,
+     "brain_auc": 0.993,
+     "brain_ap": 0.963,
      "cases": 13,
-     "caught": 15,
+     "caught": 16,
      "of": 16,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+peer": {
-     "brain_auc": 0.985,
-     "brain_ap": 0.934,
+     "brain_auc": 0.989,
+     "brain_ap": 0.947,
      "cases": 13,
-     "caught": 15,
+     "caught": 16,
      "of": 16,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+temporal+peer": {
-     "brain_auc": 0.988,
-     "brain_ap": 0.941,
+     "brain_auc": 0.99,
+     "brain_ap": 0.951,
      "cases": 13,
-     "caught": 15,
+     "caught": 16,
      "of": 16,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     }
    },
    "held-out world 201": {
     "base": {
-     "brain_auc": 0.982,
-     "brain_ap": 0.815,
+     "brain_auc": 0.994,
+     "brain_ap": 0.959,
      "cases": 12,
-     "caught": 13,
-     "of": 14,
+     "caught": 15,
+     "of": 15,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+temporal": {
-     "brain_auc": 0.984,
-     "brain_ap": 0.818,
+     "brain_auc": 0.994,
+     "brain_ap": 0.962,
      "cases": 12,
-     "caught": 13,
-     "of": 14,
+     "caught": 15,
+     "of": 15,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+peer": {
-     "brain_auc": 0.979,
-     "brain_ap": 0.802,
+     "brain_auc": 0.99,
+     "brain_ap": 0.944,
      "cases": 12,
-     "caught": 13,
-     "of": 14,
+     "caught": 15,
+     "of": 15,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+temporal+peer": {
-     "brain_auc": 0.982,
-     "brain_ap": 0.813,
+     "brain_auc": 0.991,
+     "brain_ap": 0.945,
      "cases": 13,
-     "caught": 13,
-     "of": 14,
-     "false_leads": 1,
-     "legit_escalated": 2
+     "caught": 15,
+     "of": 15,
+     "false_leads": 0,
+     "legit_escalated": 0
     }
    },
    "held-out world 202": {
     "base": {
-     "brain_auc": 0.995,
-     "brain_ap": 0.963,
+     "brain_auc": 0.997,
+     "brain_ap": 0.976,
      "cases": 12,
-     "caught": 14,
+     "caught": 15,
      "of": 15,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+temporal": {
      "brain_auc": 0.997,
-     "brain_ap": 0.972,
+     "brain_ap": 0.97,
      "cases": 12,
-     "caught": 14,
+     "caught": 15,
      "of": 15,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+peer": {
-     "brain_auc": 0.993,
-     "brain_ap": 0.943,
+     "brain_auc": 0.995,
+     "brain_ap": 0.959,
      "cases": 12,
-     "caught": 14,
+     "caught": 15,
      "of": 15,
      "false_leads": 0,
-     "legit_escalated": 1
+     "legit_escalated": 0
     },
     "+temporal+peer": {
-     "brain_auc": 0.994,
-     "brain_ap": 0.949,
+     "brain_auc": 0.995,
+     "brain_ap": 0.956,
      "cases": 13,
-     "caught": 14,
+     "caught": 15,
      "of": 15,
      "false_leads": 1,
-     "legit_escalated": 2
+     "legit_escalated": 1
     }
    }
   },
   "mean_brain_ap": {
-   "base": 0.907,
-   "+temporal": 0.915,
-   "+peer": 0.893,
-   "+temporal+peer": 0.901
+   "base": 0.964,
+   "+temporal": 0.965,
+   "+peer": 0.95,
+   "+temporal+peer": 0.951
   },
   "total_false_leads": {
    "base": 0,
    "+temporal": 0,
    "+peer": 0,
-   "+temporal+peer": 2
+   "+temporal+peer": 1
   },
   "total_caught": {
-   "base": 42,
-   "+temporal": 42,
-   "+peer": 42,
-   "+temporal+peer": 42
+   "base": 46,
+   "+temporal": 46,
+   "+peer": 46,
+   "+temporal+peer": 46
   },
   "chosen": "+temporal",
   "rule": "Choose the variant with the most fraud caught minus false leads across datasets; ties \u2192 higher mean AP."

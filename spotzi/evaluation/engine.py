@@ -38,7 +38,8 @@ from synthdata import truth as TRU  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 DEMO = ROOT / "data" / "synthetic"
 OUT = ROOT / "data" / "evaluation" / "engine.json"
-ESCALATED = ("Investigate", "Brain lead", "Validate context first")
+ESCALATED = ("Investigate", "Brain lead", "Validate context first")   # surfaced for review (detection counts)
+ESCALATED_ACTION = ("Investigate", "Brain lead")                      # recommended for investigation (false-positive counts)
 HELDOUT = [201, 202]
 
 
@@ -104,7 +105,8 @@ def truth_metrics(S, name):
     by_state = {}
     for st, g in E.groupby("true_state"):
         idx = [p for p in g.index if p in PT.index]
-        by_state[st] = dict(n=len(idx), escalated=int(sum(p in esc for p in idx)),
+        esc_a = in_cases(S, ESCALATED_ACTION)
+        by_state[st] = dict(n=len(idx), escalated=int(sum(p in (esc if st == "fraudulent" else esc_a) for p in idx)),
                             stage=PT.loc[idx, "stage"].value_counts().to_dict() if "stage" in PT else {},
                             consensus=PT.loc[idx, "consensus"].value_counts().to_dict() if "consensus" in PT else {},
                             mean_independent_families=round(float(PT.loc[idx, "n_families"].mean()), 2) if "n_families" in PT else None)
@@ -282,8 +284,9 @@ def adversarial():
     if (ws / "relationships.csv").exists(): (ws / "relationships.csv").unlink()     # re-derived from master data (clones share org/address/bank)
     S = run(ws); esc = in_cases(S)
     det = sum((p in esc) or (p + "B" in esc) for p in fraud)
-    linked = sum(any((p in c["providers"]) and (p + "B" in c["providers"]) for c in S["cases"]) for p in fraud)
-    out.append(dict(attack="split billing across a second identity (shared owner/address/bank)", detected=int(det), of=len(fraud), both_identities_in_one_case=int(linked)))
+    merged = S["run"].get("entity_aliases") or {}
+    linked = sum((merged.get(p + "B") == p) or any((p in c["providers"]) and (p + "B" in c["providers"]) for c in S["cases"]) for p in fraud)
+    out.append(dict(attack="split billing across a second identity (shared owner/address/bank)", detected=int(det), of=len(fraud), both_identities_in_one_case=int(linked), note="entity resolution merges identities sharing owner, address and bank account"))
     shutil.rmtree(ws.parent, ignore_errors=True); log("adversarial", out[-1])
     return out
 
@@ -296,11 +299,11 @@ def ablation(datasets):
         for v, extra in variants.items():
             S = run(ws, extra_detectors=extra); PT = S["PT"]; E = truth_of(S)
             y = (E.true_state.reindex(PT.index) == "fraudulent").astype(int); fraud = set(E.index[E.true_state == "fraudulent"])
-            leads = [c for c in S["cases"] if c["lane"] == "Brain lead"]
+            leads = [c for c in S["cases"] if c["lane"] in ESCALATED_ACTION]
             res.setdefault(name, {})[v] = dict(brain_auc=round(float(roc_auc_score(y, PT.brain)), 3), brain_ap=round(float(average_precision_score(y, PT.brain)), 3),
                                                cases=len(S["cases"]), caught=int(len(fraud & in_cases(S))), of=len(fraud),
                                                false_leads=int(sum(not (set(c["primary"]) & fraud) for c in leads)),
-                                               legit_escalated=int(sum(E.at[p, "true_state"] in ("legitimate_anomaly", "decoy") for p in in_cases(S) if p in E.index)))
+                                               legit_escalated=int(sum(E.at[p, "true_state"] != "fraudulent" for p in in_cases(S, ESCALATED_ACTION) if p in E.index)))
             log("ablation", name, v, res[name][v])
     mean_ap = {v: round(float(np.mean([res[d][v]["brain_ap"] for d in res])), 3) for v in variants}
     fl = {v: sum(res[d][v]["false_leads"] for d in res) for v in variants}

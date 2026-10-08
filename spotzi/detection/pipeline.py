@@ -28,7 +28,7 @@ PRIMARY_RISK = 35
 BRAIN_LEAD = .97   # a lead with no rule finding needs near-unanimous detector consensus (0.90 produced too many leads in large portfolios)
 PANEL_LEAD = .75   # patient-panel detector (recruitment typology) strong + fused score >= .9
 EXTRA_DEFAULT = ["temporal"]   # chosen by the ablation study (evaluation/engine.py): +temporal = best AP, no extra false leads
-MODEL_VERSION = "nexus-models-2.0"
+MODEL_VERSION = "nexus-models-2.2"
 
 
 # ---------------------------------------------------------------- load + validate
@@ -122,6 +122,30 @@ def validate(t) -> dict:
                 period=dict(start=str(L.service_date.min().date()), end=str(L.service_date.max().date())))
 
 
+# ---------------------------------------------------------------- entity resolution
+def resolve_entities(T):
+    """Billing identities that share owner, service address AND payment account are one billing entity (a classic evasion
+    is to split a scheme across several provider numbers). Their claims are analysed together under the first identity;
+    the original identity stays on every line (billing_provider_id) and the merge is listed in the run log."""
+    P, L = T["providers"], T["lines"]
+    key = P.org_id.astype(str) + "|" + P.address_id.astype(str) + "|" + P.bank_id.astype(str)
+    groups = P.groupby(key).provider_id.apply(sorted)
+    alias = {a: g[0] for g in groups if len(g) > 1 for a in g[1:]}
+    L["billing_provider_id"] = L.provider_id
+    if alias:
+        L["provider_id"] = L.provider_id.replace(alias)
+        for c in ("referring_provider_id",):
+            if c in L: L[c] = L[c].replace(alias)
+        T["providers"] = P[~P.provider_id.isin(alias)].copy()
+        T["providers"]["aliases"] = T["providers"].provider_id.map(lambda p: ", ".join(a for a, c in alias.items() if c == p))
+        for t, cols in (("referrals", ("referring_provider_id", "receiving_provider_id")), ("relationships", ("entity_a", "entity_b")), ("investigations", ("provider_id",))):
+            if t in T and T[t] is not None and len(T[t]):
+                for c in cols:
+                    if c in T[t]: T[t][c] = T[t][c].replace(alias)
+    T["lines"] = L
+    return T, alias
+
+
 # ---------------------------------------------------------------- helpers
 def pct(x): return float(np.clip(x, 0, 1))
 
@@ -163,6 +187,7 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
         gen.generate(seed=seed, n_members=n_members, out_dir=data_dir)
         step("Generate synthetic data", f"seed={seed}, members={n_members}")
     T = load_tables(data_dir)
+    T, aliases = resolve_entities(T)
     val = validate(T)
     step("Load + validate", f"{sum(val['rows'].values()):,} rows across {len(val['rows'])} tables; {len(val['warnings'])} warnings")
     if val["errors"]:
@@ -351,6 +376,7 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
                calibration=fc["calibration"], model_choice=fc["model_choice"], seconds=round(time.time() - t0, 1))
     run["sentinel_fit"] = sen_fit
     run["monitoring"] = monitoring
+    run["entity_aliases"] = aliases
     run["consensus"] = dict(effective_detectors=cons_meta["effective_detectors"], families=cons_meta["families"])
     run["versions"] = dict(ruleset=RULESET_VERSION, model=MODEL_VERSION, features="features-2.0", detectors=[d[0] for d in BR.DETECTORS],
                            artifacts={c["name"]: c.get("sha256") for c in MREG2.cards()})
@@ -382,6 +408,8 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
     for comp in nx.connected_components(H):
         pr = comp & primary
         if not pr: continue
+        # co-subjects: a provider sharing ownership / address / bank with a primary and carrying its own rule findings
+        pr = set(pr) | {n for p in pr for n in H[p] if set(H[p][n]["kinds"]) & {"ownership", "address", "bank"} and PT.at[n, "rule_score"] >= .3 and PT.at[n, "flagged_lines"] >= 10}
         comp = set(pr) | {n for p in pr for n in H[p]}
         groups.append((sorted(pr), sorted(comp))); seen |= pr
     for p in sorted(primary - seen):

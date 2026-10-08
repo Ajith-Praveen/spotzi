@@ -2,7 +2,7 @@
  "task": "Fraud-type classification",
  "process": "Cases \u2192 most likely scheme types (probability per type) \u2192 selects the evidence to collect",
  "kind": "Multinomial logistic regression on rule profiles, detector outputs and temporal features",
- "trained_on": "86 labelled fraudulent providers",
+ "trained_on": "90 labelled fraudulent providers",
  "classes": [
   "duplicate",
   "excessive_services",
@@ -17,7 +17,7 @@
    "fraud_providers": 16,
    "accuracy": 0.938,
    "top2_accuracy": 0.938,
-   "dominant_rule_baseline": 0.688,
+   "dominant_rule_baseline": 0.75,
    "types_present": [
     "duplicate",
     "excessive_services",
@@ -33,10 +33,10 @@
    ]
   },
   "held-out world (seed 201)": {
-   "fraud_providers": 14,
+   "fraud_providers": 15,
    "accuracy": 1.0,
    "top2_accuracy": 1.0,
-   "dominant_rule_baseline": 0.714,
+   "dominant_rule_baseline": 0.8,
    "types_present": [
     "duplicate",
     "excessive_services",
@@ -52,7 +52,7 @@
    "fraud_providers": 15,
    "accuracy": 1.0,
    "top2_accuracy": 1.0,
-   "dominant_rule_baseline": 0.667,
+   "dominant_rule_baseline": 0.733,
    "types_present": [
     "duplicate",
     "excessive_services",
@@ -70,7 +70,7 @@
   "Few labelled fraudulent providers; types never seen in training cannot be predicted (see unseen_types)."
  ],
  "name": "fraud_type",
- "trained": "2026-10-09 00:55:58",
+ "trained": "2026-10-09 01:49:19",
  "artifact": "fraud_type.joblib",
- "sha256": "88260d9d7a62d8d2"
+ "sha256": "4c654c225d66835d"
 }

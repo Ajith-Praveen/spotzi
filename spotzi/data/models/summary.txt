@@ -8,36 +8,36 @@
   "held_out": {
    "demo world (seed 7)": {
     "lines": 62507,
-    "fraud_lines": 6076,
+    "fraud_lines": 6159,
     "auc": 0.988,
-    "ap": 0.947,
-    "rules_flagged": 5491,
-    "rules_precision": 0.804,
-    "rules_recall": 0.726,
-    "model_precision_same_budget": 0.925,
-    "model_recall_same_budget": 0.836
+    "ap": 0.948,
+    "rules_flagged": 5577,
+    "rules_precision": 0.817,
+    "rules_recall": 0.739,
+    "model_precision_same_budget": 0.931,
+    "model_recall_same_budget": 0.843
    },
    "held-out world (seed 201)": {
     "lines": 62588,
-    "fraud_lines": 6165,
+    "fraud_lines": 6218,
     "auc": 0.997,
-    "ap": 0.98,
-    "rules_flagged": 5372,
-    "rules_precision": 0.819,
-    "rules_recall": 0.714,
-    "model_precision_same_budget": 0.971,
-    "model_recall_same_budget": 0.846
+    "ap": 0.979,
+    "rules_flagged": 5679,
+    "rules_precision": 0.818,
+    "rules_recall": 0.747,
+    "model_precision_same_budget": 0.958,
+    "model_recall_same_budget": 0.875
    },
    "held-out world (seed 202)": {
     "lines": 59268,
-    "fraud_lines": 5932,
-    "auc": 0.997,
+    "fraud_lines": 5974,
+    "auc": 0.996,
     "ap": 0.976,
-    "rules_flagged": 5210,
-    "rules_precision": 0.811,
-    "rules_recall": 0.712,
-    "model_precision_same_budget": 0.96,
-    "model_recall_same_budget": 0.843
+    "rules_flagged": 5319,
+    "rules_precision": 0.82,
+    "rules_recall": 0.73,
+    "model_precision_same_budget": 0.958,
+    "model_recall_same_budget": 0.853
    }
   }
  },
@@ -81,27 +81,27 @@
     "positives": 15,
     "auc": 1.0,
     "ap": 1.0,
-    "brain_auc": 0.993,
-    "brain_ap": 0.962,
-    "risk_auc": 0.993
+    "brain_auc": 0.998,
+    "brain_ap": 0.987,
+    "risk_auc": 0.997
    },
    "held-out world (seed 201)": {
     "providers": 132,
     "positives": 14,
-    "auc": 0.993,
-    "ap": 0.912,
-    "brain_auc": 0.982,
-    "brain_ap": 0.815,
-    "risk_auc": 0.988
+    "auc": 0.992,
+    "ap": 0.87,
+    "brain_auc": 0.987,
+    "brain_ap": 0.859,
+    "risk_auc": 0.99
    },
    "held-out world (seed 202)": {
     "providers": 132,
     "positives": 15,
-    "auc": 0.999,
-    "ap": 0.996,
-    "brain_auc": 0.995,
-    "brain_ap": 0.963,
-    "risk_auc": 0.997
+    "auc": 1.0,
+    "ap": 1.0,
+    "brain_auc": 0.997,
+    "brain_ap": 0.97,
+    "risk_auc": 0.998
    }
   }
  },
@@ -112,7 +112,7 @@
     "fraud_providers": 16,
     "accuracy": 0.938,
     "top2_accuracy": 0.938,
-    "dominant_rule_baseline": 0.688,
+    "dominant_rule_baseline": 0.75,
     "types_present": [
      "duplicate",
      "excessive_services",
@@ -128,10 +128,10 @@
     ]
    },
    "held-out world (seed 201)": {
-    "fraud_providers": 14,
+    "fraud_providers": 15,
     "accuracy": 1.0,
     "top2_accuracy": 1.0,
-    "dominant_rule_baseline": 0.714,
+    "dominant_rule_baseline": 0.8,
     "types_present": [
      "duplicate",
      "excessive_services",
@@ -147,7 +147,7 @@
     "fraud_providers": 15,
     "accuracy": 1.0,
     "top2_accuracy": 1.0,
-    "dominant_rule_baseline": 0.667,
+    "dominant_rule_baseline": 0.733,
     "types_present": [
      "duplicate",
      "excessive_services",
@@ -167,26 +167,26 @@
    "demo world (seed 7)": {
     "providers": 132,
     "positives": 16,
-    "ece_raw": 0.1442,
-    "ece_calibrated": 0.0128,
-    "brier_raw": 0.0632,
-    "brier_calibrated": 0.0297
+    "ece_raw": 0.1737,
+    "ece_calibrated": 0.0109,
+    "brier_raw": 0.0771,
+    "brier_calibrated": 0.0175
    },
    "held-out world (seed 201)": {
     "providers": 132,
-    "positives": 14,
-    "ece_raw": 0.1493,
-    "ece_calibrated": 0.0059,
-    "brier_raw": 0.0683,
-    "brier_calibrated": 0.0278
+    "positives": 15,
+    "ece_raw": 0.1651,
+    "ece_calibrated": 0.0032,
+    "brier_raw": 0.0692,
+    "brier_calibrated": 0.0174
    },
    "held-out world (seed 202)": {
     "providers": 132,
     "positives": 15,
-    "ece_raw": 0.1426,
-    "ece_calibrated": 0.0084,
-    "brier_raw": 0.0557,
-    "brier_calibrated": 0.0146
+    "ece_raw": 0.1709,
+    "ece_calibrated": 0.0007,
+    "brier_raw": 0.0716,
+    "brier_calibrated": 0.0099
    }
   }
  }

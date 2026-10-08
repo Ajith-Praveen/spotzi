@@ -621,6 +621,24 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = Path(__
     allx["service_date"] = allx.service_date.clip(upper=END)
     allx["service_end_date"] = allx.service_end_date.fillna(allx.service_date).clip(upper=END)
     allx = allx[allx.service_date >= START].copy()
+    # realistic capacity: a legitimate clinician's documented time stays within a working day; overflow moves to the next workday
+    lg_ = (~allx.truth) & allx.family.isin(["PRO", "BH"]) & ~allx.scenario.str.startswith("S")
+    for _ in range(6):
+        day_min = allx[lg_].groupby(["provider_id", "service_date"]).duration_min.transform("sum")
+        over = allx[lg_].assign(cum=allx[lg_].groupby(["provider_id", "service_date"]).duration_min.cumsum())
+        mv = over.index[(day_min > 600) & (over.cum > 540)]
+        if not len(mv): break
+        nd = allx.loc[mv, "service_date"] + pd.Timedelta(days=1)
+        allx.loc[mv, "service_date"] = nd + pd.to_timedelta(np.where(nd.dt.dayofweek == 5, 2, np.where(nd.dt.dayofweek == 6, 1, 0)), unit="D")
+    allx["service_end_date"] = allx[["service_end_date", "service_date"]].max(axis=1)
+    allx = allx[allx.service_date <= END].copy()
+    # one patient cannot be in two appointments at once: sequence same-day timed visits (scheme lines keep their own times)
+    tv = (~allx.truth) & ~allx.scenario.str.startswith("S") & (allx.duration_min > 0) & (allx.pos != "21")
+    seq = allx[tv].sort_values(["member_id", "service_date", "start_min"])
+    first = seq.groupby(["member_id", "service_date"]).start_min.transform("min")
+    prev_dur = seq.groupby(["member_id", "service_date"]).duration_min.shift().fillna(0) + 25
+    prev_dur[seq.groupby(["member_id", "service_date"]).cumcount() == 0] = 0
+    allx.loc[seq.index, "start_min"] = (first + prev_dur.groupby([seq.member_id, seq.service_date]).cumsum()).clip(upper=20 * 60).astype(int)
     # drop normal-looking lines after member term/death where not scenario phantom
     mm = m.set_index("member_id")
     endd = mm.term_date.fillna(mm.death_date)
