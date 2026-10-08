@@ -22,6 +22,7 @@ DETECTORS = [  # key, column in PT, label, prior weight
     ("path", "path_pct", "Sentinel care pathway", .6),
     ("drift", "drift_pct", "Behaviour change-point", .6),
     ("mix", "mix_pct", "Peer code-mix divergence", .35),
+    ("panel", "panel_pct", "Patient-panel shift", .5),
 ]
 PRIOR_BIAS = -3.2
 POSITIVE = {"Open investigation", "Recommend referral", "Approve referral"}
@@ -92,6 +93,45 @@ def code_mix(L, providers, end, lookback=180):
             js = _js(own.values, (peer - own).clip(lower=0).values)
             res[pid] = js * len(g) / (len(g) + 50)
     return pd.Series(res)
+
+
+def panel_shift(L, M, end, lookback=180):
+    """Patient-panel shift (recruitment / patient-brokering typology). Among patients NEW to a provider in the review window:
+    (a) bundle uniformity — share given the provider's single most common service bundle, vs family peers;
+    (b) isolation — share with no care from any other provider in the plan, vs the portfolio;
+    (c) catchment — share from regions the provider's shared-care patients do not come from.
+    Peer baselines rather than the provider's own history, so a scheme that began before the window cannot hide by
+    contaminating its own baseline. Legitimate growth brings varied care for local patients who are also seen elsewhere."""
+    w0 = end - pd.Timedelta(days=lookback)
+    d = L[["provider_id", "member_id", "service_date", "code", "family"]]
+    pm = d.groupby(["provider_id", "member_id"]).agg(first=("service_date", "min"), bundle=("code", lambda s: "+".join(sorted(set(s))))).reset_index()
+    nprov = d.groupby("member_id").provider_id.nunique()
+    pm["isolated"] = pm.member_id.map(nprov).fillna(1) <= 1
+    pm["region"] = pm.member_id.map(M.set_index("member_id").region).fillna("Unknown")
+    fam = d.drop_duplicates("provider_id").set_index("provider_id").family
+    shared = pm[~pm.isolated].region.value_counts(normalize=True)
+    portfolio_usual = set(shared.index[(shared.cumsum() - shared) < .8])
+    recent = d[d.service_date > w0].groupby("provider_id").member_id.nunique()
+    new = pm[pm["first"] > w0]
+    rows = {}
+    for pid, g in new.groupby("provider_id"):
+        if len(g) < 5: continue
+        own = pm[(pm.provider_id == pid) & ~pm.isolated].region.value_counts(normalize=True)
+        usual = set(own.index[(own.cumsum() - own) < .9]) if own.sum() and len(pm[(pm.provider_id == pid) & ~pm.isolated]) >= 5 else portfolio_usual
+        top = g.bundle.value_counts()
+        rows[pid] = dict(n=len(g), share=len(g) / max(1, int(recent.get(pid, len(g)))), tmpl=float(top.iat[0] / len(g)), bundle=top.index[0],
+                         iso=float(g.isolated.mean()), far=float((~g.region.isin(usual)).mean()), family=fam.get(pid))
+    R = pd.DataFrame.from_dict(rows, orient="index")
+    if R.empty: return {}
+    base_t = R.groupby("family").tmpl.transform("median").fillna(R.tmpl.median())
+    base_i = float(new.isolated.mean()); base_f = float(R.far.median())
+    R["score"] = (R.share * R.n / (R.n + 15) * (.45 * (R.tmpl - base_t).clip(lower=0) + .3 * (R.iso - base_i).clip(lower=0) + .25 * (R.far - base_f).clip(lower=0)))
+    out = {}
+    for pid, r in R.iterrows():
+        out[pid] = dict(score=float(r.score), new=int(r.n), share=float(r.share), tmpl=float(r.tmpl), bundle=r.bundle, isolated=float(r.iso), far=float(r.far),
+                        text=f"{int(r.n)} new patients in {lookback} days ({r.share * 100:.0f}% of the panel); {r.tmpl * 100:.0f}% received the same bundle ({str(r.bundle)[:40]}); "
+                             f"{r.iso * 100:.0f}% have no other care in the plan (portfolio {base_i * 100:.0f}%); {r.far * 100:.0f}% from outside the usual catchment")
+    return out
 
 
 def detector_matrix(PT):

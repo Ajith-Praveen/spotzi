@@ -14,7 +14,7 @@ SpotZⁱ turns thousands of unexplained claim alerts into a short, ranked list o
 |---|---|
 | Claim lines analysed per run | 64,879 synthetic lines · 8 service families · 132 providers · 2,500 members |
 | Raw alerts → ranked cases | 5,179 flagged lines → **12 cases** (2 of them found by learned models with no rule firing) |
-| Detectors | **7** (rules, Isolation Forest, network graph, case-mix twin, care-pathway, change-point, code-mix) fused by the **Nexus Brain** |
+| Detectors | **8** (rules, Isolation Forest, network graph, case-mix twin, care-pathway, change-point, code-mix, patient-panel shift) fused by the **Nexus Brain** |
 | Forecast | Discrete-time hazard model, 30 / 60 / 90 days, calibrated |
 | Second brain | Knowledge wiki (ingest → lint → human review → versioned memory) + 6-step decision chain |
 | Full pipeline run | ~14 seconds on a laptop |
@@ -144,7 +144,7 @@ Neither has fraud labels: detection, the Brain, link analysis, briefs and the de
 
 ## 5. AI models — the detection brain
 
-All seven detectors are built and trained in-house on the claims themselves.
+All eight detectors are built in-house and run on the claims themselves; no third-party or real-world data is used.
 
 | # | Detector | How it works | What it catches | AUC* |
 |---|---|---|---|---|
@@ -155,6 +155,7 @@ All seven detectors are built and trained in-house on the claims themselves.
 | 5 | **Sentinel care-pathway** | Back-off sequence model of member journeys: next service given previous service, time gap, inside-stay, after-coverage-end. Leave-provider-out counts so a ring can't normalise its own pattern | Improbable care sequences (e.g. wheelchair during an inpatient stay: <0.01% of comparable journeys) | 0.897 |
 | 6 | **Behaviour change-point** | Searches each provider's monthly history for the split that best explains a shift in volume, members, new members, out-of-region share, paid per line and service mix | *When* behaviour changed and how ("From 2025-03: new members 2/mo → 32/mo") | 0.966 |
 | 7 | **Peer code-mix divergence** | Jensen–Shannon divergence of service mix vs family peers, volume-shrunk | Unusual service mix | 0.891 |
+| 8 | **Patient-panel shift** | Among patients new to a provider in the review window: share given one templated bundle, share with no other care in the plan, share from outside the usual catchment — each vs peer baselines | Patient recruitment / brokering ("67 new patients, 100% same bundle, none seen elsewhere") | see EVALUATION.md |
 | ★ | **Nexus Brain (fused)** | One-sided evidence fusion: a quiet detector adds nothing (rule silence is not innocence). Logistic fusion with expert prior weights | All of the above | **0.997** |
 
 \*Ranking AUC against hidden synthetic labels, all 132 providers.
@@ -174,7 +175,6 @@ Detector weights start at expert priors and update from every recorded decision 
 ### Optional models
 | Model | Status |
 |---|---|
-| **Own model trained on Kaggle provider-fraud data** (`kaggle_model/`) | Code ready; transfers relative provider behaviour from public Medicare-style claims. Needs your Kaggle token to train. |
 | **AI narrative & copilot** | Code ready; grounded in the case evidence package, citation-verified. Not required. |
 
 ---
@@ -255,7 +255,7 @@ Helps the investigator test legitimate against suspicious explanations before de
 |---|---|
 | **Brief** | summary, recommended human action, confidence rationale, signal families, competing explanations, LLM second opinion (optional), AI narrative (optional), limitations |
 | **Decision chain** | the six-step reasoning path (§6) |
-| **Evidence** | every rule finding with example lines and reasons, Isolation Forest drivers, Sentinel findings with improbable transitions, Brain fusion breakdown, behaviour change before→after, graph links, prior investigations, Kaggle model (if trained) — each with source |
+| **Evidence** | every rule finding with example lines and reasons, Isolation Forest drivers, Sentinel findings with improbable transitions, Brain fusion breakdown, behaviour change before→after, graph links, patient-panel shift, prior investigations — each with source |
 | **Network** | interactive ego graph (zoom, pan, click) + provider roles; linked providers may be innocent bystanders |
 | **Timeline** | monthly paid vs flagged; first-flag events; prior investigations |
 | **Forecast** | 30/60/90-day probability, drivers, held-out metrics |
@@ -305,8 +305,7 @@ gen.py ──► data/synthetic/*.csv ──► pipeline.py
                                      ├─ rules.py          (rules engine)
                                      ├─ analytics.py      (features, Isolation Forest, hazard forecast, graph)
                                      ├─ sentinel.py       (case-mix twin, care pathway)
-                                     ├─ brain.py          (change-point, code mix, fusion, learning, feed)
-                                     └─ kaggle_model/     (optional own model)
+                                     └─ brain.py          (change-point, code mix, patient panel, fusion, learning, feed)
 server.py (FastAPI) ─┬─ briefs.py      (ranking, case detail, Markdown brief)
                      ├─ lab.py         (Challenge Lab)
                      ├─ precedents.py  (Precedent Intelligence)

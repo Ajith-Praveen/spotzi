@@ -11,8 +11,6 @@ import pandas as pd
 import sys
 import analytics as A
 import gen
-sys.path.insert(0, str(Path(__file__).parent / "kaggle_model"))
-import transfer as KT
 import sentinel as SN
 import brain as BR
 import hashlib
@@ -23,7 +21,7 @@ DATA = ROOT / "data" / "synthetic"
 LOOKBACK = 180
 PRIMARY_RISK = 35
 BRAIN_LEAD = .97   # a lead with no rule finding needs near-unanimous detector consensus (0.90 produced too many leads in large portfolios)
-MODEL_VERSION = "nexus-models-1.0"
+MODEL_VERSION = "nexus-models-1.1"
 
 
 # ---------------------------------------------------------------- load + validate
@@ -242,12 +240,15 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     cps = BR.change_points(L, M, P)
     PT["drift_raw"] = pd.Series({k: v["score"] for k, v in cps.items()}).reindex(PT.index).fillna(0)
     PT["mix_raw"] = BR.code_mix(L, P, END).reindex(PT.index).fillna(0)
+    panel = BR.panel_shift(L, M, END)
+    PT["panel_raw"] = pd.Series({k: v["score"] for k, v in panel.items()}, dtype=float).reindex(PT.index).fillna(0)
+    PT["panel_pct"] = .5 + .49 * (PT.panel_raw / .3).clip(0, 1)   # absolute scale: most providers have no new-patient wave, so ranks would inflate tiny values
     for c in ("drift", "mix"):
         PT[f"{c}_pct"] = .7 * PT.groupby("family")[f"{c}_raw"].rank(pct=True).fillna(.5) + .3 * PT[f"{c}_raw"].rank(pct=True).fillna(.5)
     PT["rule_pct"] = .5 + .49 * PT.rule_score
     bw, bb, _, _ = BR.learn(PT, {})
     PT["brain"], brain_contrib = BR.score(PT, bw, bb)
-    step("Nexus Brain", f"change-point + code-mix detectors; fusion over {len(BR.DETECTORS)} detectors (prior weights)")
+    step("Nexus Brain", f"change-point + code-mix + patient-panel detectors; fusion over {len(BR.DETECTORS)} detectors (prior weights)")
     aadj = ((PT.anomaly_pct - .5) / .5).clip(0, 1)
     sadj = ((PT.sentinel.fillna(.5) - .6) / .4).clip(0, 1)
     PT["risk"] = (100 * (.50 * PT.rule_score + .15 * aadj + .20 * PT.graph_score + .15 * sadj)).clip(0, 100)
@@ -257,18 +258,6 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
         PT[f"fc{h}"] = pd.Series({p: v.get(h, 0) for p, v in fc["pred"].items()}, dtype=float).reindex(PT.index)
     PT["escalation"] = X_end.escalation.reindex(PT.index).fillna(0)
     PT["flag_paid30"] = X_end.flag_paid30.reindex(PT.index).fillna(0)
-    own_metrics = None
-    PT["own_model"] = np.nan
-    if KT.available():
-        try:
-            sc, _ = KT.score(L, M, P)
-            PT["own_model"] = sc.reindex(PT.index)
-            own_metrics = KT.metrics()
-            step("Own model (Kaggle-trained)", f"scored {int(PT.own_model.notna().sum())} providers; CV AUC {own_metrics['auc_ensemble']:.2f} on Kaggle data" if own_metrics else "scored")
-        except Exception as e:
-            step("Own model (Kaggle-trained)", f"skipped: {type(e).__name__}: {str(e)[:80]}")
-    else:
-        step("Own model (Kaggle-trained)", "not trained yet: see kaggle_model/README.md")
     comms = A.communities(G)
     step("Graph analytics", f"{G.number_of_nodes()} providers, {G.number_of_edges()} relationships, {len(comms)} communities")
 
@@ -286,10 +275,9 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None, custom
     run = dict(run_id=f"RUN-{fp}", as_of=str(END.date()), created=time.strftime("%Y-%m-%d %H:%M:%S"),
                ruleset=RULESET_VERSION, model=MODEL_VERSION, seed=seed, log=log, validation=val, evaluation=ev, forecast_metrics=fc["metrics"],
                calibration=fc["calibration"], model_choice=fc["model_choice"], seconds=round(time.time() - t0, 1))
-    run["own_model"] = own_metrics
     run["sentinel_fit"] = sen_fit
     ctx = (L, PT, G, H, T, detail, fc, adrivers, END, ties)
-    return dict(run=run, build_ctx=ctx, base_cases=cases, paths=paths, change_points=cps, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
+    return dict(run=run, build_ctx=ctx, base_cases=cases, paths=paths, change_points=cps, panel=panel, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
 
 
 # ---------------------------------------------------------------- case construction
@@ -335,7 +323,7 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         anomalous = max(PT.at[p, "anomaly_pct"] for p in prim) >= .9
         has_graph = len(comp) > 1 and max(PT.at[p, "graph_score"] for p in prim) >= .5
         escal = max(PT.at[p, "escalation"] for p in prim) > .5 and max(PT.at[p, "flag_paid30"] for p in prim) > 1500
-        learned = max(max(PT.at[p, "sentinel"], PT.at[p, "drift_pct"]) for p in prim) >= .85
+        learned = max(max(PT.at[p, "sentinel"], PT.at[p, "drift_pct"], PT.at[p, "panel_pct"]) for p in prim) >= .85
         signals = int(len(rule_counts) > 0) + int(anomalous) + int(has_graph) + int(escal) + int(learned)
         ev = 10 * signals + (14 if len(rule_counts) >= 2 else 4 if rule_counts else 0) + 24 * min(1, len(sub) / 40) \
             + 10 * (1 - dx_missing) + (8 if sub.claim_anomaly.mean() > .85 else 0) + (8 if any(PT.at[p, "n_lines"] >= 60 for p in prim) else 0)
@@ -360,7 +348,8 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties, forced=None):
         net = len(comp) > 1
         title = PT.at[top_prov, "name"] + (f" + {len(comp) - 1} linked" if net else "")
         rules_sorted = [] if brain_lead else sorted(rule_counts, key=lambda k: -rule_paid[k])  # stray hits do not steer a learned-detector lead
-        ctype = case_type(rules_sorted, fam, net) if not brain_lead else "Behaviour shift found by learned detectors (no rule fired)"
+        ctype = case_type(rules_sorted, fam, net) if not brain_lead else (
+            "Patient-panel shift: possible recruitment (no rule fired)" if max(PT.at[p, "panel_pct"] for p in prim) >= .75 else "Behaviour shift found by learned detectors (no rule fired)")
         cid = forced_id or (f"CS-{min(nums):04d}" if nums else f"CS-{suffixes[0][:12]}")
         lane = "Investigate"
         if brain_lead: lane = "Brain lead"

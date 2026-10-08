@@ -123,12 +123,12 @@ def case_detail(S, cid, horizon=60):
                               detail=f"{PT.at[p, 'name']}: billed {PT.at[p, 'oe_paid']:.1f}× what its own patients' case mix predicts (≈${PT.at[p, 'unexplained_paid']:,.0f} unexplained, case-mix twin {PT.at[p, 'twin_pct'] * 100:.0f}th pct); care-pathway improbability {PT.at[p, 'path_pct'] * 100:.0f}th pct.",
                               transitions=tr, source="sentinel.py · cross-fitted case-mix twin + leave-provider-out care-pathway model (no rules, no labels)"))
     for p in prim:
-        om = PT.at[p, "own_model"] if "own_model" in PT.columns else float("nan")
-        if om == om and om >= .5:
+        pn = (S.get("panel") or {}).get(p)
+        if pn and PT.at[p, "panel_pct"] >= .75:
             n_id += 1
-            items.append(dict(id=f"EV-{n_id:03d}", kind="own_model", label="Own model (trained on Kaggle provider-fraud data)", provider=p, strength="Moderate" if om >= .8 else "Context",
-                              detail=f"{PT.at[p, 'name']}: {om * 100:.0f}% fraud-likeness from relative behaviour (claims per beneficiary, amount spread, repeat-beneficiary share, inpatient share…). Transfer from a different dataset, so treat as a complementary signal.",
-                              source="kaggle_model/model.joblib (gradient boosting + logistic) on shared provider features"))
+            items.append(dict(id=f"EV-{n_id:03d}", kind="panel", label="Patient-panel shift (recruitment pattern)", provider=p, strength="Moderate" if pn["tmpl"] >= .6 else "Context",
+                              detail=f"{PT.at[p, 'name']}: {pn['text']}. Legitimate growth usually brings varied care for local patients who are also seen elsewhere.",
+                              source="brain.py · panel_shift: new-patient share, bundle uniformity, isolation and catchment, each vs the provider's own earlier new patients"))
     if c["network"]:
         ego = ego_graph(S, c["primary"], extra_hops=False)
         ent = [n for n in ego["nodes"] if n["kind"] != "provider"]

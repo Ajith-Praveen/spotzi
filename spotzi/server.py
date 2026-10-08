@@ -411,7 +411,7 @@ def claims(provider_id: str = "", member_id: str = "", rule: str = "", flagged: 
 def providers():
     PT = S()["PT"]
     cs = {p: c["case_id"] for c in S()["cases"] for p in c["providers"]}
-    df = PT.reset_index()[["provider_id", "name", "family", "specialty", "city", "risk", "rule_score", "anomaly_pct", "graph_score", "sentinel", "own_model", "n_lines", "paid", "members", "flagged_lines", "flagged_paid", "fc30", "fc60", "fc90", "context_note"]]
+    df = PT.reset_index()[["provider_id", "name", "family", "specialty", "city", "risk", "rule_score", "anomaly_pct", "graph_score", "sentinel", "panel_pct", "n_lines", "paid", "members", "flagged_lines", "flagged_paid", "fc30", "fc60", "fc90", "context_note"]]
     df["case_id"] = df.provider_id.map(cs)
     return J(df.sort_values("risk", ascending=False).to_dict("records"))
 
@@ -425,7 +425,7 @@ def provider(pid: str):
     codes = sub.groupby("code").agg(lines=("line_id", "size"), paid=("paid", "sum"), flagged=("any_flag", "sum")).reset_index().sort_values("paid", ascending=False).head(10)
     r = PT.loc[pid]
     return J(dict(provider_id=pid, profile={k: r[k] for k in ["name", "family", "specialty", "city", "npi", "org_id", "address_id", "bank_id", "context_note"]},
-                  scores={k: r[k] for k in ["risk", "rule_score", "anomaly_pct", "graph_score", "sentinel", "twin_pct", "path_pct", "oe_paid", "own_model", "fc30", "fc60", "fc90"]},
+                  scores={k: r[k] for k in ["risk", "rule_score", "anomaly_pct", "graph_score", "sentinel", "twin_pct", "path_pct", "oe_paid", "panel_pct", "fc30", "fc60", "fc90"]},
                   rules={k: dict(name=RULES[k]["name"], lines=int(r[f"n_{k}"]), share=float(r[f"s_{k}"])) for k in RULES},
                   monthly=mg.to_dict("records"), codes=codes.to_dict("records"), network=PL.ego_graph(s, [pid], True, 12),
                   anomaly_drivers=s["adrivers"].get(pid, []), forecast_why=s["fc"]["why"].get(pid, {})))
@@ -461,7 +461,7 @@ def ego(pid: str):
 def governance():
     s = S(); run = s["run"]
     return J(dict(run=run, rules=[dict(key=k, **{kk: v for kk, v in spec.items()}) for k, spec in RULES.items()],
-                  forecast=dict(metrics=run["forecast_metrics"], calibration=run["calibration"]), own_model=run.get("own_model"),
+                  forecast=dict(metrics=run["forecast_metrics"], calibration=run["calibration"]),
                   principles=[
                       "Human in the loop: the system ranks and explains; people open, scope, close, and refer cases. There is no automated adverse action.",
                       "Four-eyes referral: a recommended referral needs a different supervisor to approve it, with written rationale.",

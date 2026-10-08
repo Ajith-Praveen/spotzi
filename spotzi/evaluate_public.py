@@ -30,7 +30,7 @@ def run(dataset, patients=4000, seed=21):
     y = np.array([int(p in bad) for p in PT.index])
     def auc(col): return float(roc_auc_score(y, PT[col].fillna(0)))
     det = {name: auc(col) for name, col in [("Rules", "rule_score"), ("Isolation Forest", "anomaly_pct"), ("Case-mix twin", "twin_pct"), ("Care pathway", "path_pct"),
-                                            ("Change-point", "drift_pct"), ("Code mix", "mix_pct"), ("Nexus Brain", "brain"), ("Combined risk", "risk")] if col in PT}
+                                            ("Change-point", "drift_pct"), ("Code mix", "mix_pct"), ("Patient panel", "panel_pct"), ("Nexus Brain", "brain"), ("Combined risk", "risk")] if col in PT}
     det_ap = {"Nexus Brain": float(average_precision_score(y, PT["brain"].fillna(0))), "Combined risk": float(average_precision_score(y, PT["risk"].fillna(0)))}
     # ranking of the SIU queue (provider-level truth): precision@k of cases
     import briefs
@@ -60,7 +60,7 @@ def run(dataset, patients=4000, seed=21):
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--seed=")]
-    seed = int(next((a.split("=")[1] for a in sys.argv[1:] if a.startswith("--seed=")), 99))
+    seed = int(next((a.split("=")[1] for a in sys.argv[1:] if a.startswith("--seed=")), 7))
     for ds in (args or ["synthea", "synpuf"]):
         o = run(ds, seed=seed)
         print(f"\n=== {ds}: {o['lines']:,} lines · {o['providers']} providers · {o['cases']} cases · {o['seconds']} s")

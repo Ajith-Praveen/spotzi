@@ -11,7 +11,10 @@ Schemes
   repeat     panels re-billed within a few days
   upcode     office/clinic visits shifted to the highest level
   deceased   services billed after the patient's death
-  influx     HELD-OUT (no rule targets it): wave of new out-of-area patients, each receiving one identical service bundle
+  influx     wave of new out-of-area patients, each receiving one identical service bundle (patient recruitment).
+             Was held out until v2; the patient-panel detector now targets this typology, so it is no longer a blind test.
+  scope      HELD-OUT (no rule or detector designed for it): the provider starts billing a costly service it has never
+             billed before, for its own existing patients
 Benign
   growth     legitimate expansion: more patients, normal service mix (labelled NOT fraud)"""
 from __future__ import annotations
@@ -34,7 +37,7 @@ def inject(ws: Path, seed=21, n_per_scheme=3, n_benign=4, min_lines=200):
     span = (end - start).days
     vol = L.groupby("provider_id").size()
     eligible = list(vol[vol >= min_lines].sample(frac=1, random_state=seed).index)
-    schemes = ["dup", "units", "repeat", "upcode", "deceased", "influx"]
+    schemes = ["dup", "units", "repeat", "upcode", "deceased", "influx", "scope"]
     need = n_per_scheme * len(schemes) + n_benign
     if len(eligible) < need: raise ValueError(f"Only {len(eligible)} providers with ≥{min_lines} lines; need {need}")
     assign, k = {}, 0
@@ -116,6 +119,19 @@ def inject(ws: Path, seed=21, n_per_scheme=3, n_benign=4, min_lines=200):
                 b = tmpl.copy(); b["member_id"] = mid; b["service_date"] = d; b["service_end_date"] = d; b["units"] = 1
                 rows.append(b)
             add(pd.concat(rows), "influx")
+        elif s == "scope":
+            own = set(L.loc[L.provider_id == pid, "code"])
+            costly = L[~L.code.isin(own)].groupby("code").paid.agg(["median", "size"])
+            costly = costly[costly["size"] >= 5].sort_values("median", ascending=False).head(25)
+            pts = L.loc[(L.provider_id == pid) & (L.service_date < t0), "member_id"].unique()
+            if len(costly) == 0 or len(pts) == 0: continue
+            codes = rng.choice(costly.index, size=min(2, len(costly)), replace=False)
+            n_s = max(30, min(80, int(len(mine) * .3)))
+            v = L[L.provider_id == pid].sample(n_s, replace=True, random_state=8).copy()
+            v["member_id"] = rng.choice(pts, n_s); v["code"] = rng.choice(codes, n_s); v["units"] = 1
+            v["paid"] = v.code.map(costly["median"]).astype(float)
+            v["service_date"] = t0 + pd.to_timedelta(rng.integers(0, max(1, (end - t0).days), n_s), unit="D"); v["service_end_date"] = v.service_date
+            add(v, "scope")
         log.append(dict(provider_id=pid, scheme=s, onset=str(t0.date())))
     for pid in benign:  # legitimate growth: copy COMPLETE real patient episodes (all of a patient's services) to new local patients
         t0 = onset(); mine = L[(L.provider_id == pid) & (L.service_date < t0)]
