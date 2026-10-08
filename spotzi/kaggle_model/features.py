@@ -1,4 +1,4 @@
-"""Provider-level features shared by the Kaggle training data and the SpotZ^i synthetic claims.
+"""Provider-level features shared by the Kaggle training data and the SpotZⁱ synthetic claims.
 Both sides are reduced to the same schema, then rank-normalised so only *relative* behaviour transfers."""
 from __future__ import annotations
 

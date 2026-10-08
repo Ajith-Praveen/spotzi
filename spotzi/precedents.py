@@ -1,4 +1,4 @@
-"""SpotZ^i Precedent Intelligence (doc 22): retrieve comparable, quality-approved, human-reviewed cases;
+"""SpotZⁱ Precedent Intelligence (doc 22): retrieve comparable, quality-approved, human-reviewed cases;
 show differences first; build an editable review blueprint. Never copies an outcome into the current decision.
 The seeded library is SIMULATED human review, labelled as such."""
 from __future__ import annotations

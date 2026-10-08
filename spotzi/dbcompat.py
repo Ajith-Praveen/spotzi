@@ -1,4 +1,4 @@
-"""SpotZ^i storage layer: one connection API over PostgreSQL (production) or SQLite (single-machine / tests).
+"""SpotZⁱ storage layer: one connection API over PostgreSQL (production) or SQLite (single-machine / tests).
 
 The application writes portable SQL with `?` placeholders. For PostgreSQL this module translates:
   ?                                  -> %s

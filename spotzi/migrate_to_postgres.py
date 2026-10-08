@@ -1,4 +1,4 @@
-"""One-off: copy every SpotZ^i table from the SQLite file into PostgreSQL (schema is created by the app first).
+"""One-off: copy every SpotZⁱ table from the SQLite file into PostgreSQL (schema is created by the app first).
 Usage: python3 migrate_to_postgres.py [path/to/app.db]   (target taken from data/db.env SPOTZI_DB_URL)"""
 import os
 import sqlite3

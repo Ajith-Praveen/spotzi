@@ -1,4 +1,4 @@
-# 21 — Flagship add-on: SpotZ^i Evidence Challenge Lab
+# 21 — Flagship add-on: SpotZⁱ Evidence Challenge Lab
 
 > Proposed feature, not implemented. Synthetic records only. Every investigation decision remains human. Competitive observations reflect a targeted public-source review on 8 October 2026, not an exhaustive market or patent search.
 
@@ -10,7 +10,7 @@ Build an investigation workspace that answers:
 
 The flagship interaction is **Challenge this case**. It opens competing explanations, the evidence supporting and contradicting each, a recommended next evidence check, and isolated scenario branches. An investigator chooses which check to perform, reviews the result, and makes the decision.
 
-This extends SpotZ^i from detecting patterns to helping investigators resolve uncertainty efficiently and defend their reasoning. Its most memorable demonstration is two cases with identical visible claims but different underlying explanations, revealed through investigator-approved evidence checks.
+This extends SpotZⁱ from detecting patterns to helping investigators resolve uncertainty efficiently and defend their reasoning. Its most memorable demonstration is two cases with identical visible claims but different underlying explanations, revealed through investigator-approved evidence checks.
 
 ## What is and is not a credible uniqueness claim
 
@@ -238,6 +238,6 @@ The initial scope can focus on duplicate versus distinct service, group versus i
 
 ## Positioning
 
-**SpotZ^i helps investigators identify what evidence would change their mind—and records how a human reached the final decision.**
+**SpotZⁱ helps investigators identify what evidence would change their mind—and records how a human reached the final decision.**
 
 The defensible advantage would come from a high-quality synthetic ambiguity benchmark, reviewed evidence-check catalogs, measured investigation efficiency, and clear human accountability. A feature name, an additional model, or an unsupported claim of market exclusivity is not that advantage.

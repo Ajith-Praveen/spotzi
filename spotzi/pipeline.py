@@ -1,4 +1,4 @@
-"""End-to-end SpotZ^i pipeline: load → validate → detect → connect → forecast → rank → brief."""
+"""End-to-end SpotZⁱ pipeline: load → validate → detect → connect → forecast → rank → brief."""
 from __future__ import annotations
 
 import time

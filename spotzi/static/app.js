@@ -1,4 +1,4 @@
-/* SpotZ^i front end — vanilla JS, no build step */
+/* SpotZⁱ front end — vanilla JS, no build step */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -7,7 +7,7 @@ const num = v => v == null ? "—" : Math.round(v).toLocaleString("en-US");
 const pc = (v, d = 0) => v == null ? "—" : (v * 100).toFixed(d) + "%";
 const CONTRACT = "4";
 const api = async (u, opt = {}) => {
-  if (!navigator.onLine && opt.method && opt.method !== "GET") throw new Error("You are offline. SpotZ^i is read-only until the connection returns; nothing was queued.");
+  if (!navigator.onLine && opt.method && opt.method !== "GET") throw new Error("You are offline. SpotZⁱ is read-only until the connection returns; nothing was queued.");
   opt.headers = { ...(opt.headers || {}), "X-SpotZi-Contract": CONTRACT };
   let r;
   try { r = await fetch("/api/" + u, opt); } catch (e) { throw new Error(navigator.onLine ? "Server unreachable" : "You are offline. Showing nothing rather than stale data."); }
@@ -74,7 +74,11 @@ const EICON = {
   address: "M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z M12 12a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z",
   bank: "M3 9.5 12 4.5l9 5 M5 10.5v7 M9.7 10.5v7 M14.3 10.5v7 M19 10.5v7 M3 20h18",
 };
-const EDGE = { referral: { c: "#3F3F46", l: "Referral flow" }, ownership: { c: "#B45309", l: "Shared ownership" }, address: { c: "#4D7C0F", l: "Shared address" }, bank: { c: "#7C2D12", l: "Shared bank account" }, shared_members: { c: "#A8A29E", l: "Shared members" } };
+const ARROW = new Set(["referral", "ordered_tests", "prescribed", "ordered_equipment", "home_care", "behavioral_referral", "transport"]);
+const EDGE = { ordered_tests: { c: "#3F3F46", l: "Ordered tests at" }, prescribed: { c: "#3F3F46", l: "Prescribed (filled at)" }, ordered_equipment: { c: "#3F3F46", l: "Ordered equipment from" },
+  home_care: { c: "#3F3F46", l: "Referred for home care" }, behavioral_referral: { c: "#3F3F46", l: "Referred for behavioral care" }, transport: { c: "#3F3F46", l: "Requested transport" },
+  primary_care: { c: "#78716C", l: "Primary-care physician of" }, practices_at: { c: "#0F766E", l: "Practises at hospital" }, shared_patients: { c: "#A8A29E", l: "Shares many patients" },
+  billed: { c: "#A8A29E", l: "Billed for patient" }, billed_flag: { c: "#B91C1C", l: "Billed — flagged claims" }, admitted: { c: "#0F766E", l: "Admitted (inpatient stay)" }, referral: { c: "#3F3F46", l: "Referral flow" }, ownership: { c: "#B45309", l: "Shared ownership" }, address: { c: "#4D7C0F", l: "Shared address" }, bank: { c: "#7C2D12", l: "Shared bank account" }, shared_members: { c: "#A8A29E", l: "Shared members" } };
 const riskBand = r => r >= 60 ? "Critical" : r >= 40 ? "High" : r >= 25 ? "Elevated" : "Low";
 const GRAPHS = {};
 
@@ -87,14 +91,15 @@ function hullPts(pts) {   // monotone-chain convex hull
   return lo.slice(0, -1).concat(up.slice(0, -1));
 }
 
-function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = -1, hulls = false, hullSet = null } = {}) {
+function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = -1, hulls = false, hullSet = null, canvas = null } = {}) {
   const ns = g.nodes; if (!ns.length) return `<div class="mut">No relationships.</div>`;
-  const ent = n => n.kind && n.kind !== "provider";
-  const isCard = n => !ent(n) && (n.primary || n.case_id || n.risk >= labelMin || labelMin < 0);
-  const size = n => ent(n) ? [Math.max(70, n.label.length * 6.4 + 34), 24] : isCard(n) ? [212, 44] : [34, 34];
+  const ent = n => n.kind && n.kind !== "provider" && n.kind !== "patient";
+  const pat = n => n.kind === "patient";
+  const isCard = n => !ent(n) && !pat(n) && (n.primary || n.case_id || n.risk >= labelMin || labelMin < 0);
+  const size = n => pat(n) ? [n.primary ? 190 : 132, n.primary ? 44 : 30] : ent(n) ? [Math.max(70, n.label.length * 6.4 + 34), 24] : isCard(n) ? [212, 44] : [34, 34];
   // 1) map layout to a canvas sized for cards, 2) separate overlapping boxes (axis-aligned), 3) fit viewBox
   const xs = ns.map(n => n.x), ys = ns.map(n => n.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const span = Math.max(x1 - x0, y1 - y0) || 1, CW = Math.max(ns.length < 12 ? 240 : 520, Math.min(1500, 105 * Math.sqrt(ns.length)));
+  const span = Math.max(x1 - x0, y1 - y0) || 1, CW = canvas || Math.max(ns.length < 12 ? 240 : 520, Math.min(1500, 105 * Math.sqrt(ns.length)));
   const P = ns.map(n => ({ n, x: (n.x - x0) / span * CW, y: (n.y - y0) / span * CW, w: size(n)[0], h: size(n)[1] }));
   for (let it = 0; it < 140; it++) {
     let moved = false;
@@ -114,6 +119,7 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
   g.edges.forEach(e => { add(e.source, e.target); add(e.target, e.source); });
   GRAPHS[id] = { nodes: Object.fromEntries(ns.map(n => [n.id, n])), adj: Object.fromEntries(Object.entries(adj).map(([k, v]) => [k, [...v]])), onNode, edges: g.edges };
   const clip = (p, dx, dy, pad) => { const hw = p.w / 2 + pad, hh = p.h / 2 + pad; const t = Math.min(hw / (Math.abs(dx) || 1e-9), hh / (Math.abs(dy) || 1e-9)); return [p.x + dx * t, p.y + dy * t]; };
+  const present = new Set(g.edges.map(e => e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind));
   let s = `<div class="graph net" id="${id}-wrap" style="height:${height}px"><svg id="${id}" viewBox="${bx0} ${by0} ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="height:${height}px">
   <defs>${Object.entries(EDGE).map(([k, v]) => `<marker id="${id}-ar-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1.5 10 5 0 8.5z" fill="${v.c}"/></marker>`).join("")}
   <filter id="${id}-sh" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#18181B" flood-opacity=".10"/></filter></defs><g class="vp">`;
@@ -131,12 +137,15 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
     const A = pos[e.source], B = pos[e.target]; if (!A || !B) return;
     const key = [e.source, e.target].sort().join("|"); const k = pairN[key] = (pairN[key] || 0) + 1;
     const dx = B.x - A.x, dy = B.y - A.y;
-    const [ax, ay] = clip(A, dx, dy, 3), [bx, by] = clip(B, -dx, -dy, e.kind === "referral" ? 5 : 3);
-    const bend = (e.kind === "referral" ? .12 : .05) * (k % 2 ? 1 : -1) * Math.ceil(k / 2);
+    const isArrow = ARROW.has(e.kind);
+    const [ax, ay] = clip(A, dx, dy, 3), [bx, by] = clip(B, -dx, -dy, isArrow ? 5 : 3);
+    const bend = (isArrow ? .12 : .05) * (k % 2 ? 1 : -1) * Math.ceil(k / 2);
     const mx = (ax + bx) / 2 - (by - ay) * bend, my = (ay + by) / 2 + (bx - ax) * bend;
-    const w = e.kind === "referral" ? 1.3 + Math.min(4, Math.log10((e.n || 1) + 1) * 1.6) : 1.5;
-    const dash = e.kind === "shared_members" ? 'stroke-dasharray="1.5 4" stroke-linecap="round"' : e.kind === "referral" ? "" : 'stroke-dasharray="6 4"';
-    s += `<path class="edge" data-a="${e.source}" data-b="${e.target}" d="M${ax},${ay} Q${mx},${my} ${bx},${by}" fill="none" stroke="${EDGE[e.kind].c}" stroke-width="${w}" ${dash} ${e.kind === "referral" ? `marker-end="url(#${id}-ar-referral)"` : ""} opacity="${e.kind === "shared_members" ? .5 : .75}"><title>${esc(e.label || EDGE[e.kind].l)}</title></path>`;
+    const ek = e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind;
+    const w = isArrow ? 1.3 + Math.min(4, Math.log10((e.n || e.lines || 1) + 1) * 1.6) : e.kind === "shared_patients" ? 1 + Math.min(3, (e.jaccard || 0) * 8) : e.kind === "billed" ? (e.flagged > 0 ? 1.4 + Math.min(3.5, Math.log10(e.flagged + 1) * 2.2) : 1.1) : e.kind === "admitted" ? 1.8 : 1.5;
+    const dash = e.kind === "billed" || e.kind === "admitted" || isArrow ? "" : e.kind === "shared_members" || e.kind === "shared_patients" ? 'stroke-dasharray="1.5 4" stroke-linecap="round"' : e.kind === "primary_care" ? 'stroke-dasharray="2 3"' : e.kind === "practices_at" ? 'stroke-dasharray="8 3 2 3"' : 'stroke-dasharray="6 4"';
+    const etip = isArrow ? `${EDGE[ek].l}: ${e.lines || e.n} orders · ${money(e.paid || 0)}${e.flagged ? ` · ${e.flagged} flagged` : ""}` : e.kind === "shared_patients" ? `Share ${e.patients} patients (overlap ${pc(e.jaccard)})` : e.kind === "practices_at" ? `Practises here: ${e.lines} hospital claims, ${e.patients} patients` : e.kind === "primary_care" ? "Primary-care physician of this patient" : e.kind === "billed" ? `${e.lines} claim lines · ${money(e.paid)} · ${e.flagged} flagged${e.rules?.length ? " (" + e.rules.join(", ") + ")" : ""} · ${e.first} → ${e.last}` : e.kind === "admitted" ? `${e.stays} inpatient stay(s)` : e.label || EDGE[ek].l;
+    s += `<path class="edge" data-a="${e.source}" data-b="${e.target}" d="M${ax},${ay} Q${mx},${my} ${bx},${by}" fill="none" stroke="${EDGE[ek].c}" stroke-width="${w}" ${dash} ${isArrow ? `marker-end="url(#${id}-ar-referral)"` : ""} opacity="${e.kind === "shared_members" || e.kind === "shared_patients" ? .55 : e.kind === "billed" && !e.flagged ? .45 : .8}"><title>${esc(etip)}</title></path>`;
   });
   const icon = (d, cx, cy, sz, col) => `<path d="${d}" transform="translate(${cx - sz / 2},${cy - sz / 2}) scale(${sz / 24})" fill="none" stroke="${col}" stroke-width="${1.8 * 24 / sz}" stroke-linecap="round" stroke-linejoin="round"/>`;
   P.forEach(p => {
@@ -144,6 +153,12 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
     if (ent(n)) {
       const c = EDGE[n.kind].c;
       s += `<g class="node ent" data-id="${n.id}" transform="translate(${p.x},${p.y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="5" fill="#FAFAF9" stroke="${c}" stroke-opacity=".55" stroke-dasharray="3 2"/>${icon(EICON[n.kind], -w / 2 + 13, 0, 13, c)}<text x="${-w / 2 + 25}" y="3.8" class="et">${esc(n.label)}</text></g>`;
+      return;
+    }
+    if (pat(n)) {
+      const ic = n.risk >= 60 ? "#B45309" : n.risk >= 30 ? "#CA8A04" : "#A8A29E";
+      const PI = "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0";
+      s += `<g class="node prov patient" data-id="${n.id}" data-act="${onNode}" transform="translate(${p.x},${p.y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="#fff" stroke="${n.primary ? "#18181B" : "#D6D3D1"}" stroke-width="${n.primary ? 1.4 : 1}" filter="url(#${id}-sh)"/>${icon(PI, -w / 2 + h / 2, 0, h * .5, "#44403C")}<text x="${-w / 2 + h - 2}" y="${n.primary ? -2 : 4}" class="${n.primary ? "cn" : "pt"}">${esc(n.label.replace("Patient ", ""))}</text>${n.primary ? `<text x="${-w / 2 + h - 2}" y="12" class="cs">Patient</text>` : ""}<rect x="${w / 2 - (n.primary ? 36 : 30)}" y="${n.primary ? -10 : -8}" width="${n.primary ? 28 : 22}" height="${n.primary ? 20 : 16}" rx="${n.primary ? 5 : 8}" fill="${ic}"/><text x="${w / 2 - (n.primary ? 22 : 19)}" y="${n.primary ? 4 : 3.5}" text-anchor="middle" class="rk" style="font-size:${n.primary ? 11 : 9.5}px">${Math.round(n.risk)}</text></g>`;
       return;
     }
     const col = riskColor(n.risk), tint = n.risk >= 60 ? "#FEF2F2" : n.risk >= 40 ? "#FFF7ED" : n.risk >= 25 ? "#FEFCE8" : "#F5F5F4";
@@ -169,7 +184,7 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
   <div class="gctl"><button data-gz="in" data-g="${id}" title="Zoom in">+</button><button data-gz="out" data-g="${id}" title="Zoom out">−</button><button data-gz="fit" data-g="${id}" title="Fit">⤢</button></div>
   <div class="gtip" id="${id}-tip"></div><div class="gpanel" id="${id}-panel"></div>
   </div><div class="gleg"><div class="row" style="gap:14px;flex-wrap:wrap">${Object.entries(FAM).map(([k, l]) => `<span class="row" style="gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="${FICON[k]}" fill="none" stroke="#3F3F46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${l}</span>`).join("")}</div>
-  <div class="row" style="gap:14px;margin-top:6px;flex-wrap:wrap"><span class="row" style="gap:5px">${[["#B91C1C", "60+"], ["#EA580C", "40–59"], ["#CA8A04", "25–39"], ["#A8A29E", "<25"]].map(([c, l]) => `<span class="rkl" style="background:${c}">${l}</span>`).join("")} risk score</span><span class="row" style="gap:5px"><span class="casel"></span>case provider</span><span class="row" style="gap:5px"><span class="tilel"></span>low-risk provider</span>${Object.entries(EDGE).map(([k, v]) => `<span class="row" style="gap:5px"><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${v.c}" stroke-width="2" ${k === "shared_members" ? 'stroke-dasharray="1.5 3.5" stroke-linecap="round"' : k === "referral" ? "" : 'stroke-dasharray="5 3"'}/></svg>${v.l}</span>`).join("")}</div></div>`;
+  <div class="row" style="gap:14px;margin-top:6px;flex-wrap:wrap"><span class="row" style="gap:5px">${[["#B91C1C", "60+"], ["#EA580C", "40–59"], ["#CA8A04", "25–39"], ["#A8A29E", "<25"]].map(([c, l]) => `<span class="rkl" style="background:${c}">${l}</span>`).join("")} risk score</span><span class="row" style="gap:5px"><span class="casel"></span>case provider</span><span class="row" style="gap:5px"><span class="tilel"></span>low-risk provider</span>${Object.entries(EDGE).filter(([k]) => present.has(k)).map(([k, v]) => `<span class="row" style="gap:5px"><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${v.c}" stroke-width="2" ${k === "shared_members" || k === "shared_patients" ? 'stroke-dasharray="1.5 3.5" stroke-linecap="round"' : ARROW.has(k) || k === "billed" || k === "billed_flag" || k === "admitted" ? "" : k === "primary_care" ? 'stroke-dasharray="2 3"' : k === "practices_at" ? 'stroke-dasharray="8 3 2 3"' : 'stroke-dasharray="5 3"'}/></svg>${v.l}</span>`).join("")}</div></div>`;
   return s;
 }
 
@@ -204,7 +219,9 @@ function wireGraph(id) {
     el.addEventListener("mousemove", ev => { const r = wrap.getBoundingClientRect(); tip.style.left = Math.min(r.width - 250, ev.clientX - r.left + 16) + "px"; tip.style.top = Math.max(8, ev.clientY - r.top - 10) + "px"; });
     el.addEventListener("mouseleave", () => { tip.style.display = "none"; if (!panel.dataset.open) clear(); else focus(panel.dataset.open); });
     el.addEventListener("click", ev => {
-      ev.stopPropagation(); if (moved || !n || (n.kind && n.kind !== "provider")) return;
+      ev.stopPropagation(); if (moved || !n) return;
+      if (n.kind && n.kind !== "provider" && G.onNode !== "inspect") return;
+      if (G.onNode === "inspect") { panel.dataset.open = n.id; focus(n.id); return window.wbInspect && window.wbInspect(n.id); }
       if (G.onNode !== "select") return go("/provider/" + n.id);
       panel.dataset.open = n.id; focus(n.id);
       const nb = (G.adj[n.id] || []).map(k => G.nodes[k]).filter(Boolean).sort((a, b) => (b.risk || 0) - (a.risk || 0));
@@ -215,6 +232,11 @@ function wireGraph(id) {
     });
   });
   svg.addEventListener("click", () => { if (!moved && panel.dataset.open) { panel.style.display = "none"; delete panel.dataset.open; clear(); } });
+  G.highlightPath = ids => {
+    const on = new Set(ids), pairs = new Set(ids.slice(1).map((x, i) => [ids[i], x].sort().join("|")));
+    svg.querySelectorAll(".node").forEach(el => el.classList.toggle("dim", !on.has(el.dataset.id)));
+    svg.querySelectorAll(".edge").forEach(el => { const k = [el.dataset.a, el.dataset.b].sort().join("|"); el.classList.toggle("dim", !pairs.has(k)); el.classList.toggle("hot", pairs.has(k)); });
+  };
 }
 
 /* ------------------------------------------------------------ shell */
@@ -330,7 +352,7 @@ async function vCase() {
   } else if (tab === "timeline") {
     body = `<div class="grid g21"><div class="card"><h3>Paid vs flagged by month <small>case providers, all history</small></h3>${monthChart(d.timeline.monthly, { h: 230 })}</div><div class="card"><h3>Key events</h3><div class="tl">${d.timeline.events.map(e => `<div class="${e.kind === "history" ? "h" : ""}"><b>${e.date}</b><br><span class="sm">${esc(e.label)}</span></div>`).join("") || "<span class='mut'>No events.</span>"}</div></div></div>`;
   } else if (tab === "forecast") {
-    if (d.forecast[30].p == null) body = `<div class="banner">Forecasts are unavailable for this dataset: there are no confirmed-outcome labels to learn from yet. SpotZ^i never fills a probability field with a guess. Forecasts switch on once investigator outcomes accumulate.</div>`; else
+    if (d.forecast[30].p == null) body = `<div class="banner">Forecasts are unavailable for this dataset: there are no confirmed-outcome labels to learn from yet. SpotZⁱ never fills a probability field with a guess. Forecasts switch on once investigator outcomes accumulate.</div>`; else
     body = `<div class="banner blue">Forecast = chance the case providers bill ≥3 further simulated-confirmed FWA lines in the next N days. It is a model estimate on synthetic outcomes, not a prediction about any person.</div><div class="grid g3">${[30, 60, 90].map(h => { const f = d.forecast[h], me = f.metrics; return `<div class="card"><h3>${h}-day horizon</h3><div style="font-size:34px;font-weight:700;color:${f.p > .7 ? "#B91C1C" : f.p > .4 ? "#CA8A04" : "#15803D"}">${pc(f.p)}</div><div class="bar"><i style="width:${f.p * 100}%;background:#B45309"></i></div>
       <div class="sm" style="margin-top:8px"><b>Why (logistic baseline contributions)</b></div>${f.why.length ? f.why.map(w => `<div class="sm">▲ ${esc(w.feature)} <span class="mut">(value ${w.value.toFixed(2)})</span></div>`).join("") : '<div class="sm mut">No dominant driver.</div>'}
       <div class="sm mut" style="margin-top:8px">Held-out test (later snapshots): AUC ${me.auc.toFixed(2)} · AP ${me.ap.toFixed(2)} · Brier ${me.brier.toFixed(3)} · base rate ${pc(me.base_rate)}. Probabilities are capped at 97% to avoid false certainty.</div></div>`; }).join("")}</div>`;
@@ -408,7 +430,7 @@ function offlineBanner() {
 function showUpdate(force) {
   let b = $("#updbar"); if (b) return;
   b = document.createElement("div"); b.id = "updbar";
-  b.innerHTML = `${force ? "SpotZ^i was updated on the server." : "An update to SpotZ^i is ready."} <button class="btn sm" id="updgo">Refresh when ready</button> <span class="sm">Unsaved text in a rationale box will be kept until you click.</span>`;
+  b.innerHTML = `${force ? "SpotZⁱ was updated on the server." : "An update to SpotZⁱ is ready."} <button class="btn sm" id="updgo">Refresh when ready</button> <span class="sm">Unsaved text in a rationale box will be kept until you click.</span>`;
   document.body.appendChild(b);
 }
 window.addEventListener("online", offlineBanner); window.addEventListener("offline", offlineBanner);
@@ -427,7 +449,7 @@ async function vSettings() {
    <div class="card"><h3>Two-factor sign-in</h3><div class="sm">${u.mfa_enabled ? '<span class="tag t-ok">on</span> Codes from your authenticator app are required at sign-in.' : '<span class="tag t-gray">off</span> Protect your account with an authenticator app.'}${u.mfa_required ? ' <span class="tag t-high">required for your role</span>' : ""}</div>${u.mfa_enabled ? "" : '<button class="btn" id="mfaon" style="margin-top:10px">Set up two-factor</button>'}</div>
    <div class="card" style="margin-top:12px"><h3>Change password</h3><label class="f">Current password</label><input type="password" id="pwc" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 10px"><label class="f">New password (10+ characters)</label><input type="password" id="pwn" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 10px"><button class="btn" id="pwgo" style="margin-top:10px">Change password</button></div>
    <div class="card" style="margin-top:12px"><h3>Notifications</h3><div class="sm mut">In-app notifications are always on. External copies contain only case IDs and actions — never provider, member or outcome details.</div><label class="f">Work email</label><input type="text" id="pfem" value="${esc(u.email || "")}"><label class="sm" style="display:block;margin-top:8px"><input type="checkbox" id="pfe" ${u.notify_email ? "checked" : ""}> Email me</label><label class="sm" style="display:block"><input type="checkbox" id="pfs" ${u.notify_slack ? "checked" : ""}> Post to the team Slack channel</label><button class="btn" id="pfgo" style="margin-top:10px">Save</button></div></div>
-   ${admin ? `<div><div class="card"><h3>Security policy</h3><div class="sm">Require two-factor for:</div>${["investigator", "supervisor", "analyst", "admin"].map(r => `<label class="sm" style="display:block"><input type="checkbox" class="mfarole" value="${r}" ${sec.mfa_required_roles.includes(r) ? "checked" : ""}> ${r}</label>`).join("")}<button class="btn" id="secgo" style="margin-top:8px">Save policy</button><div class="sm mut" style="margin-top:8px">Users in these roles must enrol before they can use SpotZ^i. Single sign-on: ${sec.sso ? '<span class="tag t-ok">configured</span>' : '<span class="tag t-gray">not configured</span> (set SPOTZI_OIDC_ISSUER, _CLIENT_ID, _CLIENT_SECRET)'}</div>
+   ${admin ? `<div><div class="card"><h3>Security policy</h3><div class="sm">Require two-factor for:</div>${["investigator", "supervisor", "analyst", "admin"].map(r => `<label class="sm" style="display:block"><input type="checkbox" class="mfarole" value="${r}" ${sec.mfa_required_roles.includes(r) ? "checked" : ""}> ${r}</label>`).join("")}<button class="btn" id="secgo" style="margin-top:8px">Save policy</button><div class="sm mut" style="margin-top:8px">Users in these roles must enrol before they can use SpotZⁱ. Single sign-on: ${sec.sso ? '<span class="tag t-ok">configured</span>' : '<span class="tag t-gray">not configured</span> (set SPOTZI_OIDC_ISSUER, _CLIENT_ID, _CLIENT_SECRET)'}</div>
      <table style="margin-top:8px"><tr><th>User</th><th>Role</th><th>Two-factor</th></tr>${sec.users.map(x => `<tr><td class="sm">${esc(x.name)}</td><td class="sm">${x.role}</td><td>${x.mfa ? '<span class="tag t-ok">on</span>' : '<span class="tag t-gray">off</span>'}</td></tr>`).join("")}</table></div>
      <div class="card" style="margin-top:12px"><h3>Delivery outbox <small>email ${ob.channels.email ? "configured" : "not configured"} · Slack ${ob.channels.slack ? "configured" : "not configured"}</small></h3><button class="btn sm" id="obtest">Send me a test notification</button><table style="margin-top:8px"><tr><th>Channel</th><th>To</th><th>Status</th><th>Tries</th><th>Error</th></tr>${ob.rows.slice(0, 15).map(o => `<tr><td class="sm">${o.channel}</td><td class="sm">${esc(o.recipient)}</td><td><span class="tag ${o.status === "sent" ? "t-ok" : o.status === "failed" ? "t-crit" : "t-gray"}">${o.status}</span></td><td class="num">${o.attempts}</td><td class="sm mut">${esc(o.last_error || "")}</td></tr>`).join("") || '<tr><td colspan="5" class="mut sm">Nothing sent yet.</td></tr>'}</table></div></div>` : ""}</div>`;
 }
@@ -536,21 +558,80 @@ function decisionPanel(d) {
 }
 
 /* ------------------------------------------------------------ network */
+const TFAM = { hospital: "FAC", doctor: "PRO", lab: "LAB", pharmacy: "PHARM", ambulance: "AMB", behavioral: "BH", homehealth: "HH", dme: "DME" };
+const TLAB = { hospital: "Hospital", doctor: "Doctor / practice", lab: "Laboratory", pharmacy: "Pharmacy", ambulance: "Ambulance", behavioral: "Behavioral health", homehealth: "Home health", dme: "Equipment supplier", patient: "Patient", ownership: "Ownership", address: "Address", bank: "Bank account" };
+const TPLU = { hospital: "Hospitals", doctor: "Doctors / practices", lab: "Laboratories", pharmacy: "Pharmacies", ambulance: "Ambulance services", behavioral: "Behavioral health providers", homehealth: "Home health agencies", dme: "Equipment suppliers", patient: "Patients", ownership: "Ownership groups", address: "Addresses", bank: "Bank accounts" };
+const PICON = "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0";
+const typeIcon = (t, sz = 15, col = "#3F3F46") => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" style="flex:none"><path d="${t === "patient" ? PICON : FICON[TFAM[t]] || EICON[t] || FICON.PRO}" fill="none" stroke="${col}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const NET = { focus: null, flagged: false, kinds: new Set(["billed", "referred", "admitted", "primary_care", "practices_at", "shared_patients", "ownership", "address", "bank"]), trail: [], pathA: null, view: "investigate", limit: 24 };
+
+function toGraph(d) {   // link-analysis payload -> renderer format
+  const nodes = d.nodes.map(n => n.type === "patient" ? { id: n.id, label: n.label, kind: "patient", risk: n.score || 0, primary: n.role === "focus", x: n.x, y: n.y }
+    : ["ownership", "address", "bank"].includes(n.type) ? { id: n.id, label: n.label, kind: n.type, x: n.x, y: n.y }
+    : { id: n.id, label: n.label, kind: "provider", family: TFAM[n.type], risk: n.score || 0, case_id: n.case_id, primary: n.role === "focus", city: n.city, x: n.x, y: n.y });
+  const edges = d.edges.map(e => ({ ...e, kind: e.kind === "referred" ? "referral" : e.kind, n: e.lines }));
+  return { nodes, edges };
+}
+const entRow = (e, extra = "") => `<button class="wbrow" data-focus="${e.id}">${typeIcon(e.type)}<span class="wbl">${esc(e.label)}<em>${TLAB[e.type] || ""}${e.case_id ? " · " + e.case_id : ""}${extra}</em></span>${e.score != null ? `<b class="wbs" style="background:${e.type === "patient" ? (e.score >= 60 ? "#B45309" : e.score >= 30 ? "#CA8A04" : "#A8A29E") : riskColor(e.score)}">${Math.round(e.score)}</b>` : ""}</button>`;
+
 async function vNetwork() {
+  if (NET.view === "map") return vNetworkMap();
+  const st = await api("graph/start");
+  if (!NET.focus) NET.focus = st.providers[0].id;
+  const kinds = [...NET.kinds].join(",");
+  const g = await api(`graph/entity?id=${encodeURIComponent(NET.focus)}&flagged_only=${NET.flagged}&kinds=${kinds}&limit=${NET.limit}`);
+  const focusNode = g.nodes.find(n => n.id === NET.focus);
+  const types = {}; g.nodes.forEach(n => { if (n.id !== NET.focus) types[n.type] = (types[n.type] || 0) + 1; });
+  const flaggedEdges = g.edges.filter(e => e.flagged > 0).length;
+  setTimeout(() => wbInspect(NET.focus), 0);
+  return `<div class="wbtop"><div><h1>Link analysis</h1><p>Pick a hospital, doctor, supplier or patient and see who they are connected to — claims billed, referrals, hospital stays, shared ownership.</p></div><span class="sp"></span><div class="seg"><button class="on">Investigate an entity</button><button data-netview="map">Portfolio risk map</button></div></div>
+  <div class="wb">
+    <aside class="wbside">
+      <div class="wbsearch"><input type="text" id="wbq" placeholder="Search hospital, doctor, lab, patient ID…" autocomplete="off"><div id="wbres"></div></div>
+      <div class="wbsec"><div class="wbh">Show relationships</div>${[["billed", "Claims billed for patients"], ["referred", "Orders & referrals (tests, prescriptions, equipment, home care…)"], ["primary_care", "Primary-care physician"], ["practices_at", "Doctor practises at hospital"], ["admitted", "Hospital admissions"], ["shared_patients", "Providers sharing many patients"], ["ownership", "Shared ownership"], ["address", "Shared address"], ["bank", "Shared bank account"]].map(([k, l]) => `<label class="wbchk"><input type="checkbox" data-kind="${k}" ${NET.kinds.has(k) ? "checked" : ""}> ${l}</label>`).join("")}
+        <label class="wbchk" style="margin-top:6px"><input type="checkbox" id="wbflag" ${NET.flagged ? "checked" : ""}> <b>Only links with flagged claims</b></label></div>
+      ${NET.trail.length ? `<div class="wbsec"><div class="wbh">Your trail</div>${NET.trail.slice(-6).map(t => `<button class="wbcrumb" data-focus="${t.id}">← ${esc(t.label)}</button>`).join("")}</div>` : ""}
+      <div class="wbsec"><div class="wbh">Highest-risk providers</div>${st.providers.slice(0, 7).map(e => entRow(e)).join("")}</div>
+      <div class="wbsec"><div class="wbh">Hospitals</div>${st.hospitals.map(e => entRow(e)).join("")}</div>
+      <div class="wbsec"><div class="wbh">Most-involved patients <span class="mut" style="font-weight:400">(may be victims)</span></div>${st.patients.slice(0, 6).map(e => entRow(e, ` · ${e.flagged} flagged`)).join("")}</div>
+    </aside>
+    <section class="wbmain">
+      <div class="wbbar">${typeIcon(focusNode.type, 18, "#18181B")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div></div>
+      <div class="wbgraph">${g.nodes.length > 1 ? graphHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect", canvas: Math.max(560, Math.min(1250, 170 * Math.sqrt(g.nodes.length))) }) : `<div class="loading">No relationships of the selected types${NET.flagged ? " with flagged claims" : ""}.</div>`}</div>
+    </section>
+    <aside class="wbinspect" id="wbinsp"><div class="mut sm">Select an entity.</div></aside>
+  </div>`;
+}
+
+window.wbInspect = async id => {
+  const el = $("#wbinsp"); if (!el) return;
+  let d; try { d = await api("graph/inspect?id=" + encodeURIComponent(id)); } catch (e) { el.innerHTML = `<div class="banner red">${esc(e.message)}</div>`; return; }
+  const sc = d.score == null ? "" : `<div class="wbscore"><b style="color:${d.kind === "patient" ? (d.score >= 60 ? "#B45309" : "#CA8A04") : riskColor(d.score)}">${Math.round(d.score)}</b><span>${d.score_kind}</span></div>`;
+  const fv = (k, v) => v == null ? "–" : typeof v === "number" ? (k.toLowerCase().includes("paid") ? money(v) : k.toLowerCase().includes("share") ? pc(v) : num(v)) : esc(v);
+  const isFocus = id === NET.focus;
+  el.innerHTML = `<div class="row" style="gap:10px;align-items:flex-start">${typeIcon(d.type, 26, "#18181B")}<div style="flex:1;min-width:0"><div class="b" style="font-size:15px">${esc(d.title)}</div><div class="sm mut">${esc(d.subtitle || "")}</div></div>${sc}</div>
+    ${d.case_id ? `<a class="btn sm pri" style="margin-top:10px" href="#/case/${d.case_id}">Open case ${d.case_id} →</a>` : ""}
+    <table class="wbfacts">${d.facts.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fv(k, v)}</td></tr>`).join("")}</table>
+    ${d.relations?.length ? `<div class="wbh">All relationships</div><table class="wbfacts" style="margin-top:0">${d.relations.map(r => `<tr><td>${esc(r.rel)}${r.note ? `<div class="sm mut">${esc(r.note)}</div>` : ""}</td><td class="num"><b>${num(r.count)}</b></td></tr>`).join("")}</table>` : ""}
+    ${d.signals?.length ? `<div class="wbh">Rule findings (180d)</div><div class="pill-row">${d.signals.map(x => `<span class="tag t-high">${esc(x.name)} · ${x.lines}</span>`).join("")}</div>` : ""}
+    ${d.models ? `<div class="wbh">Detectors</div><div class="wbmodels">${Object.entries(d.models).filter(([, v]) => v != null).map(([k, v]) => `<div><span>${k}</span><div class="bar"><i style="width:${v * 100}%;background:${v > .8 ? "#B91C1C" : v > .6 ? "#EA580C" : "#A8A29E"}"></i></div><b>${Math.round(v * 100)}</b></div>`).join("")}</div>` : ""}
+    ${d.explanations ? `<div class="wbh">Possible explanations</div><ul class="wbul">${d.explanations.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${d.note ? `<div class="banner" style="margin-top:10px;font-size:12px">${esc(d.note)}</div>` : ""}
+    <div class="wbactions">${isFocus ? "" : `<button class="btn sm pri" data-focus="${d.id}">Pivot here</button>`}${d.kind === "provider" ? `<a class="btn sm" href="#/provider/${d.id}">Provider page</a>` : ""}<button class="btn sm" data-patha="${d.id}">${NET.pathA ? "Connect to " + esc(NET.pathA.label) : "Find connection from here…"}</button></div>
+    <div id="wbpath"></div>`;
+};
+
+async function vNetworkMap() {
   const n = await api("network"); S.net = n;
-  const caseNodes = n.nodes.filter(x => x.case_id);
   const minRisk = S.netMin ?? 0, q = (S.netQ || "").toLowerCase();
   const keep = new Set(n.nodes.filter(x => x.risk >= minRisk && (!q || x.label.toLowerCase().includes(q) || x.id.toLowerCase().includes(q) || (x.case_id || "").toLowerCase().includes(q))).map(x => x.id));
-  // keep neighbours of searched nodes
   if (q) n.edges.forEach(e => { if (keep.has(e.source) || keep.has(e.target)) { keep.add(e.source); keep.add(e.target); } });
   const nodes = n.nodes.filter(x => keep.has(x.id)).map(x => ({ ...x, kind: "provider", primary: false }));
-  const edges = n.edges.filter(e => keep.has(e.source) && keep.has(e.target)).flatMap(e => e.kinds.map(k => ({ source: e.source, target: e.target, kind: k === "ownership" || k === "address" || k === "bank" ? k : k, strong: e.strong, label: k })));
+  const edges = n.edges.filter(e => keep.has(e.source) && keep.has(e.target)).flatMap(e => e.kinds.map(k => ({ source: e.source, target: e.target, kind: k, strong: e.strong, label: k })));
   const comms = n.communities.sort((a, b) => b.max_risk - a.max_risk);
-  return hdr("Network explorer", "Providers connected by referral flow, shared ownership, address, bank account and overlapping members. Hover to trace a provider's connections; click to pin details.",
-    `<input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:220px"><div class="row sm">Min risk <input type="range" id="netmin" min="0" max="80" value="${minRisk}" style="width:120px"><b id="netminv">${minRisk}</b></div>`) +
-    `<div class="card" style="padding:0;overflow:hidden">${graphHTML({ nodes, edges }, { height: 720, id: "ng", labelMin: 40, onNode: "select", hulls: true, hullSet: new Set(n.communities.filter(c => c.ties > 0 && c.max_risk >= 40).map(c => c.id)) })}</div><div class="sm mut" style="margin:6px 0 14px">${nodes.length} connected providers · ${edges.length} relationships shown (${n.isolated} providers with no notable relationships hidden). Hover a provider to trace its connections; click to pin details; scroll or use +/− to zoom; drag to pan.</div>
-    <h3 style="font-size:13px;margin:4px 0 10px">Communities <span class="mut" style="font-weight:400">Louvain on weighted ties · highest risk first</span></h3><div class="grid g4">${comms.slice(0, 8).map(c => `<div class="card" style="padding:12px 14px"><div class="row"><b>Community ${c.id + 1}</b><span class="sp"></span><span class="tag ${c.max_risk >= 40 ? "t-crit" : "t-gray"}">max risk ${Math.round(c.max_risk)}</span></div><div class="sm mut">${c.size} providers · ${c.ties} suspicious tie(s) · ${money(c.paid)} paid (180d)</div><div class="sm" style="margin-top:4px">${c.providers.slice(0, 4).map(p => esc(n.nodes.find(x => x.id === p)?.label)).join(", ")}${c.size > 4 ? "…" : ""}</div></div>`).join("")}</div>
-    <div class="sm mut" style="margin-top:10px">Shared ownership alone is not suspicious (see chain pharmacies): it only matters when linked providers also show risky behaviour.</div>`;
+  return `<div class="wbtop"><div><h1>Portfolio risk map</h1><p>Every provider with a notable relationship, grouped into communities. Click a provider to pin details; use <b>Investigate</b> to open it in link analysis.</p></div><span class="sp"></span><input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:200px"><div class="seg"><button data-netview="investigate">Investigate an entity</button><button class="on">Portfolio risk map</button></div></div>
+    <div class="card" style="padding:0;overflow:hidden">${graphHTML({ nodes, edges }, { height: 720, id: "ng", labelMin: 40, onNode: "select", hulls: true, hullSet: new Set(n.communities.filter(c => c.ties > 0 && c.max_risk >= 40).map(c => c.id)) })}</div>
+    <h3 style="font-size:13px;margin:16px 0 10px">Communities <span class="mut" style="font-weight:400">highest risk first</span></h3><div class="grid g4">${comms.slice(0, 8).map(c => `<div class="card" style="padding:12px 14px"><div class="row"><b>Community ${c.id + 1}</b><span class="sp"></span><span class="tag ${c.max_risk >= 40 ? "t-crit" : "t-gray"}">max risk ${Math.round(c.max_risk)}</span></div><div class="sm mut">${c.size} providers · ${c.ties} suspicious tie(s) · ${money(c.paid)}</div><div class="sm" style="margin-top:4px">${c.providers.slice(0, 4).map(p => esc(n.nodes.find(x => x.id === p)?.label)).join(", ")}${c.size > 4 ? "…" : ""}</div></div>`).join("")}</div>`;
 }
 
 /* ------------------------------------------------------------ explorer */
@@ -617,7 +698,7 @@ async function vKnowledge() {
   const w = await api("wiki"); const q = S.wq || ""; const res = q ? await api("wiki/search?q=" + encodeURIComponent(q)) : null;
   const byKind = {}; w.pages.forEach(p => (byKind[p.kind] = byKind[p.kind] || []).push(p));
   const clean = w.proposals.filter(p => p.lint.every(l => l.level === "ok")).length;
-  return hdr("Knowledge", "SpotZ^i's persistent, linked memory: policies, schemes, providers, cases and human decisions — maintained by the system, approved by people.",
+  return hdr("Knowledge", "SpotZⁱ's persistent, linked memory: policies, schemes, providers, cases and human decisions — maintained by the system, approved by people.",
       `<input type="text" id="wq" placeholder="Ask the knowledge base…" value="${esc(q)}" style="width:280px">`) +
     `<div class="journey"><div><b>Ingest</b><span>runs + decisions propose updates</span></div><div><b>Lint</b><span>citations · privacy · contradictions</span></div><div><b>Review</b><span>${w.proposals.length} pending</span></div><div><b>Update</b><span>${w.pages.length} approved pages, versioned</span></div><div><b>Compounds</b><span>retrieved by every decision chain</span></div></div>` +
     (res ? `<div class="card" style="margin-bottom:12px"><h3>Results for “${esc(q)}”</h3>${res.map(r => `<div style="padding:7px 0;border-bottom:1px solid var(--line2)"><a href="#/knowledge/page?slug=${r.slug}" class="b">${esc(r.title)}</a> <span class="tag t-gray">${r.kind}</span> <span class="sm mut">v${r.version} · relevance ${r.score.toFixed(2)}</span><div class="sm mut">${esc(r.snippet)}</div></div>`).join("") || '<div class="mut">No approved knowledge matches.</div>'}</div>` : "") +
@@ -630,7 +711,7 @@ async function chainPanel(d) {
   const st = Object.fromEntries(c.steps.map(s => [s.key, s]));
   const box = (s, inner) => `<div class="card" style="position:relative"><div class="row"><span style="width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600">${s.n}</span><h3 style="margin:0">${s.title}</h3><span class="sp"></span><span class="sm mut">${esc(s.summary)}</span></div><div style="margin-top:10px">${inner}</div></div>`;
   const R = st.retrieve, I = st.interpret, A = st.rules, P = st.propose, Sc = st.score, C = st.cite;
-  return `<div class="banner blue">Traceable decision chain: each checkpoint strengthens evidence, confidence and accountability. Everything here is derived from SpotZ^i's own detectors and approved knowledge — no external model.</div>
+  return `<div class="banner blue">Traceable decision chain: each checkpoint strengthens evidence, confidence and accountability. Everything here is derived from SpotZⁱ's own detectors and approved knowledge — no external model.</div>
   <div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap">${c.steps.map(s => `<span class="tag t-med">${s.n} ${s.title}</span>${s.n < 6 ? '<span class="mut">→</span>' : ""}`).join("")}</div>
   <div class="grid g2">
   ${box(R, `<div class="sm mut">Query: ${esc(R.query)}</div>${R.policy.map(p => `<div class="ex"><a href="#/knowledge/page?slug=${p.slug}">${esc(p.title)}</a> <span class="mut">${p.kind} v${p.version}</span><br>${esc(p.snippet)}</div>`).join("")}${R.memory.map(p => `<div class="ex"><a href="#/knowledge/page?slug=${p.slug}">${esc(p.title)}</a> <span class="tag t-vio">memory</span></div>`).join("") || '<div class="sm mut" style="margin-top:6px">No approved memory pages yet — approve wiki updates to let past work inform this chain.</div>'}`)}
@@ -762,6 +843,19 @@ document.addEventListener("click", async e => {
   if (t.id === "splitgo") { const ps = $$(".splitp").filter(x => x.checked).map(x => x.value); try { const r = await post(`cases/${S.arg}/split`, { providers: ps, reason: $("#scopewhy").value }); toast("Split into " + r.new_case); S.queue = null; } catch (err) { return toast(err.message); } return render(); }
   if (t.id === "mergego") { try { await post(`cases/${S.arg}/merge`, { other: $("#mergeother").value, reason: $("#scopewhy").value }); toast("Merged"); S.queue = null; } catch (err) { return toast(err.message); } return render(); }
   const ud = t.closest("[data-undo]"); if (ud) { try { await post(`scope/${ud.dataset.undo}/undo`, {}); toast("Scope change undone"); S.queue = null; } catch (err) { return toast(err.message); } return render(); }
+  const fb = t.closest("[data-focus]"); if (fb) { const cur = NET.focus; if (cur && cur !== fb.dataset.focus) { const lbl = $(".wbbar b")?.textContent || cur; NET.trail = NET.trail.filter(x => x.id !== cur).concat([{ id: cur, label: lbl }]); } NET.focus = fb.dataset.focus; NET.view = "investigate"; NET.limit = 24; if (S.view !== "network") return go("/network"); return render(); }
+  const mo = t.closest("[data-more]"); if (mo) { NET.limit = mo.dataset.more === "1" ? NET.limit + 24 : 24; return render(); }
+  const nv = t.closest("[data-netview]"); if (nv) { NET.view = nv.dataset.netview; return render(); }
+  const pa = t.closest("[data-patha]"); if (pa) {
+    const idx = pa.dataset.patha;
+    if (!NET.pathA) { NET.pathA = { id: idx, label: $(".wbinspect .b")?.textContent || idx }; toast("Now click another entity (or search one) and choose “Connect to …”"); return wbInspect(idx); }
+    if (NET.pathA.id === idx) { NET.pathA = null; return wbInspect(idx); }
+    const r = await api(`graph/path?a=${encodeURIComponent(NET.pathA.id)}&b=${encodeURIComponent(idx)}`);
+    const box = $("#wbpath"); const KL = { billed: "billed claims for", referred: "referred to", admitted: "was admitted to", owned_by: "is owned by", located_at: "is located at", paid_to_account: "is paid into", primary_care: "is the primary-care physician of", practices_at: "practises at" };
+    box.innerHTML = `<div class="wbh">How they connect</div>` + (r.found ? `<div class="wbpath">${r.steps.map(x => `<div><b>${esc(x.a)}</b> <span class="mut">${x.kind === "billed" && x.a_id.startsWith("M-") ? "was billed by" : x.kind === "admitted" && !x.a_id.startsWith("M-") ? "admitted" : KL[x.kind] || x.kind}</span> <b>${esc(x.b)}</b></div>`).join("")}</div><div class="sm mut">${r.length} step(s). A connection is a lead to check, not evidence of wrongdoing.</div>` : `<div class="sm mut">${esc(r.note || "No connection found.")}</div>`);
+    if (r.found) GRAPHS.lg?.highlightPath?.(r.ids);
+    NET.pathA = null; return;
+  }
   if (t.id === "wreset") { S.weights = null; return render(); }
   if (t.id === "submitDec") {
     const body = { outcome: $("#outcome").value, reason: $("#reason").value, checks: S.checks[S.cd.case_id] || [] };
@@ -777,6 +871,7 @@ document.addEventListener("input", e => {
   if (t.dataset.cap) { S[t.dataset.cap] = Math.max(1, +t.value || 1); clearTimeout(S.ct); S.ct = setTimeout(render, 500); }
   if (t.id === "pq") { S.expl.prov.q = t.value; clearTimeout(S.pt); S.pt = setTimeout(async () => { const p = $("#pq"); const pos = p.selectionStart; await render(); const n = $("#pq"); n.focus(); n.setSelectionRange(pos, pos); }, 300); }
   if (t.id === "wq") { S.wq = t.value; clearTimeout(S.wt2); S.wt2 = setTimeout(async () => { await render(); const n = $("#wq"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 450); }
+  if (t.id === "wbq") { clearTimeout(S.wbt); S.wbt = setTimeout(async () => { const q = t.value.trim(); const box = $("#wbres"); if (!box) return; if (!q) { box.innerHTML = ""; return; } const r = await api("graph/search?q=" + encodeURIComponent(q)); box.innerHTML = `<div class="wbdrop">${r.map(e => entRow(e)).join("") || '<div class="sm mut" style="padding:8px">No match. Patients: search by member ID (e.g. M-00010).</div>'}</div>`; }, 220); }
   if (t.id === "netq") { S.netQ = t.value; clearTimeout(S.nt); S.nt = setTimeout(async () => { await render(); const n = $("#netq"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 400); }
   if (t.id === "netmin") { S.netMin = +t.value; $("#netminv").textContent = t.value; clearTimeout(S.nt); S.nt = setTimeout(render, 300); }
 });
@@ -798,10 +893,12 @@ document.addEventListener("submit", async e => {
   if (e.target.id === "enrolf") { e.preventDefault(); const r = await fetch("/api/mfa/confirm", { method: "POST", headers: { "Content-Type": "application/json", "X-SpotZi-Contract": CONTRACT }, body: JSON.stringify({ code: $("#enc").value }) }); const j = await r.json(); if (!r.ok) return toast(j.detail); $("#enrolf").remove(); $("#encodes").innerHTML = `<div class="banner green" style="margin-top:12px"><b>Two-factor is on.</b> Save these one-time recovery codes somewhere safe; they are shown only once.</div><div class="mono" style="columns:2">${j.recovery_codes.map(c => `<div>${c}</div>`).join("")}</div><button class="btn pri" style="width:100%;justify-content:center;margin-top:12px" id="enrdone">Continue</button>`; }
 });
 document.addEventListener("change", async e => {
+  if (e.target.dataset && e.target.dataset.kind) { e.target.checked ? NET.kinds.add(e.target.dataset.kind) : NET.kinds.delete(e.target.dataset.kind); return render(); }
+  if (e.target.id === "wbflag") { NET.flagged = e.target.checked; return render(); }
   if (e.target.id === "asgsel" && e.target.value) { try { const r = await post(`cases/${S.arg}/assign`, { assignee: e.target.value, days: 10 }); toast("Assigned · due " + r.due); } catch (err) { toast(err.message); } return render(); }
   if (e.target.dataset && e.target.dataset.urole) { try { await api("users/" + e.target.dataset.urole, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: e.target.value }) }); toast("Role updated"); } catch (err) { toast(err.message); } return; }
  if (e.target.id === "pf") { S.expl.prov.fam = e.target.value; render(); } });
-function afterRender() { ["cg", "ng", "pg"].forEach(wireGraph); if (S.view === "case" && S.tab === "decision") { loadNotes(S.arg); scopeCard(S.arg); } offlineBanner(); }
+function afterRender() { ["cg", "ng", "pg", "lg"].forEach(wireGraph); if (S.view === "case" && S.tab === "decision") { loadNotes(S.arg); scopeCard(S.arg); } offlineBanner(); }
 
 async function poll() {
   S.status = await api("status");

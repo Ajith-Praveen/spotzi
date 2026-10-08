@@ -2,7 +2,7 @@
 
 ## Product purpose
 
-SpotZ^i should help an investigator answer a new question quickly:
+SpotZⁱ should help an investigator answer a new question quickly:
 
 **“Which previously reviewed cases are materially similar, how are they different, and what reasoning can I reuse?”**
 

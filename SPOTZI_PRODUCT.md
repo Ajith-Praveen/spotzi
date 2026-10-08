@@ -1,10 +1,10 @@
-# SpotZ^i — Product Feature Reference
+# SpotZⁱ — Product Feature Reference
 
 **Evidence-first fraud, waste and abuse (FWA) intelligence for healthcare payer Special Investigations Units.**
 
-SpotZ^i turns thousands of unexplained claim alerts into a short, ranked list of evidence-backed cases that an investigator can understand, challenge and act on. Every number traces to source rows, every recommendation shows its reasoning, and every outcome is decided by a named human.
+SpotZⁱ turns thousands of unexplained claim alerts into a short, ranked list of evidence-backed cases that an investigator can understand, challenge and act on. Every number traces to source rows, every recommendation shows its reasoning, and every outcome is decided by a named human.
 
-> **Data notice.** SpotZ^i currently runs on fully synthetic data (no real member, provider or payer data). All accuracy figures in this document are measured against hidden synthetic labels and do **not** describe real-world performance.
+> **Data notice.** SpotZⁱ currently runs on fully synthetic data (no real member, provider or payer data). All accuracy figures in this document are measured against hidden synthetic labels and do **not** describe real-world performance.
 
 ---
 
@@ -23,11 +23,11 @@ SpotZ^i turns thousands of unexplained claim alerts into a short, ranked list of
 ### Run it
 ```bash
 pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy python-multipart "psycopg[binary]"
-cd spotzi && ./start.sh               # starts local PostgreSQL (port 5544) + SpotZ^i → http://localhost:8000
+cd spotzi && ./start.sh               # starts local PostgreSQL (port 5544) + SpotZⁱ → http://localhost:8000
 ./stop.sh                                  # stops both
 ```
-**Storage.** SpotZ^i runs on **PostgreSQL 16** (project-local cluster in `spotzi/data/pg`, SCRAM-SHA-256 password auth, listening on 127.0.0.1 only). Connection settings live in `spotzi/data/db.env` (owner-readable, git-ignored); point `SPOTZI_DB_URL` at any managed Postgres to move it. Without `SPOTZI_DB_URL` it falls back to a single SQLite file for laptops and quick demos. `migrate_to_postgres.py` copies an existing SQLite database into Postgres.
-On first start SpotZ^i creates five local demo accounts (2 investigators, 1 supervisor, 1 analyst, 1 admin) with random passwords, written only to `spotzi/data/seed_users.json` (owner-readable). Sign in with one of them; change or remove them for any shared deployment.
+**Storage.** SpotZⁱ runs on **PostgreSQL 16** (project-local cluster in `spotzi/data/pg`, SCRAM-SHA-256 password auth, listening on 127.0.0.1 only). Connection settings live in `spotzi/data/db.env` (owner-readable, git-ignored); point `SPOTZI_DB_URL` at any managed Postgres to move it. Without `SPOTZI_DB_URL` it falls back to a single SQLite file for laptops and quick demos. `migrate_to_postgres.py` copies an existing SQLite database into Postgres.
+On first start SpotZⁱ creates five local demo accounts (2 investigators, 1 supervisor, 1 analyst, 1 admin) with random passwords, written only to `spotzi/data/seed_users.json` (owner-readable). Sign in with one of them; change or remove them for any shared deployment.
 
 ### Test it
 ```bash
@@ -69,7 +69,7 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 
 **Two-factor sign-in (TOTP).** Works with any authenticator app; ±30-second window, each code usable once (replay-protected), 8 single-use recovery codes. Admins choose which roles must use it; users in those roles must enrol before anything else works. Admins can reset a user's two-factor. Verified against the RFC 6238 test vectors.
 
-**Single sign-on (OpenID Connect).** Authorization-code flow with PKCE, single-use state and nonce, ID-token signature verified (RS256 via the identity provider's published keys), issuer / audience / expiry checked. Users must already exist in SpotZ^i (matched by work email) — the identity provider proves who you are; SpotZ^i still decides your role. Configure with `SPOTZI_OIDC_ISSUER`, `SPOTZI_OIDC_CLIENT_ID`, `SPOTZI_OIDC_CLIENT_SECRET` (optional `SPOTZI_OIDC_REDIRECT`, `SPOTZI_OIDC_LABEL`). Tested end-to-end against a simulated identity provider; not yet tried with a live one.
+**Single sign-on (OpenID Connect).** Authorization-code flow with PKCE, single-use state and nonce, ID-token signature verified (RS256 via the identity provider's published keys), issuer / audience / expiry checked. Users must already exist in SpotZⁱ (matched by work email) — the identity provider proves who you are; SpotZⁱ still decides your role. Configure with `SPOTZI_OIDC_ISSUER`, `SPOTZI_OIDC_CLIENT_ID`, `SPOTZI_OIDC_CLIENT_SECRET` (optional `SPOTZI_OIDC_REDIRECT`, `SPOTZI_OIDC_LABEL`). Tested end-to-end against a simulated identity provider; not yet tried with a live one.
 
 **Security hardening.** Strict Content-Security-Policy (no inline scripts), no framing, no-sniff, no-referrer, `no-store` on API responses; cross-site writes blocked by origin check; a client/server contract version stops an outdated browser tab from submitting decisions ("refresh first").
 
@@ -77,7 +77,7 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 
 **My work** (home screen, per user): my assigned cases with due dates and overdue flags; for supervisors — referral approvals waiting, unassigned cases, team workload, precedent quality review; for analysts — knowledge review count; notifications for assignments, notes and approval requests.
 
-**Email and Slack notifications.** Every in-app notification can also go to email (SMTP) and/or a Slack-compatible webhook, if the user opts in. Messages carry only case IDs and actions — never provider or member names, scores or outcomes — and link back to SpotZ^i, which requires sign-in. A durable outbox retries failures with exponential back-off (5 attempts) and shows status to admins. Configure `SPOTZI_SMTP_HOST/PORT/USER/PASSWORD/FROM`, `SPOTZI_SLACK_WEBHOOK`, `SPOTZI_BASE_URL`.
+**Email and Slack notifications.** Every in-app notification can also go to email (SMTP) and/or a Slack-compatible webhook, if the user opts in. Messages carry only case IDs and actions — never provider or member names, scores or outcomes — and link back to SpotZⁱ, which requires sign-in. A durable outbox retries failures with exponential back-off (5 attempts) and shows status to admins. Configure `SPOTZI_SMTP_HOST/PORT/USER/PASSWORD/FROM`, `SPOTZI_SLACK_WEBHOOK`, `SPOTZI_BASE_URL`.
 
 **Case split and merge.** Supervisors can merge cases that belong together or split providers into their own case, with a written reason. Edits are stored, replayed on every analysis run, can be undone, and are audited; a merged-away case ID points to its successor.
 
@@ -110,7 +110,7 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 | **S9 recruitment mill (held-out)** | sudden wave of out-of-region members, one templated visit + lab bundle each |
 | Decoys | oncology (legitimately high-level visits), dialysis lab (legitimate repeat labs), chain pharmacies (routine shared ownership) |
 
-**Bring your own data.** Analysts upload CSVs on *Data & pipeline*: `claim_lines`, `providers`, `members` (required) plus optional referrals, relationships, investigations, inpatient stays and facilities. Required files and columns are validated before anything runs; missing optional columns get safe defaults (e.g. ownership links are derived from provider master data). Without outcome labels SpotZ^i still detects, ranks, explains and reasons; forecasts show as **unavailable** (their queue weight is redistributed, never guessed), and evaluation and the evidence vault switch off. A test proves detection is identical with and without labels. One click switches back to the synthetic demo.
+**Bring your own data.** Analysts upload CSVs on *Data & pipeline*: `claim_lines`, `providers`, `members` (required) plus optional referrals, relationships, investigations, inpatient stays and facilities. Required files and columns are validated before anything runs; missing optional columns get safe defaults (e.g. ownership links are derived from provider master data). Without outcome labels SpotZⁱ still detects, ranks, explains and reasons; forecasts show as **unavailable** (their queue weight is redistributed, never guessed), and evaluation and the evidence vault switch off. A test proves detection is identical with and without labels. One click switches back to the synthetic demo.
 
 **X12 837 claim files.** Upload 837 professional (837P) and institutional (837I) files directly — alone or alongside CSVs. The parser reads billing provider, taxonomy, subscriber/patient and demographics, claims, diagnoses, referring provider, service lines and dates, and inpatient admission/discharge; provider type comes from the taxonomy code, falling back to place of service. Malformed segments are reported, never silently dropped. Round-trip tested: 100% of codes, amounts, dates and provider types preserved. 837 carries billed charges only, so paid amounts equal billed until 835 remittance is added. Sample 837P/837I files can be downloaded from *Data & pipeline*.
 
@@ -158,7 +158,7 @@ Detector weights start at expert priors and update from every recorded decision 
 
 ## 6. The second brain — knowledge layer
 
-SpotZ^i keeps a persistent, linked memory that improves with every approved update.
+SpotZⁱ keeps a persistent, linked memory that improves with every approved update.
 
 | Stage | What happens |
 |---|---|

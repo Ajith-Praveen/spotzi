@@ -1,4 +1,4 @@
-# SpotZ^i — implementation blueprint
+# SpotZⁱ — implementation blueprint
 
 > Prepared 8 October 2026. This folder is a design deliverable, not an implemented application. Examples, thresholds, estimates, and performance targets are proposed or synthetic unless explicitly sourced.
 
@@ -30,15 +30,15 @@ Build an **evidence-first SIU investigation workbench** that turns individual al
 | [18 — Deployment, operations, cost](18-deployment-operations-and-cost.md) | Deployment, configuration, monitoring, recovery, resource budget |
 | [19 — Decisions, risks, references](19-decisions-risks-and-references.md) | Decisions, open questions, glossary, primary sources |
 | [20 — Human review and decision mechanism](20-human-review-and-decision-mechanism.md) | Review stages, roles, approvals, disagreements, decision records, audit |
-| [21 — SpotZ^i Evidence Challenge Lab](21-nexus-evidence-challenge-lab.md) | Flagship add-on: competing explanations, evidence checks, scenario branches, and human decisions |
+| [21 — SpotZⁱ Evidence Challenge Lab](21-nexus-evidence-challenge-lab.md) | Flagship add-on: competing explanations, evidence checks, scenario branches, and human decisions |
 | [22 — Precedent Intelligence](22-precedent-intelligence.md) | Similar reviewed cases, material differences, and reusable review blueprints |
 | [23 — Responsive web and PWA](23-responsive-web-and-pwa.md) | Installability, responsive layouts, offline boundaries, notifications, and updates |
 
 ## Proposed flagship differentiator
 
-[SpotZ^i Evidence Challenge Lab](21-nexus-evidence-challenge-lab.md) helps a reviewer compare legitimate and suspicious explanations, select evidence that could distinguish them, and preserve the reasoning behind the final human decision. Its signature synthetic demonstration uses matched cases with identical visible claims and different underlying explanations. The proposal includes a competitive reality check, technical design, filenames, and evaluation plan; worldwide uniqueness is not claimed.
+[SpotZⁱ Evidence Challenge Lab](21-nexus-evidence-challenge-lab.md) helps a reviewer compare legitimate and suspicious explanations, select evidence that could distinguish them, and preserve the reasoning behind the final human decision. Its signature synthetic demonstration uses matched cases with identical visible claims and different underlying explanations. The proposal includes a competitive reality check, technical design, filenames, and evaluation plan; worldwide uniqueness is not claimed.
 
-[Precedent Intelligence](22-precedent-intelligence.md) retrieves comparable, quality-reviewed historical cases and turns their evidence checks into an editable blueprint for the current review. It emphasizes material differences and never copies a prior outcome. SpotZ^i is delivered as a responsive internal web application with the installable PWA behavior specified in [document 23](23-responsive-web-and-pwa.md).
+[Precedent Intelligence](22-precedent-intelligence.md) retrieves comparable, quality-reviewed historical cases and turns their evidence checks into an editable blueprint for the current review. It emphasizes material differences and never copies a prior outcome. SpotZⁱ is delivered as a responsive internal web application with the installable PWA behavior specified in [document 23](23-responsive-web-and-pwa.md).
 
 ## Recommended foundation
 

@@ -1,12 +1,12 @@
-"""SpotZ^i X12 837 support (005010X222A1 professional / 005010X223A2 institutional).
+"""SpotZⁱ X12 837 support (005010X222A1 professional / 005010X223A2 institutional).
 
-parse_837(text)  -> dict of DataFrames shaped like SpotZ^i tables (claim_lines, providers, members, inpatient_stays)
-export_837(...)  -> 837 text from SpotZ^i tables (used for round-trip tests and demo files)
+parse_837(text)  -> dict of DataFrames shaped like SpotZⁱ tables (claim_lines, providers, members, inpatient_stays)
+export_837(...)  -> 837 text from SpotZⁱ tables (used for round-trip tests and demo files)
 
-Covers the loops SpotZ^i needs: billing provider (2010AA), subscriber/patient (2010BA, DMG), claim (CLM, DTP, HI),
+Covers the loops SpotZⁱ needs: billing provider (2010AA), subscriber/patient (2010BA, DMG), claim (CLM, DTP, HI),
 referring provider (2310A/NM1*DN), service lines (LX + SV1/SV2 + DTP*472). Unknown segments are ignored; every
 skipped or malformed segment is reported, never silently dropped.
-Payment amounts: 837 carries billed charges only. Paid amounts come from 835 remittance; when absent SpotZ^i uses billed
+Payment amounts: 837 carries billed charges only. Paid amounts come from 835 remittance; when absent SpotZⁱ uses billed
 amounts and marks the dataset as charge-based."""
 from __future__ import annotations
 
@@ -137,7 +137,7 @@ def parse_837(text: str):
 
 
 def export_837(L, P, M, kind="P", sender="SPOTZI", receiver="PAYER", limit=None):
-    """Write SpotZ^i tables as a single 837 transaction (one billing-provider loop per provider)."""
+    """Write SpotZⁱ tables as a single 837 transaction (one billing-provider loop per provider)."""
     el, seg, comp = "*", "~", ":"
     S = []
     add = lambda *x: S.append(el.join(str(v) for v in x))

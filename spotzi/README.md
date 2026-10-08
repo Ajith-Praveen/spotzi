@@ -1,4 +1,4 @@
-# SpotZ^i
+# SpotZⁱ
 
 End-to-end healthcare payer FWA (fraud, waste, abuse) intelligence prototype. **Synthetic data only.** Humans make every decision.
 

@@ -1,4 +1,4 @@
-"""SpotZ^i authentication and role-based access. Local users, PBKDF2 password hashing, HttpOnly session cookies.
+"""SpotZⁱ authentication and role-based access. Local users, PBKDF2 password hashing, HttpOnly session cookies.
 Roles: investigator · supervisor · analyst · admin. The server, not the client, decides who is acting."""
 from __future__ import annotations
 
@@ -60,7 +60,7 @@ def seed(c, path: Path):
         pw = secrets.token_urlsafe(12)
         create_user(c, u, n, r, pw); creds.append(dict(username=u, name=n, role=r, password=pw))
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(dict(note="Local demo accounts for SpotZ^i (synthetic environment). Change or delete for any shared deployment.", users=creds), indent=1))
+    path.write_text(json.dumps(dict(note="Local demo accounts for SpotZⁱ (synthetic environment). Change or delete for any shared deployment.", users=creds), indent=1))
     try: path.chmod(0o600)
     except Exception: pass
     return True
@@ -140,7 +140,7 @@ def totp_verify(c, user_row, code, t=None):
 def mfa_begin(c, uid, username):
     secret = base64.b32encode(secrets.token_bytes(20)).decode().rstrip("=")
     c.execute("UPDATE users SET mfa_secret=?, mfa_enabled=0, mfa_last=0 WHERE id=?", (secret, uid))
-    uri = f"otpauth://totp/{urllib.parse.quote('SpotZ^i:' + username)}?secret={secret}&issuer={urllib.parse.quote('SpotZ^i')}&digits=6&period=30"
+    uri = f"otpauth://totp/{urllib.parse.quote('SpotZⁱ:' + username)}?secret={secret}&issuer={urllib.parse.quote('SpotZⁱ')}&digits=6&period=30"
     return secret, uri
 
 
@@ -249,5 +249,5 @@ def oidc_finish(c, cfg, code, state):
     claims = verify_jwt(tok["id_token"], jwks, cfg["issuer"], cfg["client_id"], r["nonce"])
     ident = str(claims.get(cfg["claim"], "")).lower()
     u = c.execute("SELECT * FROM users WHERE (lower(email)=? OR username=?) AND active=1", (ident, ident.split("@")[0] if cfg["claim"] == "username" else ident)).fetchone()
-    if not u: raise PermissionError(f"No active SpotZ^i account is linked to {ident}. Ask an administrator to add it.")
+    if not u: raise PermissionError(f"No active SpotZⁱ account is linked to {ident}. Ask an administrator to add it.")
     return u, claims

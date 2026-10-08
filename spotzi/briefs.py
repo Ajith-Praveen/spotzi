@@ -226,7 +226,7 @@ def case_detail(S, cid, horizon=60):
 
 def brief_markdown(d, decisions=None):
     m = d["metrics"]
-    o = [f"# SpotZ^i investigation brief — {d['case_id']}: {d['title']}", "",
+    o = [f"# SpotZⁱ investigation brief — {d['case_id']}: {d['title']}", "",
          f"*Run {d['run']['run_id']} · as of {d['run']['as_of']} · {d['run']['ruleset']} · {d['run']['model']} · SYNTHETIC DATA*", "",
          f"**Type:** {d['type']}  ", f"**Lane:** {d['lane']}  ", f"**Confidence:** {d['confidence']['label']} ({d['confidence']['score']:.0f}/100)", "",
          "> A flagged pattern is not a finding of fraud. This brief supports a human reviewer; it takes no adverse action.", "",

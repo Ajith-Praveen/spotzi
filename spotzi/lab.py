@@ -1,4 +1,4 @@
-"""SpotZ^i Evidence Challenge Lab: competing explanations, expected-information-gain check ranking,
+"""SpotZⁱ Evidence Challenge Lab: competing explanations, expected-information-gain check ranking,
 scenario branches, evidence fragility and a synthetic evidence vault (doc 21).
 
 Hidden scenario truth is used ONLY to decide what a revealed synthetic artifact says (the vault), never for ranking."""

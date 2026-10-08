@@ -1,4 +1,4 @@
-/* SpotZ^i — neutral product theme: stone surfaces, ink type, one warm accent, risk on a red/orange scale. */
+/* SpotZⁱ — neutral product theme: stone surfaces, ink type, one warm accent, risk on a red/orange scale. */
 :root{
   --bg:#F5F5F4;--panel:#FFFFFF;--sunk:#FAFAF9;--ink:#18181B;--ink2:#3F3F46;--mut:#78716C;--faint:#A8A29E;--line:#E7E5E4;--line2:#F0EFED;
   --brand:#18181B;--accent:#B45309;--accent-bg:#FEF3C7;--red:#B91C1C;--red-bg:#FEF2F2;--orange:#EA580C;--amber:#CA8A04;--amber-bg:#FFFBEB;--green:#15803D;--green-bg:#F0FDF4;
@@ -144,3 +144,37 @@ body.offline .btn.pri,body.offline [data-reveal],body.offline #mkbp,body.offline
 .rkl{color:#fff;border-radius:4px;padding:0 5px;font-size:10px;font-weight:600}
 .casel{display:inline-block;width:18px;height:11px;border:1.5px solid #18181B;border-radius:3px;background:#fff}
 .tilel{display:inline-block;width:11px;height:11px;border:1px solid #D6D3D1;border-radius:3px;background:#fff;box-shadow:inset 0 -2px 0 #A8A29E}
+
+/* link-analysis workbench */
+.wbtop{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.wbtop h1{margin:0;font-size:20px;font-weight:650;letter-spacing:-.3px}.wbtop p{margin:3px 0 0;color:var(--mut);max-width:640px}
+.wb{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:12px;align-items:start}
+@media(max-width:1250px){.wb{grid-template-columns:240px minmax(0,1fr)}.wbinspect{grid-column:1/-1}}
+@media(max-width:860px){.wb{grid-template-columns:1fr}}
+.wbside,.wbinspect,.wbmain{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.wbside{padding:12px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.wbinspect{padding:14px 16px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.wbmain{overflow:hidden}
+.wbbar{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.wbgraph .graph{border:0;border-radius:0}
+.wbsearch{position:relative;margin-bottom:6px}
+.wbdrop{position:absolute;left:0;right:0;top:40px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px rgba(24,24,27,.14);z-index:20;max-height:320px;overflow:auto;padding:4px}
+.wbsec{padding:10px 0 4px;border-top:1px solid var(--line2);margin-top:8px}
+.wbh{font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:10px 0 6px}
+.wbsec .wbh{margin-top:0}
+.wbchk{display:flex;gap:7px;align-items:center;font-size:12.5px;padding:2px 0;cursor:pointer}
+.wbrow{display:flex;gap:8px;align-items:center;width:100%;border:0;background:none;padding:6px 6px;border-radius:6px;cursor:pointer;text-align:left}
+.wbrow:hover{background:var(--sunk)}
+.wbl{flex:1;min-width:0;font-size:12.5px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wbl em{display:block;font-style:normal;font-weight:400;font-size:11px;color:var(--mut);overflow:hidden;text-overflow:ellipsis}
+.wbs{color:#fff;font-size:10.5px;border-radius:4px;padding:1px 6px;font-variant-numeric:tabular-nums}
+.wbcrumb{display:block;border:0;background:none;padding:3px 4px;font-size:12px;color:var(--ink2);cursor:pointer;text-align:left;width:100%}
+.wbcrumb:hover{text-decoration:underline}
+.wbscore{text-align:center;border:1px solid var(--line);border-radius:8px;padding:4px 10px;flex:none}
+.wbscore b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}.wbscore span{font-size:10px;color:var(--mut)}
+.wbfacts{margin-top:12px}.wbfacts td{padding:6px 0;font-size:12.5px;border-bottom:1px solid var(--line2)}.wbfacts td:first-child{color:var(--ink2)}
+.wbmodels div{display:grid;grid-template-columns:70px 1fr 28px;gap:8px;align-items:center;font-size:12px;margin:4px 0}.wbmodels span{color:var(--ink2);text-transform:capitalize}.wbmodels b{text-align:right;font-variant-numeric:tabular-nums}
+.wbul{margin:0;padding-left:16px;font-size:12.5px}.wbul li{margin:3px 0}
+.wbactions{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.wbpath div{font-size:12.5px;padding:5px 0 5px 12px;border-left:2px solid var(--accent);margin:2px 0}
+.graph.net .pt{font-size:11px;font-weight:600;fill:#27272A;font-family:"SF Mono",ui-monospace,Menlo,monospace;pointer-events:none}

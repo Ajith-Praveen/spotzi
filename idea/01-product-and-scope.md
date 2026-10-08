@@ -2,7 +2,7 @@
 
 ## The product in one sentence
 
-SpotZ^i is a workspace where an SIU investigator can understand **what looks suspicious, which entities connect the activity, what evidence supports it, how it may develop, and whether it deserves scarce investigation time**.
+SpotZⁱ is a workspace where an SIU investigator can understand **what looks suspicious, which entities connect the activity, what evidence supports it, how it may develop, and whether it deserves scarce investigation time**.
 
 An alerting model alone does not solve the problem. Ten duplicate alerts, twenty unusual laboratory claims, and three referral signals may describe one investigation. The product must preserve the evidence while reducing repeated work.
 

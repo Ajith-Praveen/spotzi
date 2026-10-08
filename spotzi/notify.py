@@ -1,4 +1,4 @@
-"""SpotZ^i outbound notifications: durable outbox, opt-in per user, Slack-compatible webhook + SMTP email.
+"""SpotZⁱ outbound notifications: durable outbox, opt-in per user, Slack-compatible webhook + SMTP email.
 Content is deliberately neutral (case IDs and actions only — no provider/member names, scores or outcomes).
 Configuration (environment):
   SPOTZI_SLACK_WEBHOOK   incoming-webhook URL (Slack, Teams-compatible relays, or any JSON endpoint)
@@ -32,13 +32,13 @@ def enqueue(c, user_row, text, link):
     """Called for every in-app notification; queues external copies only where the user opted in and the channel exists."""
     ch = channels(); now = time.strftime("%Y-%m-%d %H:%M:%S"); n = 0
     url = f"{base_url()}/#/{link}" if link else base_url()
-    body = f"{text}\nOpen in SpotZ^i (sign-in required): {url}"
+    body = f"{text}\nOpen in SpotZⁱ (sign-in required): {url}"
     if ch["email"] and user_row["notify_email"] and user_row["email"]:
         c.execute("INSERT INTO outbox(channel,recipient,subject,body,status,next_try,created) VALUES(?,?,?,?,?,?,?)",
-                  ("email", user_row["email"], "SpotZ^i: " + text[:80], body, "pending", time.time(), now)); n += 1
+                  ("email", user_row["email"], "SpotZⁱ: " + text[:80], body, "pending", time.time(), now)); n += 1
     if ch["slack"] and user_row["notify_slack"]:
         c.execute("INSERT INTO outbox(channel,recipient,subject,body,status,next_try,created) VALUES(?,?,?,?,?,?,?)",
-                  ("slack", user_row["name"], "", f"*{user_row['name']}*: {text} — <{url}|open in SpotZ^i>", "pending", time.time(), now)); n += 1
+                  ("slack", user_row["name"], "", f"*{user_row['name']}*: {text} — <{url}|open in SpotZⁱ>", "pending", time.time(), now)); n += 1
     return n
 
 

@@ -1,4 +1,4 @@
-"""SpotZ^i Nexus Brain — the "second brain" layer.
+"""SpotZⁱ Nexus Brain — the "second brain" layer.
 
 * Two more detectors:
     - Behaviour change-point: finds the month a provider's behaviour shifted (volume, new members, out-of-region

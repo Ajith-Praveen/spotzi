@@ -1,4 +1,4 @@
-"""SpotZ^i Knowledge layer — the second brain's persistent, linked memory.
+"""SpotZⁱ Knowledge layer — the second brain's persistent, linked memory.
 
 INGEST   : every analysis run and every human decision produces *proposed* wiki updates (rule/policy pages,
            scheme pages, provider dossiers, case pages, decision records, lessons learned) with citations.
@@ -75,7 +75,7 @@ def scheme_page(key, title, text, lessons=None):
 
 {text}
 
-## How SpotZ^i detects it
+## How SpotZⁱ detects it
 - Rules, Isolation Forest, Sentinel case-mix twin and care-pathway model, change-point detector (source: brain.py detector set)
 
 ## Lessons from approved decisions

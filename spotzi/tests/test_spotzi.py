@@ -1,4 +1,4 @@
-"""SpotZ^i product guarantees. Run:  cd spotzi && python3 -m unittest discover -s tests -v
+"""SpotZⁱ product guarantees. Run:  cd spotzi && python3 -m unittest discover -s tests -v
 Uses a temporary database and user file; never touches data/app.db."""
 from __future__ import annotations
 

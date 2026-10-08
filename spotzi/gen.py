@@ -1,4 +1,4 @@
-"""Synthetic healthcare-payer data generator for SpotZ^i.
+"""Synthetic healthcare-payer data generator for SpotZⁱ.
 
 Everything here is fabricated. Names, IDs and addresses are invented; code values are
 public billing-code identifiers with invented prices. Hidden scenario truth is written to

@@ -1,4 +1,4 @@
-"""Score SpotZ^i providers with the Kaggle-trained model (relative-feature transfer)."""
+"""Score SpotZⁱ providers with the Kaggle-trained model (relative-feature transfer)."""
 from __future__ import annotations
 
 import json

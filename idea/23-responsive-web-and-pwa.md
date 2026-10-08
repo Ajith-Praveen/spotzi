@@ -2,11 +2,11 @@
 
 ## Decision
 
-Build SpotZ^i as a responsive internal web application and package the same interface as an installable Progressive Web App. Investigators use one centrally maintained system in a browser or a desktop-like standalone window. No separate Windows or macOS codebase is required.
+Build SpotZⁱ as a responsive internal web application and package the same interface as an installable Progressive Web App. Investigators use one centrally maintained system in a browser or a desktop-like standalone window. No separate Windows or macOS codebase is required.
 
 ## PWA scope
 
-The web manifest defines the SpotZ^i name, icon, theme colors, start URL, and standalone display mode. A service worker caches only versioned application-shell assets: HTML entry point, CSS, JavaScript, icons, and an offline status page.
+The web manifest defines the SpotZⁱ name, icon, theme colors, start URL, and standalone display mode. A service worker caches only versioned application-shell assets: HTML entry point, CSS, JavaScript, icons, and an offline status page.
 
 Case data, evidence, model output, audit records, and human decisions remain server-authoritative. Do not persist whole claim rows, case briefs, member details, authentication tokens, or decision forms in the service-worker cache.
 
@@ -56,7 +56,7 @@ The API exposes its compatible frontend contract version. If an installed shell 
 
 ## Acceptance criteria
 
-- Supported browsers offer an installable SpotZ^i experience with correct name, icon, and standalone launch.
+- Supported browsers offer an installable SpotZⁱ experience with correct name, icon, and standalone launch.
 - Core navigation works at desktop and compact widths.
 - Application shell loads during a simulated outage and clearly indicates offline/read-only status.
 - `/api/` responses are never written to the service-worker cache.

@@ -1,4 +1,4 @@
-"""SpotZ^i API + static web app. Run: python3 server.py  → http://localhost:8000"""
+"""SpotZⁱ API + static web app. Run: python3 server.py  → http://localhost:8000"""
 from __future__ import annotations
 
 import json
@@ -36,7 +36,7 @@ async def _lifespan(app_):
     yield
 
 
-app = FastAPI(title="SpotZ^i", lifespan=_lifespan)
+app = FastAPI(title="SpotZⁱ", lifespan=_lifespan)
 import auth as AU
 from fastapi.responses import Response
 
@@ -57,7 +57,7 @@ async def require_login(request: Request, call_next):
             return JSONResponse({"detail": "Cross-site request blocked"}, status_code=403)
         cv = request.headers.get("x-spotzi-contract")
         if cv and cv != CONTRACT:
-            return JSONResponse({"detail": "SpotZ^i was updated. Refresh the page before continuing.", "refresh": True}, status_code=409)
+            return JSONResponse({"detail": "SpotZⁱ was updated. Refresh the page before continuing.", "refresh": True}, status_code=409)
     if p.startswith("/api/") and p not in PUBLIC_API:
         c = db(); u = AU.user_for(c, request.cookies.get(AU.COOKIE))
         if u:
@@ -221,7 +221,7 @@ def boot():
     c = db()
     import notify as NT
     NT.start_worker(db)
-    if AU.seed(c, USERS_FILE): print(f"SpotZ^i: created local demo accounts -> {USERS_FILE}")
+    if AU.seed(c, USERS_FILE): print(f"SpotZⁱ: created local demo accounts -> {USERS_FILE}")
     c.commit(); c.close()
     if not (PL.DATA / "claim_lines.csv").exists():
         import gen; gen.generate(out_dir=PL.DATA)
@@ -1082,7 +1082,7 @@ async def upload(req: Request, files: list[UploadFile] = File(...)):
     names = {f.filename.rsplit("/", 1)[-1].lower(): f for f in files}
     edi = [n for n in names if n.endswith((".837", ".edi", ".x12", ".txt"))]
     x12_report = None
-    if edi:  # X12 837 files -> SpotZ^i tables (CSV files of the same table override)
+    if edi:  # X12 837 files -> SpotZⁱ tables (CSV files of the same table override)
         import x12
         frames = {}
         for n in edi:
@@ -1166,7 +1166,7 @@ def outbox(req: Request):
 
 @app.post("/api/outbox/test")
 def outbox_test(req: Request):
-    u = need(req, "manage_users"); notify(u["username"], "test", "Test notification from SpotZ^i", "my")
+    u = need(req, "manage_users"); notify(u["username"], "test", "Test notification from SpotZⁱ", "my")
     return J(dict(ok=True))
 
 
@@ -1212,6 +1212,52 @@ def scope_undo(eid: int, req: Request):
     u = need(req, "assign"); s = S(); import scope as SC
     c = db(); c.execute("UPDATE case_scope SET active=0 WHERE id=?", (eid,)); c.commit(); SC.rebuild(s, c); c.close()
     audit(u["name"], u["role"], "case_scope_undo", str(eid)); return J(dict(ok=True))
+
+
+# ---------------------------------------------------------------- link analysis (entity graph)
+import linkgraph as LGM
+
+
+def _lg():
+    s = S()
+    if s.get("_lg_run") != s["run"]["run_id"] or "_lg" not in s:
+        s["_lg"] = LGM.build(s); s["_lg_run"] = s["run"]["run_id"]
+    return s, s["_lg"]
+
+
+@app.get("/api/graph/start")
+def graph_start():
+    s, lg = _lg(); return J(LGM.starting_points(s, lg))
+
+
+@app.get("/api/graph/search")
+def graph_search(q: str = ""):
+    s, lg = _lg(); return J(LGM.search(s, lg, q))
+
+
+@app.get("/api/graph/entity")
+def graph_entity(req: Request, id: str, flagged_only: bool = False, kinds: str = "", limit: int = 24):
+    s, lg = _lg()
+    ks = [k for k in kinds.split(",") if k] or None
+    if ks and "referred" in ks: ks = ks + ["ordered_tests", "prescribed", "ordered_equipment", "home_care", "behavioral_referral", "transport"]
+    out = LGM.neighborhood(s, lg, id, flagged_only, ks, limit)
+    if out is None: raise HTTPException(404, "Unknown entity")
+    u = me(req); audit(u["name"], u["role"], "graph_view", id)
+    return J(out)
+
+
+@app.get("/api/graph/inspect")
+def graph_inspect(id: str):
+    s, lg = _lg(); out = LGM.inspect(s, lg, id)
+    if out is None: raise HTTPException(404, "Unknown entity")
+    return J(out)
+
+
+@app.get("/api/graph/path")
+def graph_path(a: str, b: str):
+    s, lg = _lg(); out = LGM.path(s, lg, a, b)
+    if out is None: raise HTTPException(404, "Unknown entity")
+    return J(out)
 
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
