@@ -87,30 +87,69 @@ export function mount(wrap, G, H) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.dampingFactor = .08; controls.maxPolarAngle = Math.PI * .495; controls.screenSpacePanning = true;
 
-  // ---- layout: x/z from the 2D network layout, y (height) from risk; light 3D repulsion keeps cards apart
-  const ns = Object.values(G.nodes);
-  const xs = ns.map(n => n.x), ys = ns.map(n => n.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const span = Math.max(x1 - x0, y1 - y0) || 1, R = Math.max(240, Math.min(1100, 78 * Math.sqrt(ns.length)));
+  // ---- layout
   const ent = n => n.kind && n.kind !== "provider" && n.kind !== "patient";
   const lift = n => ent(n) ? 6 : 10 + (n.risk || 0) * 1.6 + (n.primary ? 20 : 0);
-  const P = ns.map(n => ({ n, x: ((n.x - x0) / span - .5) * R * 2, z: ((n.y - y0) / span - .5) * R * 2, y: lift(n) }));
-  for (let it = 0; it < 90; it++) {
-    for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
-      const a = P[i], b = P[j], dx = b.x - a.x, dz = b.z - a.z, dy = (b.y - a.y) * .6, d = Math.hypot(dx, dz, dy) || .01, min = 150;
-      if (d < min) { const f = (min - d) / d * .5; a.x -= dx * f; a.z -= dz * f; b.x += dx * f; b.z += dz * f; }
+  const spread = (P, min, iters = 90, clampR = null) => {      // light repulsion keeps cards apart (optionally inside a radius)
+    for (let it = 0; it < iters; it++) {
+      for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
+        const a = P[i], b = P[j], dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz) || .01;
+        if (d < min) { const f = (min - d) / d * .5; a.x -= dx * f; a.z -= dz * f; b.x += dx * f; b.z += dz * f; }
+      }
+      if (clampR) P.forEach(p => { const r = Math.hypot(p.x - clampR.cx, p.z - clampR.cz); if (r > clampR.r) { p.x = clampR.cx + (p.x - clampR.cx) * clampR.r / r; p.z = clampR.cz + (p.z - clampR.cz) * clampR.r / r; } });
     }
+  };
+  const islandMode = !!G.communities;
+  let ns = Object.values(G.nodes), P = [], islands = [];
+  if (islandMode) {
+    // the 3D twin of the 2D community board: every community is its own island (own layout, own floor, own cloud),
+    // islands never overlap; links between communities are summarised as one arc per pair
+    const active = G.communities.filter(c => c.max_risk >= 25 || c.ties > 0);
+    const keep = new Set(active.map(c => c.id));
+    ns = ns.filter(n => keep.has(n.community));
+    const byC = {}; ns.forEach(n => (byC[n.community] = byC[n.community] || []).push(n));
+    active.sort((x, y) => y.max_risk - x.max_risk).forEach((c, i) => {
+      const mem = byC[c.id] || []; if (!mem.length) return;
+      const r = 130 + 70 * Math.sqrt(mem.length);
+      // place on a golden-angle spiral (highest risk at the centre), pushed out until it clears every earlier island
+      let ang = i * 2.39996, dist = i ? 260 : 0, cx = 0, cz = 0;
+      for (let t = 0; t < 400; t++) {
+        cx = Math.cos(ang) * dist; cz = Math.sin(ang) * dist;
+        if (islands.every(o => Math.hypot(o.cx - cx, o.cz - cz) >= o.r + r + 130)) break;
+        dist += 25;
+      }
+      const xs = mem.map(n => n.x), ys = mem.map(n => n.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), sp = Math.max(x1 - x0, y1 - y0) || 1;
+      const local = mem.map(n => ({ n, x: cx + ((n.x - x0) / sp - .5) * r * 1.5, z: cz + ((n.y - y0) / sp - .5) * r * 1.5, y: lift(n) }));
+      spread(local, 170, 140, { cx, cz, r: r * .82 });
+      islands.push({ c, cx, cz, r, ids: new Set(mem.map(n => n.id)), mem: local });
+      P.push(...local);
+    });
+  } else {
+    const xs = ns.map(n => n.x), ys = ns.map(n => n.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const span = Math.max(x1 - x0, y1 - y0) || 1, R = Math.max(240, Math.min(1100, 78 * Math.sqrt(ns.length)));
+    P = ns.map(n => ({ n, x: ((n.x - x0) / span - .5) * R * 2, z: ((n.y - y0) / span - .5) * R * 2, y: lift(n) }));
+    spread(P, 150);
   }
   const pos = {}; P.forEach(p => pos[p.n.id] = p);
 
-  // ---- ground: subtle grid in the theme's line colours
-  const ext = Math.max(...P.map(p => Math.max(Math.abs(p.x), Math.abs(p.z)))) + 90;
-  const grid = new THREE.GridHelper(ext * 2, Math.round(ext / 40), 0xD6D3D1, 0xECEAE7); grid.material.transparent = true; grid.material.opacity = .9; scene.add(grid);
+  // ---- ground: subtle grid in the theme's line colours (+ one floor disc per island)
+  const ext = Math.max(...P.map(p => Math.max(Math.abs(p.x), Math.abs(p.z))), ...islands.map(o => Math.max(Math.abs(o.cx), Math.abs(o.cz)) + o.r)) + 90;
+  const grid = new THREE.GridHelper(ext * 2, Math.round(ext / 40), 0xE2DFDB, 0xEFEDEA); grid.material.transparent = true; grid.material.opacity = .8; scene.add(grid);
   const plane = new THREE.Mesh(new THREE.CircleGeometry(ext * 1.02, 64), new THREE.MeshBasicMaterial({ color: 0xFAFAF9, transparent: true, opacity: .7 }));
   plane.rotation.x = -Math.PI / 2; plane.position.y = -.5; scene.add(plane);
+  const suspicious = c => c.ties > 0 && c.max_risk >= 40;
+  islands.forEach(o => {
+    const red = suspicious(o.c);
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(o.r, 64), new THREE.MeshBasicMaterial({ color: red ? 0xB91C1C : 0x78716C, transparent: true, opacity: red ? .045 : .035, depthWrite: false }));
+    disc.rotation.x = -Math.PI / 2; disc.position.set(o.cx, .2, o.cz); scene.add(disc);
+    const rim = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 97 }, (_, k) => new THREE.Vector3(o.cx + Math.cos(k / 96 * Math.PI * 2) * o.r, .6, o.cz + Math.sin(k / 96 * Math.PI * 2) * o.r))),
+      new THREE.LineDashedMaterial({ color: red ? 0xB91C1C : 0xA8A29E, dashSize: 10, gapSize: 8, transparent: true, opacity: red ? .45 : .5 }));
+    rim.computeLineDistances(); scene.add(rim); o.floor = [disc, rim];
+  });
 
   // ---- nodes as camera-facing cards (identical artwork to the 2D view)
   const sprites = [], byId = {};
-  const K = .95;   // world units per card pixel
+  const K = islandMode ? 1.25 : .95;   // world units per card pixel
   P.forEach(p => {
     const n = p.n; n._card = !ent(n) && n.kind !== "patient" && (n.primary || n.case_id || n.risk >= (G.labelMin ?? -1) || (G.labelMin ?? -1) < 0);
     const { tex, w, h } = nodeTexture(n, H);
@@ -127,11 +166,51 @@ export function mount(wrap, G, H) {
     }
   });
 
+  // ---- community clouds: the 3D counterpart of the 2D map's pale red community outlines. Overlapping translucent puffs
+  //      around each member (and between linked members) form a soft volume that is densest at the core.
+  const clouds = [];
+  const puffTex = (() => {
+    const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, "rgba(185,28,28,1)"); g.addColorStop(.3, "rgba(185,28,28,.7)"); g.addColorStop(.65, "rgba(185,28,28,.22)"); g.addColorStop(1, "rgba(185,28,28,0)");
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  })();
+  const label = (txt, red = true) => {
+    const w = txt.length * 8.4 + 20, h = 22, { tex } = texture(ctx => { ctx.shadowColor = "transparent"; ctx.fillStyle = red ? "rgba(185,28,28,.9)" : "rgba(87,83,78,.9)"; ctx.font = `700 12px ${FONT}`; ctx.textBaseline = "middle"; ctx.letterSpacing = "1px"; ctx.fillText(txt, 4, h / 2); }, w, h);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false })); sp.scale.set((w + 12) * K * 1.15, (h + 12) * K * 1.15, 1); sp.renderOrder = 3; return sp;
+  };
+  islands.filter(o => suspicious(o.c)).forEach(o => {
+    const group = new THREE.Group(); group.userData = { community: o.c.id, ids: o.ids };
+    const rnd = (i => () => (i = (i * 16807) % 2147483647) / 2147483647)(o.c.id * 7919 + 13);
+    const inside = (x, z, m) => { const d = Math.hypot(x - o.cx, z - o.cz), lim = o.r - m; return d <= lim ? [x, z] : [o.cx + (x - o.cx) * lim / d, o.cz + (z - o.cz) * lim / d]; };
+    const puff = (x, y, z, size, op) => {
+      size = Math.min(size, o.r * 1.05); const [px, pz] = inside(x, z, size * .42);
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, transparent: true, depthWrite: false, opacity: op }));
+      sp.position.set(px, y, pz); sp.scale.set(size, size, 1); sp.renderOrder = 0; sp.userData.base = op; group.add(sp);
+    };
+    const hot = o.mem.filter(p => (p.n.risk || 0) >= 25 || p.n.case_id);
+    (hot.length ? hot : o.mem).forEach(p => { for (let k = 0; k < 5; k++) puff(p.x + (rnd() - .5) * 90, p.y * (.3 + .6 * rnd()) + 16, p.z + (rnd() - .5) * 90, 220 + rnd() * 140, .075); });
+    G.edges.forEach(e => {
+      if (!o.ids.has(e.source) || !o.ids.has(e.target)) return;
+      const a = pos[e.source], b = pos[e.target]; if (!a || !b) return;
+      puff((a.x + b.x) / 2, (a.y + b.y) * .3 + 14, (a.z + b.z) / 2, 200 + rnd() * 90, .05);
+    });
+    scene.add(group); clouds.push(group);
+  });
+  islands.forEach(o => {   // island label on the floor edge, facing the default camera — never on top of cards
+    const red = suspicious(o.c), lb = label(`COMMUNITY ${o.c.id + 1}  ·  MAX RISK ${Math.round(o.c.max_risk)}  ·  ${o.c.size} PROVIDERS`, red);
+    lb.position.set(o.cx, 10, o.cz + o.r - 18); scene.add(lb); o.floor.push(lb);
+  });
+
   // ---- edges: same colours / dash patterns / widths as 2D; referral-type edges get an arrowhead
   const res = new THREE.Vector2(W(), Ht()), edges = [];
   const DASH = k => k === "shared_members" || k === "shared_patients" ? [1.5, 4] : k === "primary_care" ? [2, 3] : k === "practices_at" ? [8, 4] : ["ownership", "address", "bank"].includes(k) ? [6, 4] : null;
+  const between = {};
   G.edges.forEach(e => {
     const A = pos[e.source], B = pos[e.target]; if (!A || !B) return;
+    if (islandMode && A.n.community !== B.n.community) {     // summarised as one arc per island pair (below)
+      const k = [A.n.community, B.n.community].sort((x, y) => x - y).join("|"); (between[k] = between[k] || { n: 0, kinds: new Set() }).n++; between[k].kinds.add(e.kind); return;
+    }
     const ek = e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind, arrow = H.ARROW.has(e.kind);
     const w = arrow ? 1.3 + Math.min(4, Math.log10((e.n || e.lines || 1) + 1) * 1.6) : e.kind === "shared_patients" ? 1 + Math.min(3, (e.jaccard || 0) * 8)
       : e.kind === "billed" ? (e.flagged > 0 ? 1.4 + Math.min(3.5, Math.log10(e.flagged + 1) * 2.2) : 1.1) : e.kind === "admitted" ? 1.8 : 1.5;
@@ -152,11 +231,23 @@ export function mount(wrap, G, H) {
     edges.push({ a: e.source, b: e.target, parts, op });
   });
 
+  // links between communities: one soft arc per pair of islands, width by number of links
+  const isl = Object.fromEntries(islands.map(o => [o.c.id, o]));
+  Object.entries(between).forEach(([k, v]) => {
+    const [ca, cb] = k.split("|").map(Number), A = isl[ca], B = isl[cb]; if (!A || !B) return;
+    const dx = B.cx - A.cx, dz = B.cz - A.cz, d = Math.hypot(dx, dz) || 1;
+    const a = new THREE.Vector3(A.cx + dx / d * A.r, 2, A.cz + dz / d * A.r), b = new THREE.Vector3(B.cx - dx / d * B.r, 2, B.cz - dz / d * B.r);
+    const m = a.clone().add(b).multiplyScalar(.5); m.y = 30 + a.distanceTo(b) * .18;
+    const geo = new LineGeometry(); geo.setPositions(new THREE.QuadraticBezierCurve3(a, m, b).getPoints(32).flatMap(p => [p.x, p.y, p.z]));
+    const line = new Line2(geo, new LineMaterial({ color: 0x78716C, linewidth: Math.min(5, 1.2 + Math.log2(v.n + 1)), transparent: true, opacity: .5, dashed: true, dashSize: 14, gapSize: 10, resolution: res }));
+    line.computeLineDistances(); scene.add(line); edges.push({ a: null, b: null, parts: [line], op: .5, between: [ca, cb] });
+  });
+
   // ---- camera framing
   const box = new THREE.Box3(); P.forEach(p => box.expandByPoint(new THREE.Vector3(p.x, p.y + 30, p.z))); box.expandByPoint(new THREE.Vector3(0, 0, 0));
   const sphere = box.getBoundingSphere(new THREE.Sphere());
   const fit = () => {     // frame the whole network: distance from the bounding sphere and the camera's field of view
-    const d = sphere.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * (camera.aspect < 1 ? .74 / camera.aspect : .74);
+    const d = sphere.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * (camera.aspect < 1 ? (islandMode ? .62 : .74) / camera.aspect : (islandMode ? .62 : .74));
     const dir = new THREE.Vector3(.35, .78, .62).normalize();
     controls.target.copy(sphere.center); camera.position.copy(sphere.center).addScaledVector(dir, d);
     camera.near = Math.max(1, d / 100); camera.far = d * 8; camera.updateProjectionMatrix(); controls.update();
@@ -170,8 +261,9 @@ export function mount(wrap, G, H) {
     sprites.forEach(s => setOp(s, keep.has(s.userData.id) ? 1 : .14));
     Object.entries(byId).forEach(([k, v]) => v.stems.forEach(o => setOp(o, keep.has(k) ? .55 : .08)));
     edges.forEach(e => { const on = e.a === idn || e.b === idn; e.parts.forEach(o => setOp(o, on ? 1 : .06)); });
+    clouds.forEach(g => g.children.forEach(o => setOp(o, (o.userData.base ?? 1) * (g.userData.ids.has(idn) ? 1 : .25))));
   };
-  const clear = () => { sprites.forEach(s => setOp(s, 1)); Object.values(byId).forEach(v => v.stems.forEach(o => setOp(o, .55))); edges.forEach(e => e.parts.forEach(o => setOp(o, e.op))); };
+  const clear = () => { sprites.forEach(s => setOp(s, 1)); Object.values(byId).forEach(v => v.stems.forEach(o => setOp(o, .55))); edges.forEach(e => e.parts.forEach(o => setOp(o, e.op))); clouds.forEach(g => g.children.forEach(o => setOp(o, o.userData.base ?? 1))); };
   G.highlightPath = ids => {
     const on = new Set(ids), pairs = new Set(ids.slice(1).map((x, i) => [ids[i], x].sort().join("|")));
     sprites.forEach(s => setOp(s, on.has(s.userData.id) ? 1 : .14));

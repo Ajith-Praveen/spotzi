@@ -214,15 +214,15 @@ function nodeClick(G, idn, panel, focus, clear) {
 }
 
 // 3D view (three.js). Same data, cards, colours and interactions as graphHTML; height = risk.
-function graph3dHTML(g, { height = 640, onNode = "openProv", id = "g", labelMin = -1 } = {}) {
+function graph3dHTML(g, { height = 640, onNode = "openProv", id = "g", labelMin = -1, hullSet = null, communities = null } = {}) {
   if (!g.nodes.length) return `<div class="mut">No relationships.</div>`;
   const adj = {}; const add = (a, b) => ((adj[a] = adj[a] || new Set()).add(b));
   g.edges.forEach(e => { add(e.source, e.target); add(e.target, e.source); });
-  GRAPHS[id] = { nodes: Object.fromEntries(g.nodes.map(n => [n.id, { ...n }])), adj: Object.fromEntries(Object.entries(adj).map(([k, v]) => [k, [...v]])), onNode, edges: g.edges, labelMin, three: true };
+  GRAPHS[id] = { nodes: Object.fromEntries(g.nodes.map(n => [n.id, { ...n }])), adj: Object.fromEntries(Object.entries(adj).map(([k, v]) => [k, [...v]])), onNode, edges: g.edges, labelMin, three: true, hullSet: hullSet ? [...hullSet] : null, communities };
   const present = new Set(g.edges.map(e => e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind));
   return `<div class="graph net g3d" id="${id}-wrap" data-g3d="${id}" style="height:${height}px"><div class="g3c"></div>
     <div class="gctl"><button data-g3="in" title="Zoom in">+</button><button data-g3="out" title="Zoom out">−</button><button data-g3="fit" title="Reset view">⤢</button><button data-g3="top" title="Top-down">⊙</button><button data-g3="spin" title="Auto-rotate">↻</button></div>
-    <div class="g3hint">Drag to orbit · scroll to zoom · right-drag to pan · height = risk</div>
+    <div class="g3hint">Drag to orbit · scroll to zoom · right-drag to pan · height = risk${g.nodes.some(n => n.community != null) ? " · one island per community · dashed arcs = links between communities" : ""}</div>
     <div class="gtip"></div><div class="gpanel"></div></div>${graphLegend(present)}`;
 }
 function mount3d() {
@@ -742,7 +742,7 @@ async function vNetworkMap() {
   const edges = n.edges.filter(e => keep.has(e.source) && keep.has(e.target)).flatMap(e => e.kinds.map(k => ({ source: e.source, target: e.target, kind: k, strong: e.strong, label: k })));
   const comms = n.communities.sort((a, b) => b.max_risk - a.max_risk);
   return `<div class="wbtop"><div><h1>Portfolio risk map</h1><p>Every provider with a notable relationship, grouped into communities. Click a provider to pin details; use <b>Investigate</b> to open it in link analysis.</p></div><span class="sp"></span><input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:200px">${dimSeg()}<div class="seg"><button data-netview="investigate">Investigate an entity</button><button class="on">Portfolio risk map</button></div></div>
-    ${NET.dim === "3d" ? `<div class="card" style="padding:0;overflow:hidden">${graph3dHTML({ nodes, edges }, { height: 720, id: "ng", labelMin: 40, onNode: "select" })}</div>` : communityBoard(nodes, edges, comms, n)}`;
+    ${NET.dim === "3d" ? `<div class="card" style="padding:0;overflow:hidden">${graph3dHTML({ nodes, edges }, { height: 760, id: "ng", labelMin: 40, onNode: "select", communities: comms.map(c => ({ id: c.id, max_risk: c.max_risk, ties: c.ties, size: c.size, paid: c.paid })) })}</div>` : communityBoard(nodes, edges, comms, n)}`;
 }
 
 
