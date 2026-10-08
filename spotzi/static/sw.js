@@ -1,4 +1,4 @@
-const CACHE = "spotzi-shell-v6";
+const CACHE = "spotzi-shell-v7";
 // Application shell only. Case data, evidence, decisions and tokens are never cached (idea/23).
 const SHELL = ["/", "/static/styles.css", "/static/app.js", "/manifest.webmanifest", "/spotzi-icon.svg"];
 

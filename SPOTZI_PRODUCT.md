@@ -320,6 +320,19 @@ It produces a clear recommendation, for example: *"Do not refer yet. Next: obtai
 
 ---
 
+## 10b. 3D link analysis
+Link analysis and the Portfolio risk map have a **2D | 3D** switch, and your choice is remembered.
+
+The 3D view uses the same cards, icons, risk colours and edge styles as 2D, rendered with three.js. Three.js 0.186.1 (MIT) is vendored in `spotzi/static/vendor/`, so no CDN is needed and it runs under the strict content-security policy.
+
+Space has meaning: horizontal position comes from the network layout, and **height = risk**. High-risk entities rise above the portfolio, and drop-lines to the ground grid make depth readable.
+
+Controls:
+- orbit, zoom and pan;
+- reset, top-down and auto-rotate buttons.
+
+Hover highlights neighbours; click opens the same inspector or panel; path finding highlights the route in 3D. Edge width still encodes volume (fat lines).
+
 ## 11. Other screens
 
 - **Installable app (PWA)** — installs as a standalone window. Offline it is read-only by design (doc 23): only the application shell is cached, never case data or tokens; an offline banner shows the run and as-of date; decisions, approvals and evidence checks are disabled and nothing is queued. Updates show "Update available" and apply only when the user chooses; caches are cleared at sign-out.

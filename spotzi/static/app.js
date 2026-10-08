@@ -91,7 +91,7 @@ function hullPts(pts) {   // monotone-chain convex hull
   return lo.slice(0, -1).concat(up.slice(0, -1));
 }
 
-function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = -1, hulls = false, hullSet = null, canvas = null } = {}) {
+function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = -1, hulls = false, hullSet = null, canvas = null, legend = true } = {}) {
   const ns = g.nodes; if (!ns.length) return `<div class="mut">No relationships.</div>`;
   const ent = n => n.kind && n.kind !== "provider" && n.kind !== "patient";
   const pat = n => n.kind === "patient";
@@ -183,17 +183,61 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
   s += `</g></svg>
   <div class="gctl"><button data-gz="in" data-g="${id}" title="Zoom in">+</button><button data-gz="out" data-g="${id}" title="Zoom out">−</button><button data-gz="fit" data-g="${id}" title="Fit">⤢</button></div>
   <div class="gtip" id="${id}-tip"></div><div class="gpanel" id="${id}-panel"></div>
-  </div><div class="gleg"><div class="row" style="gap:14px;flex-wrap:wrap">${Object.entries(FAM).map(([k, l]) => `<span class="row" style="gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="${FICON[k]}" fill="none" stroke="#3F3F46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${l}</span>`).join("")}</div>
-  <div class="row" style="gap:14px;margin-top:6px;flex-wrap:wrap"><span class="row" style="gap:5px">${[["#B91C1C", "60+"], ["#EA580C", "40–59"], ["#CA8A04", "25–39"], ["#A8A29E", "<25"]].map(([c, l]) => `<span class="rkl" style="background:${c}">${l}</span>`).join("")} risk score</span><span class="row" style="gap:5px"><span class="casel"></span>case provider</span><span class="row" style="gap:5px"><span class="tilel"></span>low-risk provider</span>${Object.entries(EDGE).filter(([k]) => present.has(k)).map(([k, v]) => `<span class="row" style="gap:5px"><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${v.c}" stroke-width="2" ${k === "shared_members" || k === "shared_patients" ? 'stroke-dasharray="1.5 3.5" stroke-linecap="round"' : ARROW.has(k) || k === "billed" || k === "billed_flag" || k === "admitted" ? "" : k === "primary_care" ? 'stroke-dasharray="2 3"' : k === "practices_at" ? 'stroke-dasharray="8 3 2 3"' : 'stroke-dasharray="5 3"'}/></svg>${v.l}</span>`).join("")}</div></div>`;
+  </div>${legend ? graphLegend(present) : ""}`;
   return s;
 }
+
+function graphLegend(present) {
+  return `<div class="gleg"><div class="row" style="gap:14px;flex-wrap:wrap">${Object.entries(FAM).map(([k, l]) => `<span class="row" style="gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="${FICON[k]}" fill="none" stroke="#3F3F46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${l}</span>`).join("")}</div>
+  <div class="row" style="gap:14px;margin-top:6px;flex-wrap:wrap"><span class="row" style="gap:5px">${[["#B91C1C", "60+"], ["#EA580C", "40–59"], ["#CA8A04", "25–39"], ["#A8A29E", "<25"]].map(([c, l]) => `<span class="rkl" style="background:${c}">${l}</span>`).join("")} risk score</span><span class="row" style="gap:5px"><span class="casel"></span>case provider</span><span class="row" style="gap:5px"><span class="tilel"></span>low-risk provider</span>${Object.entries(EDGE).filter(([k]) => present.has(k)).map(([k, v]) => `<span class="row" style="gap:5px"><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${v.c}" stroke-width="2" ${k === "shared_members" || k === "shared_patients" ? 'stroke-dasharray="1.5 3.5" stroke-linecap="round"' : ARROW.has(k) || k === "billed" || k === "billed_flag" || k === "admitted" ? "" : k === "primary_care" ? 'stroke-dasharray="2 3"' : k === "practices_at" ? 'stroke-dasharray="8 3 2 3"' : 'stroke-dasharray="5 3"'}/></svg>${v.l}</span>`).join("")}</div></div>`;
+}
+
+// card + click behaviour shared by the 2D (SVG) and 3D (three.js) views
+function nodeCard(n, G) {
+  return n.kind && n.kind !== "provider" && n.kind !== "patient"
+    ? `<div class="b">${esc(n.label)}</div><div class="sm mut">${EDGE[n.kind].l} shared by ${(G.adj[n.id] || []).length} providers</div>`
+    : `<div class="row" style="gap:10px;align-items:flex-start"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none;margin-top:2px"><path d="${FICON[n.family] || FICON.PRO}" fill="none" stroke="#18181B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="b">${esc(n.label)}</div><div class="sm mut">${FAM[n.family] || (n.kind === "patient" ? "Patient" : "")}${n.city ? " · " + esc(n.city) : ""}</div></div></div>
+       <div class="gstats"><div><span>Risk</span><b style="color:${riskColor(n.risk)}">${Math.round(n.risk)}</b><em>${riskBand(n.risk)}</em></div>${n.brain != null ? `<div><span>Brain</span><b>${Math.round(n.brain * 100)}</b></div>` : ""}${n.lines != null ? `<div><span>Lines 180d</span><b>${num(n.lines)}</b></div>` : ""}<div><span>Links</span><b>${(G.adj[n.id] || []).length}</b></div></div>
+       ${n.rule != null ? `<div class="sm mut">Rules ${Math.round(n.rule * 100)} · Anomaly ${pc(n.anomaly)}</div>` : ""}${n.case_id ? `<div class="sm" style="margin-top:4px">In case <b>${n.case_id}</b></div>` : ""}`;
+}
+function nodeClick(G, idn, panel, focus, clear) {
+  const n = G.nodes[idn]; if (!n) return;
+  if (n.kind && n.kind !== "provider" && n.kind !== "patient" && G.onNode !== "inspect") return;
+  if (G.onNode === "inspect") { panel.dataset.open = n.id; focus(n.id); return window.wbInspect && window.wbInspect(n.id); }
+  if (G.onNode !== "select") return go("/provider/" + n.id);
+  panel.dataset.open = n.id; focus(n.id);
+  const nb = (G.adj[n.id] || []).map(k => G.nodes[k]).filter(Boolean).sort((a, b) => (b.risk || 0) - (a.risk || 0));
+  panel.innerHTML = `<button class="gx" data-gclose="1">×</button>${nodeCard(n, G)}<div class="sm b" style="margin-top:10px">Connected to</div>${nb.slice(0, 8).map(m => `<div class="sm row" style="gap:6px;padding:3px 0"><i style="width:8px;height:8px;border-radius:50%;background:${m.kind && m.kind !== "provider" && m.kind !== "patient" ? EDGE[m.kind].c : riskColor(m.risk)}"></i>${esc(m.label)}</div>`).join("")}
+    <div class="row" style="gap:6px;margin-top:10px"><a class="btn sm" href="#/provider/${n.id}">Open provider</a>${n.case_id ? `<a class="btn sm pri" href="#/case/${n.case_id}">Open ${n.case_id}</a>` : ""}</div>`;
+  panel.style.display = "block";
+  panel.querySelector("[data-gclose]").addEventListener("click", () => { panel.style.display = "none"; delete panel.dataset.open; clear(); });
+}
+
+// 3D view (three.js). Same data, cards, colours and interactions as graphHTML; height = risk.
+function graph3dHTML(g, { height = 640, onNode = "openProv", id = "g", labelMin = -1 } = {}) {
+  if (!g.nodes.length) return `<div class="mut">No relationships.</div>`;
+  const adj = {}; const add = (a, b) => ((adj[a] = adj[a] || new Set()).add(b));
+  g.edges.forEach(e => { add(e.source, e.target); add(e.target, e.source); });
+  GRAPHS[id] = { nodes: Object.fromEntries(g.nodes.map(n => [n.id, { ...n }])), adj: Object.fromEntries(Object.entries(adj).map(([k, v]) => [k, [...v]])), onNode, edges: g.edges, labelMin, three: true };
+  const present = new Set(g.edges.map(e => e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind));
+  return `<div class="graph net g3d" id="${id}-wrap" data-g3d="${id}" style="height:${height}px"><div class="g3c"></div>
+    <div class="gctl"><button data-g3="in" title="Zoom in">+</button><button data-g3="out" title="Zoom out">−</button><button data-g3="fit" title="Reset view">⤢</button><button data-g3="top" title="Top-down">⊙</button><button data-g3="spin" title="Auto-rotate">↻</button></div>
+    <div class="g3hint">Drag to orbit · scroll to zoom · right-drag to pan · height = risk</div>
+    <div class="gtip"></div><div class="gpanel"></div></div>${graphLegend(present)}`;
+}
+function mount3d() {
+  const els = document.querySelectorAll("[data-g3d]"); if (!els.length) return;
+  import("/static/net3d.js").then(m => els.forEach(el => m.mount(el, GRAPHS[el.dataset.g3d], { riskColor, FICON, EICON, EDGE, FAM, ARROW, card: nodeCard, onNode: nodeClick })))
+    .catch(err => els.forEach(el => { el.querySelector(".g3c").innerHTML = `<div class="loading">3D view unavailable in this browser (${esc(err.message)}). Switch to 2D.</div>`; }));
+}
+const dimSeg = () => `<div class="seg" title="View"><button data-netdim="2d" class="${NET.dim !== "3d" ? "on" : ""}">2D</button><button data-netdim="3d" class="${NET.dim === "3d" ? "on" : ""}">3D</button></div>`;
 
 function wireGraph(id) {
   const svg = document.getElementById(id); if (!svg) return;
   const G = GRAPHS[id], wrap = document.getElementById(id + "-wrap"), tip = document.getElementById(id + "-tip"), panel = document.getElementById(id + "-panel");
   const vb = svg.viewBox.baseVal; const o = { x: vb.x, y: vb.y, w: vb.width, h: vb.height }; let drag = null, moved = false;
   // size the frame to the drawing's own proportions (no empty bands)
-  const fitH = Math.round(Math.max(380, Math.min(820, wrap.clientWidth * vb.height / vb.width)));
+  const small = id.startsWith("ngc"), fitH = Math.round(Math.max(small ? 240 : 380, Math.min(small ? 480 : 820, wrap.clientWidth * vb.height / vb.width)));
   if (fitH > 0 && wrap.clientWidth > 0) { wrap.style.height = fitH + "px"; svg.style.height = fitH + "px"; }
   const zoomAt = (k, cx, cy) => { vb.x = cx - (cx - vb.x) * k; vb.y = cy - (cy - vb.y) * k; vb.width *= k; vb.height *= k; };
   svg.addEventListener("wheel", e => { e.preventDefault(); const r = svg.getBoundingClientRect(); zoomAt(e.deltaY > 0 ? 1.12 : .89, vb.x + vb.width * (e.clientX - r.left) / r.width, vb.y + vb.height * (e.clientY - r.top) / r.height); }, { passive: false });
@@ -208,28 +252,13 @@ function wireGraph(id) {
     svg.querySelectorAll(".edge").forEach(el => el.classList.toggle("hot", el.dataset.a === idn || el.dataset.b === idn));
   };
   const clear = () => svg.querySelectorAll(".dim,.hot").forEach(el => el.classList.remove("dim", "hot"));
-  const card = n => n.kind && n.kind !== "provider"
-    ? `<div class="b">${esc(n.label)}</div><div class="sm mut">${EDGE[n.kind].l} shared by ${(G.adj[n.id] || []).length} providers</div>`
-    : `<div class="row" style="gap:10px;align-items:flex-start"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none;margin-top:2px"><path d="${FICON[n.family]}" fill="none" stroke="#18181B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="b">${esc(n.label)}</div><div class="sm mut">${FAM[n.family]}${n.city ? " · " + esc(n.city) : ""}</div></div></div>
-       <div class="gstats"><div><span>Risk</span><b style="color:${riskColor(n.risk)}">${Math.round(n.risk)}</b><em>${riskBand(n.risk)}</em></div>${n.brain != null ? `<div><span>Brain</span><b>${Math.round(n.brain * 100)}</b></div>` : ""}<div><span>Lines 180d</span><b>${num(n.lines)}</b></div><div><span>Links</span><b>${(G.adj[n.id] || []).length}</b></div></div>
-       ${n.rule != null ? `<div class="sm mut">Rules ${Math.round(n.rule * 100)} · Anomaly ${pc(n.anomaly)}</div>` : ""}${n.case_id ? `<div class="sm" style="margin-top:4px">In case <b>${n.case_id}</b></div>` : ""}`;
+  const card = n => nodeCard(n, G);
   svg.querySelectorAll(".node").forEach(el => {
     const n = G.nodes[el.dataset.id];
     el.addEventListener("mouseenter", () => { focus(n.id); tip.innerHTML = card(n); tip.style.display = "block"; });
     el.addEventListener("mousemove", ev => { const r = wrap.getBoundingClientRect(); tip.style.left = Math.min(r.width - 250, ev.clientX - r.left + 16) + "px"; tip.style.top = Math.max(8, ev.clientY - r.top - 10) + "px"; });
     el.addEventListener("mouseleave", () => { tip.style.display = "none"; if (!panel.dataset.open) clear(); else focus(panel.dataset.open); });
-    el.addEventListener("click", ev => {
-      ev.stopPropagation(); if (moved || !n) return;
-      if (n.kind && n.kind !== "provider" && G.onNode !== "inspect") return;
-      if (G.onNode === "inspect") { panel.dataset.open = n.id; focus(n.id); return window.wbInspect && window.wbInspect(n.id); }
-      if (G.onNode !== "select") return go("/provider/" + n.id);
-      panel.dataset.open = n.id; focus(n.id);
-      const nb = (G.adj[n.id] || []).map(k => G.nodes[k]).filter(Boolean).sort((a, b) => (b.risk || 0) - (a.risk || 0));
-      panel.innerHTML = `<button class="gx" data-gclose="${id}">×</button>${card(n)}<div class="sm b" style="margin-top:10px">Connected to</div>${nb.slice(0, 8).map(m => `<div class="sm row" style="gap:6px;padding:3px 0"><i style="width:8px;height:8px;border-radius:50%;background:${m.kind && m.kind !== "provider" ? EDGE[m.kind].c : riskColor(m.risk)}"></i>${esc(m.label)}</div>`).join("")}
-        <div class="row" style="gap:6px;margin-top:10px"><a class="btn sm" href="#/provider/${n.id}">Open provider</a>${n.case_id ? `<a class="btn sm pri" href="#/case/${n.case_id}">Open ${n.case_id}</a>` : ""}</div>`;
-      panel.style.display = "block";
-      panel.querySelector("[data-gclose]").addEventListener("click", () => { panel.style.display = "none"; delete panel.dataset.open; clear(); });
-    });
+    el.addEventListener("click", ev => { ev.stopPropagation(); if (moved || !n) return; nodeClick(G, n.id, panel, focus, clear); });
   });
   svg.addEventListener("click", () => { if (!moved && panel.dataset.open) { panel.style.display = "none"; delete panel.dataset.open; clear(); } });
   G.highlightPath = ids => {
@@ -622,7 +651,7 @@ const TLAB = { hospital: "Hospital", doctor: "Doctor / practice", lab: "Laborato
 const TPLU = { hospital: "Hospitals", doctor: "Doctors / practices", lab: "Laboratories", pharmacy: "Pharmacies", ambulance: "Ambulance services", behavioral: "Behavioral health providers", homehealth: "Home health agencies", dme: "Equipment suppliers", patient: "Patients", ownership: "Ownership groups", address: "Addresses", bank: "Bank accounts" };
 const PICON = "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0";
 const typeIcon = (t, sz = 15, col = "#3F3F46") => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" style="flex:none"><path d="${t === "patient" ? PICON : FICON[TFAM[t]] || EICON[t] || FICON.PRO}" fill="none" stroke="${col}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const NET = { focus: null, flagged: false, kinds: new Set(["billed", "referred", "admitted", "primary_care", "practices_at", "shared_patients", "ownership", "address", "bank"]), trail: [], pathA: null, view: "investigate", limit: 24 };
+const NET = { dim: (() => { try { return localStorage.getItem("spotzi.netdim") || "2d"; } catch (e) { return "2d"; } })(), focus: null, flagged: false, kinds: new Set(["billed", "referred", "admitted", "primary_care", "practices_at", "shared_patients", "ownership", "address", "bank"]), trail: [], pathA: null, view: "investigate", limit: 24 };
 
 function toGraph(d) {   // link-analysis payload -> renderer format
   const nodes = d.nodes.map(n => n.type === "patient" ? { id: n.id, label: n.label, kind: "patient", risk: n.score || 0, primary: n.role === "focus", x: n.x, y: n.y }
@@ -655,8 +684,8 @@ async function vNetwork() {
       <div class="wbsec"><div class="wbh">Most-involved patients <span class="mut" style="font-weight:400">(may be victims)</span></div>${st.patients.slice(0, 6).map(e => entRow(e, ` · ${e.flagged} flagged`)).join("")}</div>
     </aside>
     <section class="wbmain">
-      <div class="wbbar">${typeIcon(focusNode.type, 18, "#18181B")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div></div>
-      <div class="wbgraph">${g.nodes.length > 1 ? graphHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect", canvas: Math.max(560, Math.min(1250, 170 * Math.sqrt(g.nodes.length))) }) : `<div class="loading">No relationships of the selected types${NET.flagged ? " with flagged claims" : ""}.</div>`}</div>
+      <div class="wbbar">${typeIcon(focusNode.type, 18, "#18181B")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div>${dimSeg()}</div>
+      <div class="wbgraph">${g.nodes.length > 1 ? (NET.dim === "3d" ? graph3dHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect" }) : graphHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect", canvas: Math.max(560, Math.min(1250, 170 * Math.sqrt(g.nodes.length))) })) : `<div class="loading">No relationships of the selected types${NET.flagged ? " with flagged claims" : ""}.</div>`}</div>
     </section>
     <aside class="wbinspect" id="wbinsp"><div class="mut sm">Select an entity.</div></aside>
   </div>`;
@@ -680,6 +709,30 @@ window.wbInspect = async id => {
     <div id="wbpath"></div>`;
 };
 
+// 2D portfolio map as a board of communities: one clean panel per community (own layout, no overlapping hulls or
+// labels); links between communities are listed, not drawn across the page. Quiet communities collapse into a list.
+function communityBoard(nodes, edges, comms, n) {
+  const byC = {}; nodes.forEach(x => (byC[x.community] = byC[x.community] || []).push(x));
+  const cOf = Object.fromEntries(nodes.map(x => [x.id, x.community]));
+  const active = comms.filter(c => (byC[c.id] || []).length && (c.max_risk >= 25 || c.ties > 0));
+  const quiet = comms.filter(c => (byC[c.id] || []).length && !(c.max_risk >= 25 || c.ties > 0));
+  const nameOf = id => nodes.find(x => x.id === id)?.label || id;
+  const panel = c => {
+    const ns = byC[c.id].slice().sort((a, b) => b.risk - a.risk), ids = new Set(ns.map(x => x.id));
+    const inner = edges.filter(e => ids.has(e.source) && ids.has(e.target));
+    const out = {}; edges.forEach(e => { const a = ids.has(e.source), b = ids.has(e.target); if (a !== b) { const o = cOf[a ? e.target : e.source]; if (o != null && o >= 0) { out[o] = out[o] || new Set(); out[o].add(e.kind); } } });
+    const big = ns.length > 10, h = Math.min(460, 230 + ns.length * 12);
+    const top = ns.filter(x => x.risk >= 40 || x.case_id).slice(0, 3);
+    return `<div class="card cpanel"><div class="cphead"><div><b>Community ${c.id + 1}</b><div class="sm mut">${c.size} providers · ${c.ties} suspicious tie${c.ties === 1 ? "" : "s"} · ${money(c.paid)}</div></div><span class="sp"></span><span class="tag ${c.max_risk >= 60 ? "t-crit" : c.max_risk >= 40 ? "t-high" : "t-gray"}">max risk ${Math.round(c.max_risk)}</span></div>
+      ${top.length ? `<div class="cptop">${top.map(x => `<a href="#/provider/${x.id}" class="cpchip"><i style="background:${riskColor(x.risk)}"></i>${esc(x.label)}${x.case_id ? ` <span class="mut">· ${x.case_id}</span>` : ""}</a>`).join("")}</div>` : ""}
+      <div class="cpgraph">${graphHTML({ nodes: ns, edges: inner }, { height: h, id: "ngc" + c.id, labelMin: big ? 40 : 25, onNode: "select", canvas: Math.max(300, Math.min(620, 105 * Math.sqrt(ns.length))), legend: false })}</div>
+      <div class="cpfoot sm">${Object.keys(out).length ? "Links to " + Object.entries(out).sort((a, b) => b[1].size - a[1].size).slice(0, 4).map(([o, k]) => `<b>Community ${+o + 1}</b> <span class="mut">(${[...k].map(x => (EDGE[x]?.l || x).toLowerCase()).join(", ")})</span>`).join(" · ") : '<span class="mut">No links to other communities.</span>'}</div></div>`;
+  };
+  const present = new Set(edges.map(e => e.kind));
+  return `<div class="cboard">${active.map(panel).join("")}</div>
+    <div class="card" style="margin-top:12px;padding:10px 14px">${graphLegend(present)}</div>
+    ${quiet.length ? `<details class="card" style="margin-top:12px;padding:12px 14px"><summary class="sm"><b>${quiet.length} quiet communities</b> <span class="mut">— no suspicious ties and every provider below risk 25</span></summary><div class="grid g3" style="margin-top:10px">${quiet.map(c => `<div class="sm"><b>Community ${c.id + 1}</b> <span class="mut">${c.size} providers · ${money(c.paid)}</span><div>${c.providers.slice(0, 4).map(p => esc(nameOf(p))).join(", ")}${c.size > 4 ? "…" : ""}</div></div>`).join("")}</div></details>` : ""}`;
+}
 async function vNetworkMap() {
   const n = await api("network"); S.net = n;
   const minRisk = S.netMin ?? 0, q = (S.netQ || "").toLowerCase();
@@ -688,9 +741,8 @@ async function vNetworkMap() {
   const nodes = n.nodes.filter(x => keep.has(x.id)).map(x => ({ ...x, kind: "provider", primary: false }));
   const edges = n.edges.filter(e => keep.has(e.source) && keep.has(e.target)).flatMap(e => e.kinds.map(k => ({ source: e.source, target: e.target, kind: k, strong: e.strong, label: k })));
   const comms = n.communities.sort((a, b) => b.max_risk - a.max_risk);
-  return `<div class="wbtop"><div><h1>Portfolio risk map</h1><p>Every provider with a notable relationship, grouped into communities. Click a provider to pin details; use <b>Investigate</b> to open it in link analysis.</p></div><span class="sp"></span><input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:200px"><div class="seg"><button data-netview="investigate">Investigate an entity</button><button class="on">Portfolio risk map</button></div></div>
-    <div class="card" style="padding:0;overflow:hidden">${graphHTML({ nodes, edges }, { height: 720, id: "ng", labelMin: 40, onNode: "select", hulls: true, hullSet: new Set(n.communities.filter(c => c.ties > 0 && c.max_risk >= 40).map(c => c.id)) })}</div>
-    <h3 style="font-size:13px;margin:16px 0 10px">Communities <span class="mut" style="font-weight:400">highest risk first</span></h3><div class="grid g4">${comms.slice(0, 8).map(c => `<div class="card" style="padding:12px 14px"><div class="row"><b>Community ${c.id + 1}</b><span class="sp"></span><span class="tag ${c.max_risk >= 40 ? "t-crit" : "t-gray"}">max risk ${Math.round(c.max_risk)}</span></div><div class="sm mut">${c.size} providers · ${c.ties} suspicious tie(s) · ${money(c.paid)}</div><div class="sm" style="margin-top:4px">${c.providers.slice(0, 4).map(p => esc(n.nodes.find(x => x.id === p)?.label)).join(", ")}${c.size > 4 ? "…" : ""}</div></div>`).join("")}</div>`;
+  return `<div class="wbtop"><div><h1>Portfolio risk map</h1><p>Every provider with a notable relationship, grouped into communities. Click a provider to pin details; use <b>Investigate</b> to open it in link analysis.</p></div><span class="sp"></span><input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:200px">${dimSeg()}<div class="seg"><button data-netview="investigate">Investigate an entity</button><button class="on">Portfolio risk map</button></div></div>
+    ${NET.dim === "3d" ? `<div class="card" style="padding:0;overflow:hidden">${graph3dHTML({ nodes, edges }, { height: 720, id: "ng", labelMin: 40, onNode: "select" })}</div>` : communityBoard(nodes, edges, comms, n)}`;
 }
 
 
@@ -975,6 +1027,7 @@ document.addEventListener("click", async e => {
   const fb = t.closest("[data-focus]"); if (fb) { const cur = NET.focus; if (cur && cur !== fb.dataset.focus) { const lbl = $(".wbbar b")?.textContent || cur; NET.trail = NET.trail.filter(x => x.id !== cur).concat([{ id: cur, label: lbl }]); } NET.focus = fb.dataset.focus; NET.view = "investigate"; NET.limit = 24; if (S.view !== "network") return go("/network"); return render(); }
   const mo = t.closest("[data-more]"); if (mo) { NET.limit = mo.dataset.more === "1" ? NET.limit + 24 : 24; return render(); }
   const nv = t.closest("[data-netview]"); if (nv) { NET.view = nv.dataset.netview; return render(); }
+  const nd = t.closest("[data-netdim]"); if (nd) { NET.dim = nd.dataset.netdim; try { localStorage.setItem("spotzi.netdim", NET.dim); } catch (e) { } return render(); }
   const pa = t.closest("[data-patha]"); if (pa) {
     const idx = pa.dataset.patha;
     if (!NET.pathA) { NET.pathA = { id: idx, label: $(".wbinspect .b")?.textContent || idx }; toast("Now click another entity (or search one) and choose “Connect to …”"); return wbInspect(idx); }
@@ -1061,7 +1114,7 @@ document.addEventListener("change", async e => {
   if (e.target.id === "asgsel" && e.target.value) { try { const r = await post(`cases/${S.arg}/assign`, { assignee: e.target.value, days: 10 }); toast("Assigned · due " + r.due); } catch (err) { toast(err.message); } return render(); }
   if (e.target.dataset && e.target.dataset.urole) { try { await api("users/" + e.target.dataset.urole, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: e.target.value }) }); toast("Role updated"); } catch (err) { toast(err.message); } return; }
  if (e.target.id === "pf") { S.expl.prov.fam = e.target.value; render(); } });
-function afterRender() { ["cg", "ng", "pg", "lg"].forEach(wireGraph); if (S.view === "case" && S.tab === "decision") { loadNotes(S.arg); scopeCard(S.arg); recCard(S.arg); docCard(S.arg); } offlineBanner(); }
+function afterRender() { Object.keys(GRAPHS).forEach(id => { if (!GRAPHS[id]?.three && document.getElementById(id)) wireGraph(id); }); mount3d(); if (S.view === "case" && S.tab === "decision") { loadNotes(S.arg); scopeCard(S.arg); recCard(S.arg); docCard(S.arg); } offlineBanner(); }
 
 async function poll() {
   S.status = await api("status");
