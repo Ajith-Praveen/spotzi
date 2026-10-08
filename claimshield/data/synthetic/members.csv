@@ -1,18 +1,18 @@
 member_id,age,sex,plan,region,enroll_date,term_date,death_date,vulnerable,pcp
 M-00001,89,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0002
-M-00002,86,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
+M-00002,86,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
 M-00003,12,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
 M-00004,32,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-00005,65,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-00006,67,F,Commercial,Rivergate,2024-01-01,,,True,P-0034
-M-00007,66,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0003
+M-00007,66,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
 M-00008,50,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-00009,61,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
-M-00010,65,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
+M-00009,61,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
+M-00010,65,F,Medicaid,Rivergate,2024-01-01,,,True,P-0003
 M-00011,50,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-00012,72,F,Medicaid,Lakemont,2024-01-01,2024-08-21,,True,P-0003
+M-00012,72,F,Medicaid,Lakemont,2024-01-01,2024-08-21,,True,P-0008
 M-00013,6,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0010
-M-00014,64,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0036
+M-00014,64,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00015,31,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00016,71,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-00017,47,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0025
@@ -20,19 +20,19 @@ M-00018,34,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-00019,59,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-00020,33,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00021,33,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
-M-00022,20,F,Commercial,Fairhaven,2024-01-01,,,False,P-0010
+M-00022,20,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00023,51,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00024,61,M,Medicaid,Pinecrest,2024-01-01,2025-03-15,,True,P-0008
 M-00025,72,F,Medicaid,Rivergate,2024-01-01,2024-07-31,,True,P-0003
 M-00026,49,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0043
-M-00027,72,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
-M-00028,52,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
-M-00029,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-00027,72,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0014
+M-00028,52,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00029,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00030,63,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-00031,73,F,Commercial,Stonebridge,2024-01-01,,,True,P-0008
-M-00032,45,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0033
+M-00031,73,F,Commercial,Stonebridge,2024-01-01,,,True,P-0004
+M-00032,45,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
 M-00033,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
-M-00034,48,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-00034,48,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-00035,53,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-00036,33,F,Medicare Advantage,Pinecrest,2024-01-01,2025-03-06,,False,P-0041
 M-00037,72,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
@@ -40,18 +40,18 @@ M-00038,43,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0036
 M-00039,61,F,Medicare Advantage,Rivergate,2024-01-01,2025-03-06,,False,P-0026
 M-00040,35,M,Commercial,Pinecrest,2024-01-01,,,False,P-0038
 M-00041,59,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00042,59,F,Medicare Advantage,Eastvale,2024-01-01,2024-06-03,,False,P-0030
+M-00042,59,F,Medicare Advantage,Eastvale,2024-01-01,2024-06-03,,False,P-0008
 M-00043,43,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-00044,92,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
 M-00045,59,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-00046,87,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0020
 M-00047,71,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-00048,38,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
-M-00049,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
-M-00050,60,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
-M-00051,53,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
+M-00048,38,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-00049,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-00050,60,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
+M-00051,53,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00052,52,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
-M-00053,46,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-00053,46,F,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-00054,15,F,Commercial,Fairhaven,2024-01-01,,,False,P-0011
 M-00055,47,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-00056,7,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0045
@@ -63,8 +63,8 @@ M-00061,57,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00062,23,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0017
 M-00063,17,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-00064,30,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-00065,11,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
-M-00066,32,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-00065,11,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
+M-00066,32,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-00067,83,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0011
 M-00068,30,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-00069,65,F,Commercial,Pinecrest,2024-01-01,,,True,P-0003
@@ -74,32 +74,32 @@ M-00072,45,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-00073,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00074,63,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-00075,87,M,Medicaid,Eastvale,2024-01-01,,,True,P-0002
-M-00076,55,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
+M-00076,55,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00077,54,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
-M-00078,32,F,Commercial,Lakemont,2024-01-01,,,False,P-0013
+M-00078,32,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00079,63,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00080,47,M,Commercial,Eastvale,2024-01-01,,,False,P-0039
 M-00081,68,F,Medicare Advantage,Pinecrest,2024-01-01,2024-05-26,,True,P-0041
-M-00082,51,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0012
+M-00082,51,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-00083,86,F,Medicare Advantage,Eastvale,2024-01-01,,2024-12-01,True,P-0025
 M-00084,12,M,Commercial,Eastvale,2024-01-01,,,False,P-0036
 M-00085,46,M,Commercial,Lakemont,2024-01-01,,,False,P-0036
 M-00086,69,F,Commercial,Fairhaven,2024-01-01,,,True,P-0005
 M-00087,44,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00088,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
-M-00089,46,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00088,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
+M-00089,46,F,Medicaid,Lakemont,2024-01-01,,,True,P-0012
 M-00090,24,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0004
 M-00091,54,F,Medicaid,Eastvale,2024-01-01,,,True,P-0015
 M-00092,95,F,Commercial,Rivergate,2024-01-01,,,True,P-0003
 M-00093,74,M,Commercial,Eastvale,2024-01-01,,,True,P-0030
-M-00094,29,F,Medicaid,Pinecrest,2024-01-01,2025-03-12,,True,P-0008
+M-00094,29,F,Medicaid,Pinecrest,2024-01-01,2025-03-12,,True,P-0027
 M-00095,34,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0022
-M-00096,43,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-00096,43,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-00097,72,M,Commercial,Stonebridge,2024-01-01,,,True,P-0018
-M-00098,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0034
+M-00098,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00099,38,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-00100,69,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
-M-00101,69,F,Commercial,Rivergate,2024-01-01,,,True,P-0042
+M-00100,69,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0030
+M-00101,69,F,Commercial,Rivergate,2024-01-01,,,True,P-0008
 M-00102,44,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00103,29,M,Medicare Advantage,Stonebridge,2024-01-01,2025-06-07,,False,P-0004
 M-00104,21,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0018
@@ -108,28 +108,28 @@ M-00106,7,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00107,66,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
 M-00108,39,F,Medicaid,Lakemont,2024-01-01,,,True,P-0024
 M-00109,61,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
-M-00110,89,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-00111,75,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-00110,89,F,Commercial,Lakemont,2024-01-01,,,True,P-0013
+M-00111,75,F,Commercial,Lakemont,2024-01-01,,,True,P-0002
 M-00112,28,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0012
 M-00113,69,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
-M-00114,75,F,Commercial,Rivergate,2024-01-01,,,True,P-0007
-M-00115,37,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
+M-00114,75,F,Commercial,Rivergate,2024-01-01,,,True,P-0002
+M-00115,37,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00116,32,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00117,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0020
 M-00118,19,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0032
 M-00119,81,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0018
 M-00120,3,M,Commercial,Rivergate,2024-01-01,2024-12-22,,False,P-0022
-M-00121,29,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0012
+M-00121,29,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00122,46,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-00123,47,M,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-00124,55,M,Commercial,Pinecrest,2024-01-01,,,False,P-0040
 M-00125,57,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-00126,47,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00127,74,M,Commercial,Pinecrest,2024-01-01,,,True,P-0027
+M-00126,47,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-00127,74,M,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-00128,9,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0021
 M-00129,51,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-00130,37,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0034
-M-00131,54,M,Commercial,Rivergate,2024-01-01,,,False,P-0041
+M-00131,54,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00132,56,F,Commercial,Eastvale,2024-01-01,2024-07-08,,False,P-0029
 M-00133,33,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-00134,39,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0045
@@ -141,7 +141,7 @@ M-00139,95,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0030
 M-00140,22,M,Commercial,Eastvale,2024-01-01,,,False,P-0011
 M-00141,58,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-00142,95,F,Commercial,Eastvale,2024-01-01,,,True,P-0038
-M-00143,67,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-00143,67,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0001
 M-00144,56,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-00145,47,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-00146,41,M,Commercial,Pinecrest,2024-01-01,,,False,P-0024
@@ -159,67 +159,67 @@ M-00157,59,M,Medicaid,Lakemont,2024-01-01,,,True,P-0020
 M-00158,62,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-00159,59,F,Commercial,Stonebridge,2024-01-01,,,False,P-0043
 M-00160,53,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-00161,49,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
-M-00162,45,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00161,49,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-00162,45,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00163,67,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-00164,30,M,Commercial,Fairhaven,2024-01-01,,,False,P-0035
-M-00165,78,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-00165,78,M,Commercial,Lakemont,2024-01-01,,,True,P-0013
 M-00166,52,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00167,37,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
-M-00168,42,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-00168,42,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00169,38,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0028
 M-00170,55,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00171,37,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00172,74,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0027
 M-00173,36,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00174,6,F,Commercial,Eastvale,2024-01-01,,,False,P-0028
-M-00175,37,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
-M-00176,11,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-00175,37,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
+M-00176,11,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00177,51,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00178,73,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
 M-00179,64,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-00180,25,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
-M-00181,36,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
-M-00182,87,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0008
+M-00180,25,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
+M-00181,36,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-00182,87,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0014
 M-00183,58,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-00184,52,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
+M-00184,52,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00185,73,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
-M-00186,95,F,Commercial,Stonebridge,2024-01-01,,,True,P-0003
+M-00186,95,F,Commercial,Stonebridge,2024-01-01,,,True,P-0008
 M-00187,77,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0003
 M-00188,54,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00189,59,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-00190,64,F,Medicaid,Stonebridge,2024-01-01,2025-05-29,,True,P-0021
+M-00190,64,F,Medicaid,Stonebridge,2024-01-01,2025-05-29,,True,P-0008
 M-00191,39,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
-M-00192,30,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-00192,30,F,Medicaid,Eastvale,2024-01-01,,,True,P-0035
 M-00193,53,M,Commercial,Fairhaven,2024-01-01,,,False,P-0005
 M-00194,33,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0021
-M-00195,50,F,Medicaid,Stonebridge,2024-01-01,2025-08-03,,True,P-0004
-M-00196,53,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0033
+M-00195,50,F,Medicaid,Stonebridge,2024-01-01,2025-08-03,,True,P-0008
+M-00196,53,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-00197,95,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-00198,34,M,Commercial,Eastvale,2024-01-01,,,False,P-0011
 M-00199,49,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
-M-00200,48,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
+M-00200,48,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0017
 M-00201,60,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00202,72,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
-M-00203,42,M,Medicaid,Rivergate,2024-01-01,,,True,P-0008
+M-00203,42,M,Medicaid,Rivergate,2024-01-01,,,True,P-0034
 M-00204,35,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-00205,19,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-00206,33,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-00207,62,M,Commercial,Lakemont,2024-01-01,,,False,P-0016
-M-00208,52,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-00208,52,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-00209,31,M,Commercial,Stonebridge,2024-01-01,,,False,P-0046
 M-00210,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0035
 M-00211,52,M,Commercial,Rivergate,2024-01-01,,,False,P-0026
 M-00212,62,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
-M-00213,40,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-00213,40,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-00214,46,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00215,15,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-00216,28,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-00217,84,M,Commercial,Lakemont,2024-01-01,,,True,P-0022
+M-00217,84,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-00218,8,F,Medicare Advantage,Fairhaven,2024-01-01,2024-05-20,,False,P-0032
 M-00219,45,F,Medicaid,Rivergate,2024-01-01,,,True,P-0042
 M-00220,56,M,Medicaid,Rivergate,2024-01-01,,,True,P-0022
-M-00221,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0032
+M-00221,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00222,35,M,Commercial,Stonebridge,2024-01-01,,,False,P-0010
 M-00223,50,F,Commercial,Rivergate,2024-01-01,2024-12-16,,False,P-0007
 M-00224,51,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
@@ -231,45 +231,45 @@ M-00229,41,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0011
 M-00230,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00231,64,F,Commercial,Eastvale,2024-01-01,,,False,P-0044
 M-00232,69,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
-M-00233,42,M,Commercial,Rivergate,2024-01-01,,,False,P-0034
+M-00233,42,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-00234,70,M,Commercial,Pinecrest,2024-01-01,2025-06-06,,True,P-0003
-M-00235,75,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-00235,75,F,Commercial,Eastvale,2024-01-01,,,True,P-0045
 M-00236,74,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0016
 M-00237,79,M,Commercial,Fairhaven,2024-01-01,,,True,P-0038
 M-00238,49,M,Medicare Advantage,Rivergate,2024-01-01,2025-04-21,,False,P-0025
 M-00239,48,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
-M-00240,68,F,Commercial,Pinecrest,2024-01-01,2025-03-02,,True,P-0040
-M-00241,24,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-00240,68,F,Commercial,Pinecrest,2024-01-01,2025-03-02,,True,P-0008
+M-00241,24,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-00242,56,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
-M-00243,41,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-00243,41,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
 M-00244,44,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
-M-00245,17,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0035
+M-00245,17,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-00246,34,M,Commercial,Stonebridge,2024-01-01,,,False,P-0021
 M-00247,51,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00248,69,F,Commercial,Pinecrest,2024-01-01,,,True,P-0002
-M-00249,71,M,Medicaid,Rivergate,2024-01-01,2024-09-14,,True,P-0001
+M-00249,71,M,Medicaid,Rivergate,2024-01-01,2024-09-14,,True,P-0008
 M-00250,50,F,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-00251,48,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
-M-00252,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-00252,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-00253,60,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-00254,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00255,64,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00256,87,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0002
-M-00257,51,M,Commercial,Lakemont,2024-01-01,2024-10-28,,False,P-0013
+M-00257,51,M,Commercial,Lakemont,2024-01-01,2024-10-28,,False,P-0008
 M-00258,22,F,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-00259,34,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
-M-00260,22,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-00261,28,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00260,22,F,Commercial,Pinecrest,2024-01-01,,,False,P-0043
+M-00261,28,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-00262,78,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0019
-M-00263,56,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00263,56,F,Medicaid,Lakemont,2024-01-01,,,True,P-0031
 M-00264,21,M,Commercial,Stonebridge,2024-01-01,,,False,P-0011
-M-00265,65,F,Commercial,Eastvale,2024-01-01,,,True,P-0003
+M-00265,65,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
 M-00266,77,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00267,44,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00268,38,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
 M-00269,45,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00270,57,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0020
-M-00271,64,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
+M-00271,64,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-00272,75,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0003
 M-00273,76,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-00274,75,M,Medicaid,Lakemont,2024-01-01,,,True,P-0019
@@ -277,37 +277,37 @@ M-00275,79,M,Commercial,Pinecrest,2024-01-01,,,True,P-0002
 M-00276,65,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
 M-00277,21,M,Commercial,Stonebridge,2024-01-01,,,False,P-0014
 M-00278,49,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0045
-M-00279,58,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0009
+M-00279,58,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00280,44,M,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-00281,70,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0002
 M-00282,44,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-00283,33,F,Commercial,Stonebridge,2024-01-01,,,False,P-0013
+M-00283,33,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00284,80,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-00285,65,F,Medicare Advantage,Pinecrest,2024-01-01,2024-05-22,,True,P-0008
+M-00285,65,F,Medicare Advantage,Pinecrest,2024-01-01,2024-05-22,,True,P-0030
 M-00286,56,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00287,70,M,Medicaid,Pinecrest,2024-01-01,2024-08-20,,True,P-0008
-M-00288,73,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-00289,58,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00288,73,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
+M-00289,58,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00290,2,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-00291,38,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-00292,42,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00293,32,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-00294,55,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0022
-M-00295,75,M,Commercial,Pinecrest,2024-01-01,,,True,P-0008
+M-00295,75,M,Commercial,Pinecrest,2024-01-01,,,True,P-0001
 M-00296,42,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00297,29,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0037
 M-00298,92,M,Commercial,Eastvale,2024-01-01,,,True,P-0038
-M-00299,42,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
-M-00300,27,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0044
+M-00299,42,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00300,27,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-00301,56,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
 M-00302,60,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
-M-00303,37,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
+M-00303,37,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00304,67,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
-M-00305,42,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-00305,42,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00306,33,F,Commercial,Lakemont,2024-01-01,2024-09-16,,False,P-0036
 M-00307,55,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0036
 M-00308,67,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0015
-M-00309,39,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
+M-00309,39,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-00310,58,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00311,50,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-00312,95,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0032
@@ -316,11 +316,11 @@ M-00314,79,M,Commercial,Eastvale,2024-01-01,,,True,P-0010
 M-00315,50,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-00316,49,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-00317,66,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
-M-00318,69,F,Commercial,Stonebridge,2024-01-01,,,True,P-0008
+M-00318,69,F,Commercial,Stonebridge,2024-01-01,,,True,P-0018
 M-00319,77,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
 M-00320,58,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00321,39,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
-M-00322,41,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-00322,41,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-00323,62,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
 M-00324,63,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00325,79,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
@@ -328,40 +328,40 @@ M-00326,60,M,Commercial,Eastvale,2024-01-01,,,False,P-0027
 M-00327,73,F,Commercial,Pinecrest,2024-01-01,,,True,P-0005
 M-00328,82,M,Commercial,Pinecrest,2024-01-01,,,True,P-0027
 M-00329,55,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-00330,22,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
+M-00330,22,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00331,28,F,Commercial,Rivergate,2024-01-01,2024-12-30,,False,P-0034
-M-00332,23,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-00333,83,M,Commercial,Pinecrest,2024-01-01,2024-06-02,,True,P-0008
+M-00332,23,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
+M-00333,83,M,Commercial,Pinecrest,2024-01-01,2024-06-02,,True,P-0043
 M-00334,35,M,Medicaid,Lakemont,2024-01-01,,,True,P-0031
 M-00335,76,F,Commercial,Fairhaven,2024-01-01,,,True,P-0044
 M-00336,63,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0040
 M-00337,86,M,Medicaid,Fairhaven,2024-01-01,2025-05-21,,True,P-0044
 M-00338,72,M,Commercial,Lakemont,2024-01-01,,,True,P-0031
-M-00339,49,M,Medicaid,Rivergate,2024-01-01,,,True,P-0042
+M-00339,49,M,Medicaid,Rivergate,2024-01-01,,,True,P-0008
 M-00340,47,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
-M-00341,53,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
+M-00341,53,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0033
 M-00342,55,F,Commercial,Stonebridge,2024-01-01,2024-08-05,,False,P-0021
-M-00343,41,M,Medicare Advantage,Rivergate,2024-01-01,2024-08-02,,False,P-0007
+M-00343,41,M,Medicare Advantage,Rivergate,2024-01-01,2024-08-02,,False,P-0008
 M-00344,51,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00345,84,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-00346,17,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
 M-00347,57,M,Commercial,Lakemont,2024-01-01,,,False,P-0026
-M-00348,33,F,Commercial,Rivergate,2024-01-01,2024-08-14,,False,P-0007
-M-00349,55,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-00348,33,F,Commercial,Rivergate,2024-01-01,2024-08-14,,False,P-0020
+M-00349,55,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00350,68,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0015
-M-00351,50,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
+M-00351,50,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0010
 M-00352,67,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0029
-M-00353,20,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-00353,20,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00354,74,F,Commercial,Eastvale,2024-01-01,,2024-11-09,True,P-0023
 M-00355,39,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00356,64,F,Medicare Advantage,Lakemont,2024-01-01,2024-08-23,,False,P-0003
 M-00357,55,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
 M-00358,1,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
 M-00359,36,F,Medicaid,Eastvale,2024-01-01,,,True,P-0043
-M-00360,56,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00360,56,M,Commercial,Stonebridge,2024-01-01,,,False,P-0018
 M-00361,83,F,Commercial,Eastvale,2024-01-01,,,True,P-0035
-M-00362,57,F,Commercial,Rivergate,2024-01-01,2025-08-07,,False,P-0008
-M-00363,57,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-00362,57,F,Commercial,Rivergate,2024-01-01,2025-08-07,,False,P-0002
+M-00363,57,F,Commercial,Rivergate,2024-01-01,,,False,P-0029
 M-00364,23,F,Commercial,Rivergate,2024-01-01,,,False,P-0042
 M-00365,80,F,Commercial,Eastvale,2024-01-01,,,True,P-0003
 M-00366,88,F,Commercial,Lakemont,2024-01-01,,,True,P-0022
@@ -381,12 +381,12 @@ M-00379,57,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-00380,69,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0003
 M-00381,60,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00382,59,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
-M-00383,36,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00383,36,M,Commercial,Stonebridge,2024-01-01,,,False,P-0018
 M-00384,26,F,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-00385,53,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0045
-M-00386,37,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
-M-00387,25,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
-M-00388,26,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-00386,37,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00387,25,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
+M-00388,26,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-00389,42,M,Commercial,Eastvale,2024-01-01,,,False,P-0025
 M-00390,14,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-00391,25,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0030
@@ -394,23 +394,23 @@ M-00392,19,M,Commercial,Eastvale,2024-01-01,2024-06-29,,False,P-0029
 M-00393,55,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-00394,60,M,Commercial,Rivergate,2024-01-01,,,False,P-0029
 M-00395,92,F,Commercial,Stonebridge,2024-01-01,,,True,P-0021
-M-00396,22,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
-M-00397,38,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
+M-00396,22,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-00397,38,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-00398,70,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0040
 M-00399,47,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00400,45,M,Medicaid,Eastvale,2024-01-01,,,True,P-0028
 M-00401,86,F,Commercial,Stonebridge,2024-01-01,,,True,P-0021
 M-00402,45,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
-M-00403,28,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-00403,28,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00404,25,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0021
 M-00405,58,M,Commercial,Lakemont,2024-01-01,2025-05-14,,False,P-0022
 M-00406,58,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-00407,24,F,Medicare Advantage,Rivergate,2024-01-01,2025-01-13,,False,P-0008
+M-00407,24,F,Medicare Advantage,Rivergate,2024-01-01,2025-01-13,,False,P-0034
 M-00408,32,M,Medicaid,Rivergate,2024-01-01,,,True,P-0031
 M-00409,62,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-00410,63,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
-M-00411,39,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
-M-00412,64,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
+M-00411,39,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-00412,64,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0040
 M-00413,63,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0014
 M-00414,16,F,Commercial,Lakemont,2024-01-01,,,False,P-0020
 M-00415,45,F,Medicaid,Rivergate,2024-01-01,,,True,P-0009
@@ -425,9 +425,9 @@ M-00423,95,F,Commercial,Lakemont,2024-01-01,,,True,P-0019
 M-00424,29,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0045
 M-00425,71,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0046
 M-00426,76,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
-M-00427,71,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
+M-00427,71,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0030
 M-00428,54,F,Commercial,Pinecrest,2024-01-01,,,False,P-0004
-M-00429,28,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
+M-00429,28,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
 M-00430,64,F,Commercial,Fairhaven,2024-01-01,,,False,P-0017
 M-00431,37,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00432,1,F,Commercial,Lakemont,2024-01-01,,,False,P-0024
@@ -444,13 +444,13 @@ M-00442,48,M,Medicare Advantage,Stonebridge,2024-01-01,2024-11-08,,False,P-0018
 M-00443,7,F,Commercial,Eastvale,2024-01-01,,,False,P-0035
 M-00444,17,F,Commercial,Lakemont,2024-01-01,,,False,P-0016
 M-00445,53,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
-M-00446,32,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-00446,32,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-00447,48,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-00448,49,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-00448,49,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-00449,90,F,Commercial,Rivergate,2024-01-01,,,True,P-0007
 M-00450,77,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0012
 M-00451,51,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-00452,76,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0005
+M-00452,76,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
 M-00453,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-00454,45,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0010
 M-00455,70,M,Commercial,Eastvale,2024-01-01,2024-06-28,,True,P-0033
@@ -460,24 +460,24 @@ M-00458,25,M,Commercial,Pinecrest,2024-01-01,,,False,P-0017
 M-00459,54,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0028
 M-00460,84,M,Medicare Advantage,Pinecrest,2024-01-01,2025-07-25,,True,P-0008
 M-00461,36,F,Medicaid,Rivergate,2024-01-01,,,True,P-0034
-M-00462,56,F,Commercial,Lakemont,2024-01-01,,,False,P-0016
+M-00462,56,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00463,34,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
 M-00464,29,M,Commercial,Stonebridge,2024-01-01,,,False,P-0018
 M-00465,27,M,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-00466,81,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
 M-00467,95,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
-M-00468,61,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
+M-00468,61,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0005
 M-00469,37,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00470,66,F,Commercial,Eastvale,2024-01-01,,,True,P-0023
 M-00471,45,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00472,68,F,Commercial,Pinecrest,2024-01-01,,,True,P-0016
 M-00473,57,F,Commercial,Stonebridge,2024-01-01,,,False,P-0018
 M-00474,57,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
-M-00475,64,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
+M-00475,64,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00476,40,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0012
 M-00477,43,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-00478,17,M,Medicaid,Lakemont,2024-01-01,2025-03-29,,True,P-0003
-M-00479,43,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-00479,43,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00480,23,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-00481,49,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-00482,32,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0005
@@ -485,18 +485,18 @@ M-00483,54,M,Commercial,Stonebridge,2024-01-01,,,False,P-0012
 M-00484,61,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00485,23,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0015
 M-00486,35,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
-M-00487,33,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0028
+M-00487,33,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-00488,66,M,Commercial,Eastvale,2024-01-01,,,True,P-0025
 M-00489,86,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0001
-M-00490,69,M,Medicare Advantage,Fairhaven,2024-01-01,2025-01-05,,True,P-0006
-M-00491,45,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00490,69,M,Medicare Advantage,Fairhaven,2024-01-01,2025-01-05,,True,P-0008
+M-00491,45,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00492,81,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
 M-00493,21,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-00494,81,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-00494,81,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-00495,38,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
 M-00496,1,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0019
 M-00497,95,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0008
-M-00498,83,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0041
+M-00498,83,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
 M-00499,31,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00500,55,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-00501,47,M,Medicaid,Eastvale,2024-01-01,,,True,P-0030
@@ -509,20 +509,20 @@ M-00507,75,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-00508,53,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-00509,95,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
 M-00510,37,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00511,57,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-00511,57,M,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-00512,13,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00513,26,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-00514,78,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
 M-00515,33,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-00516,62,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
-M-00517,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0034
+M-00517,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00518,31,M,Commercial,Pinecrest,2024-01-01,,,False,P-0043
 M-00519,45,F,Commercial,Lakemont,2024-01-01,,,False,P-0022
-M-00520,41,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0013
+M-00520,41,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-00521,42,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0012
 M-00522,67,M,Medicaid,Lakemont,2024-01-01,,,True,P-0024
 M-00523,65,M,Commercial,Eastvale,2024-01-01,,,True,P-0030
-M-00524,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00524,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-00525,33,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00526,57,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-00527,49,M,Medicaid,Rivergate,2024-01-01,,,True,P-0008
@@ -538,9 +538,9 @@ M-00536,44,F,Medicaid,Eastvale,2024-01-01,,,True,P-0019
 M-00537,43,F,Commercial,Lakemont,2024-01-01,,,False,P-0020
 M-00538,66,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00539,44,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
-M-00540,48,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
+M-00540,48,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-00541,27,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
-M-00542,84,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0008
+M-00542,84,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0016
 M-00543,62,F,Commercial,Eastvale,2024-01-01,,,False,P-0031
 M-00544,87,M,Commercial,Pinecrest,2024-01-01,,,True,P-0027
 M-00545,67,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
@@ -548,71 +548,71 @@ M-00546,81,F,Commercial,Pinecrest,2024-01-01,,,True,P-0003
 M-00547,47,M,Commercial,Pinecrest,2024-01-01,,,False,P-0043
 M-00548,66,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0008
 M-00549,95,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0044
-M-00550,27,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
-M-00551,75,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-00550,27,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0020
+M-00551,75,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0017
 M-00552,85,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0029
-M-00553,60,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00553,60,F,Medicaid,Lakemont,2024-01-01,,,True,P-0038
 M-00554,67,M,Commercial,Lakemont,2024-01-01,,,True,P-0013
 M-00555,77,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0003
-M-00556,38,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-00557,60,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-00556,38,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
+M-00557,60,M,Commercial,Lakemont,2024-01-01,,,False,P-0017
 M-00558,34,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-00559,38,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
 M-00560,39,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0044
 M-00561,49,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0032
-M-00562,54,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
-M-00563,61,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00562,54,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0033
+M-00563,61,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00564,22,M,Medicaid,Pinecrest,2024-01-01,2025-05-03,,True,P-0001
 M-00565,92,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0020
 M-00566,75,M,Commercial,Pinecrest,2024-01-01,,,True,P-0026
 M-00567,66,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0001
-M-00568,44,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00568,44,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-00569,50,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-00570,63,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
-M-00571,60,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
+M-00570,63,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
+M-00571,60,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00572,17,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-00573,67,M,Commercial,Fairhaven,2024-01-01,,,True,P-0044
 M-00574,95,F,Commercial,Rivergate,2024-01-01,,2025-02-09,True,P-0001
 M-00575,14,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0023
 M-00576,72,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00577,59,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
-M-00578,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-00578,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-00579,80,M,Commercial,Pinecrest,2024-01-01,2024-11-22,,True,P-0003
 M-00580,27,F,Medicaid,Fairhaven,2024-01-01,2025-03-11,,True,P-0006
-M-00581,55,F,Commercial,Lakemont,2024-01-01,,,False,P-0013
+M-00581,55,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00582,82,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0016
 M-00583,47,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00584,43,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0021
 M-00585,54,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0030
-M-00586,42,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0015
+M-00586,42,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-00587,83,M,Commercial,Stonebridge,2024-01-01,,,True,P-0003
-M-00588,33,F,Medicaid,Lakemont,2024-01-01,2025-03-23,,True,P-0031
+M-00588,33,F,Medicaid,Lakemont,2024-01-01,2025-03-23,,True,P-0008
 M-00589,69,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0002
-M-00590,26,M,Commercial,Lakemont,2024-01-01,,,False,P-0031
-M-00591,65,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
-M-00592,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0011
+M-00590,26,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-00591,65,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00592,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00593,1,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
-M-00594,51,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-00594,51,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-00595,30,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00596,42,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-00597,83,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0018
 M-00598,29,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
-M-00599,30,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
-M-00600,81,F,Commercial,Lakemont,2024-01-01,,2025-03-24,True,P-0013
+M-00599,30,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
+M-00600,81,F,Commercial,Lakemont,2024-01-01,,2025-03-24,True,P-0008
 M-00601,54,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-00602,83,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
-M-00603,58,F,Commercial,Stonebridge,2024-01-01,,,False,P-0022
+M-00603,58,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00604,33,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0018
 M-00605,50,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00606,77,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0014
 M-00607,71,F,Medicaid,Eastvale,2024-01-01,,,True,P-0032
 M-00608,52,M,Commercial,Lakemont,2024-01-01,,,False,P-0036
-M-00609,53,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00609,53,M,Medicaid,Lakemont,2024-01-01,,,True,P-0011
 M-00610,49,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00611,40,F,Commercial,Eastvale,2024-01-01,,,False,P-0013
 M-00612,91,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00613,52,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
-M-00614,28,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-00614,28,F,Commercial,Pinecrest,2024-01-01,,,False,P-0004
 M-00615,42,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
 M-00616,66,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-00617,65,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
@@ -621,104 +621,104 @@ M-00619,38,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-00620,52,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-00621,17,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00622,25,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
-M-00623,68,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0043
+M-00623,68,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
 M-00624,42,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0026
 M-00625,59,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-00626,77,F,Commercial,Pinecrest,2024-01-01,,,True,P-0026
-M-00627,65,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-00627,65,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
 M-00628,52,M,Commercial,Lakemont,2024-01-01,,,False,P-0022
-M-00629,95,F,Commercial,Pinecrest,2024-01-01,,,True,P-0013
-M-00630,65,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0032
+M-00629,95,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
+M-00630,65,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-00631,44,M,Commercial,Stonebridge,2024-01-01,2025-01-12,,False,P-0021
 M-00632,67,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0038
-M-00633,60,F,Commercial,Stonebridge,2024-01-01,,,False,P-0037
+M-00633,60,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00634,34,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
 M-00635,53,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00636,48,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
-M-00637,11,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00637,11,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00638,48,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
 M-00639,46,M,Medicare Advantage,Eastvale,2024-01-01,2025-02-02,,False,P-0029
 M-00640,42,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
-M-00641,18,F,Commercial,Eastvale,2024-01-01,,,False,P-0035
+M-00641,18,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00642,44,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
-M-00643,51,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-00643,51,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-00644,54,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
-M-00645,28,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0037
-M-00646,65,M,Commercial,Rivergate,2024-01-01,2024-11-19,,True,P-0034
+M-00645,28,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00646,65,M,Commercial,Rivergate,2024-01-01,2024-11-19,,True,P-0007
 M-00647,27,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0005
 M-00648,47,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
-M-00649,78,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
+M-00649,78,M,Commercial,Stonebridge,2024-01-01,,,True,P-0008
 M-00650,37,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00651,41,F,Medicaid,Lakemont,2024-01-01,2024-09-07,,True,P-0016
 M-00652,74,M,Commercial,Stonebridge,2024-01-01,,,True,P-0046
 M-00653,44,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-00654,45,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
-M-00655,56,M,Commercial,Fairhaven,2024-01-01,,,False,P-0033
+M-00655,56,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-00656,73,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00657,6,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-00658,34,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00659,31,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
-M-00660,29,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-00661,34,F,Medicaid,Rivergate,2024-01-01,2025-03-02,,True,P-0002
+M-00660,29,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
+M-00661,34,F,Medicaid,Rivergate,2024-01-01,2025-03-02,,True,P-0007
 M-00662,34,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-00663,58,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0044
 M-00664,33,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-00665,54,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00666,60,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-00666,60,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-00667,37,F,Commercial,Pinecrest,2024-01-01,,,False,P-0022
 M-00668,54,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
 M-00669,85,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0015
-M-00670,58,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
-M-00671,38,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-00670,58,F,Commercial,Stonebridge,2024-01-01,,,False,P-0025
+M-00671,38,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00672,50,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-00673,33,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0034
 M-00674,57,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0017
 M-00675,69,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0029
-M-00676,35,F,Commercial,Lakemont,2024-01-01,,,False,P-0045
+M-00676,35,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-00677,47,F,Commercial,Lakemont,2024-01-01,,,False,P-0027
 M-00678,74,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0014
 M-00679,41,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00680,55,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-00680,55,F,Commercial,Fairhaven,2024-01-01,,,False,P-0037
 M-00681,31,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-00682,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0039
 M-00683,41,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00684,95,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00685,43,F,Commercial,Eastvale,2024-01-01,,,False,P-0028
 M-00686,41,F,Medicaid,Rivergate,2024-01-01,,,True,P-0014
-M-00687,40,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00687,40,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-00688,48,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
 M-00689,65,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0003
 M-00690,55,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
 M-00691,93,M,Commercial,Eastvale,2024-01-01,,,True,P-0026
-M-00692,56,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00692,56,M,Commercial,Stonebridge,2024-01-01,,,False,P-0018
 M-00693,80,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-00694,57,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-00695,64,M,Medicaid,Lakemont,2024-01-01,,,True,P-0013
-M-00696,23,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-00696,23,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-00697,49,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0029
-M-00698,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-00698,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0017
 M-00699,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
 M-00700,8,F,Medicare Advantage,Eastvale,2024-01-01,2025-04-07,,False,P-0029
 M-00701,69,F,Commercial,Pinecrest,2024-01-01,,,True,P-0001
 M-00702,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00703,43,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-00704,46,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
+M-00704,46,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00705,47,M,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-00706,60,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
 M-00707,26,F,Commercial,Eastvale,2024-01-01,,,False,P-0046
 M-00708,33,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-00709,57,M,Commercial,Fairhaven,2024-01-01,2025-05-25,,False,P-0044
-M-00710,54,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0016
+M-00709,57,M,Commercial,Fairhaven,2024-01-01,2025-05-25,,False,P-0008
+M-00710,54,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-00711,44,M,Medicaid,Eastvale,2024-01-01,,,True,P-0038
 M-00712,40,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-00713,35,M,Medicare Advantage,Rivergate,2024-01-01,2024-11-20,,False,P-0008
-M-00714,50,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0040
-M-00715,75,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-00713,35,M,Medicare Advantage,Rivergate,2024-01-01,2024-11-20,,False,P-0007
+M-00714,50,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
+M-00715,75,M,Commercial,Rivergate,2024-01-01,,,True,P-0008
 M-00716,30,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0033
 M-00717,82,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-00718,68,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0003
 M-00719,42,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-00720,67,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
+M-00720,67,F,Commercial,Fairhaven,2024-01-01,,,True,P-0032
 M-00721,22,F,Commercial,Pinecrest,2024-01-01,,,False,P-0036
 M-00722,17,M,Medicare Advantage,Rivergate,2024-01-01,2024-07-06,,False,P-0009
 M-00723,26,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
@@ -727,34 +727,34 @@ M-00725,45,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0033
 M-00726,41,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00727,53,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00728,9,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-00729,61,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
+M-00729,61,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-00730,23,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00731,38,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0014
 M-00732,43,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0002
 M-00733,28,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0018
 M-00734,24,F,Commercial,Stonebridge,2024-01-01,,,False,P-0029
 M-00735,31,F,Commercial,Rivergate,2024-01-01,2024-09-14,,False,P-0008
-M-00736,51,F,Medicaid,Fairhaven,2024-01-01,2024-09-03,,True,P-0006
+M-00736,51,F,Medicaid,Fairhaven,2024-01-01,2024-09-03,,True,P-0008
 M-00737,63,F,Commercial,Stonebridge,2024-01-01,,,False,P-0016
 M-00738,63,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-00739,32,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-00739,32,F,Medicaid,Eastvale,2024-01-01,,,True,P-0017
 M-00740,36,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
-M-00741,33,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00741,33,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0032
 M-00742,60,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-00743,11,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
+M-00743,11,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00744,76,M,Medicaid,Stonebridge,2024-01-01,2024-12-07,,True,P-0004
 M-00745,42,F,Medicaid,Eastvale,2024-01-01,,,True,P-0032
 M-00746,36,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0024
 M-00747,58,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
 M-00748,72,F,Medicare Advantage,Stonebridge,2024-01-01,,2024-12-23,True,P-0003
 M-00749,58,M,Commercial,Eastvale,2024-01-01,,,False,P-0025
-M-00750,73,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-00751,54,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0036
+M-00750,73,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
+M-00751,54,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-00752,76,M,Commercial,Eastvale,2024-01-01,,,True,P-0046
 M-00753,76,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0035
-M-00754,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-00754,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00755,80,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0001
-M-00756,55,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-00756,55,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-00757,53,F,Medicare Advantage,Lakemont,2024-01-01,2024-08-06,,False,P-0013
 M-00758,33,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
 M-00759,46,M,Commercial,Eastvale,2024-01-01,,,False,P-0015
@@ -764,32 +764,32 @@ M-00762,64,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-00763,58,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00764,57,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00765,7,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
-M-00766,49,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-00766,49,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00767,64,M,Commercial,Stonebridge,2024-01-01,,,False,P-0046
-M-00768,36,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
-M-00769,53,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-00768,36,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
+M-00769,53,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-00770,4,M,Medicaid,Rivergate,2024-01-01,,,True,P-0042
 M-00771,65,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
-M-00772,38,F,Commercial,Stonebridge,2024-01-01,,,False,P-0013
+M-00772,38,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-00773,69,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-00774,15,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0010
-M-00775,65,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
-M-00776,47,F,Medicaid,Rivergate,2024-01-01,,,True,P-0044
-M-00777,68,M,Medicare Advantage,Lakemont,2024-01-01,,2024-12-02,True,P-0008
+M-00775,65,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-00776,47,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-00777,68,M,Medicare Advantage,Lakemont,2024-01-01,,2024-12-02,True,P-0011
 M-00778,33,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
-M-00779,39,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
+M-00779,39,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0013
 M-00780,95,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-00781,35,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0044
 M-00782,37,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00783,46,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-00784,31,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-00784,31,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0024
 M-00785,75,F,Commercial,Pinecrest,2024-01-01,,,True,P-0019
-M-00786,86,M,Commercial,Lakemont,2024-01-01,,,True,P-0016
-M-00787,37,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-00786,86,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-00787,37,M,Commercial,Eastvale,2024-01-01,,,False,P-0035
 M-00788,17,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
 M-00789,75,M,Commercial,Stonebridge,2024-01-01,,,True,P-0017
-M-00790,74,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
-M-00791,68,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-00790,74,M,Commercial,Rivergate,2024-01-01,,,True,P-0003
+M-00791,68,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-00792,75,F,Medicaid,Lakemont,2024-01-01,,,True,P-0031
 M-00793,34,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0038
 M-00794,48,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
@@ -799,17 +799,17 @@ M-00797,71,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
 M-00798,38,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-00799,95,M,Commercial,Fairhaven,2024-01-01,,,True,P-0044
 M-00800,53,F,Commercial,Lakemont,2024-01-01,,,False,P-0003
-M-00801,39,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00801,39,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0039
 M-00802,67,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
-M-00803,88,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-00803,88,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-00804,61,F,Commercial,Eastvale,2024-01-01,,,False,P-0017
-M-00805,27,M,Commercial,Eastvale,2024-01-01,,,False,P-0025
+M-00805,27,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00806,59,F,Commercial,Pinecrest,2024-01-01,,,False,P-0041
 M-00807,79,F,Commercial,Rivergate,2024-01-01,,,True,P-0024
 M-00808,42,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
-M-00809,36,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00809,36,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-00810,72,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-00811,54,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-00811,54,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00812,29,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-00813,44,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00814,36,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
@@ -817,13 +817,13 @@ M-00815,57,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-00816,54,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
 M-00817,75,F,Commercial,Rivergate,2024-01-01,,,True,P-0026
 M-00818,66,M,Commercial,Pinecrest,2024-01-01,,,True,P-0043
-M-00819,20,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
+M-00819,20,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-00820,60,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00821,69,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00822,61,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00823,72,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-00824,41,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-00825,32,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0022
+M-00825,32,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00826,70,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0028
 M-00827,30,M,Commercial,Lakemont,2024-01-01,,,False,P-0016
 M-00828,8,F,Commercial,Stonebridge,2024-01-01,,,False,P-0017
@@ -837,17 +837,17 @@ M-00835,44,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-00836,59,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0018
 M-00837,6,F,Commercial,Fairhaven,2024-01-01,2025-05-14,,False,P-0017
 M-00838,67,M,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-00839,28,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
+M-00839,28,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0027
 M-00840,30,M,Medicaid,Rivergate,2024-01-01,,,True,P-0002
-M-00841,65,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
+M-00841,65,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-00842,50,F,Medicaid,Lakemont,2024-01-01,,,True,P-0020
-M-00843,21,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
-M-00844,88,F,Commercial,Lakemont,2024-01-01,,,True,P-0036
+M-00843,21,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0029
+M-00844,88,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-00845,34,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
-M-00846,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0026
+M-00846,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00847,55,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-00848,80,F,Commercial,Stonebridge,2024-01-01,,,True,P-0018
-M-00849,42,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-00849,42,F,Commercial,Eastvale,2024-01-01,,,False,P-0045
 M-00850,72,F,Medicare Advantage,Eastvale,2024-01-01,2025-03-17,,True,P-0035
 M-00851,37,F,Commercial,Stonebridge,2024-01-01,,,False,P-0005
 M-00852,74,M,Commercial,Pinecrest,2024-01-01,,,True,P-0008
@@ -872,8 +872,8 @@ M-00870,63,M,Medicare Advantage,Rivergate,2024-01-01,2024-11-26,,False,P-0034
 M-00871,11,F,Commercial,Lakemont,2024-01-01,,,False,P-0029
 M-00872,43,F,Commercial,Eastvale,2024-01-01,,,False,P-0038
 M-00873,43,M,Medicare Advantage,Stonebridge,2024-01-01,2024-08-21,,False,P-0018
-M-00874,46,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
-M-00875,58,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
+M-00874,46,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
+M-00875,58,F,Medicaid,Rivergate,2024-01-01,,,True,P-0043
 M-00876,27,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-00877,63,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-00878,48,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
@@ -881,10 +881,10 @@ M-00879,38,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-00880,24,M,Commercial,Pinecrest,2024-01-01,,,False,P-0043
 M-00881,28,M,Commercial,Stonebridge,2024-01-01,,,False,P-0021
 M-00882,59,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0011
-M-00883,32,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-00883,32,M,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-00884,53,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00885,73,M,Commercial,Eastvale,2024-01-01,2024-12-26,,True,P-0029
-M-00886,72,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-00886,72,F,Commercial,Eastvale,2024-01-01,,,True,P-0012
 M-00887,83,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-00888,46,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
 M-00889,30,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
@@ -904,47 +904,47 @@ M-00902,41,M,Commercial,Pinecrest,2024-01-01,,,False,P-0040
 M-00903,86,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0001
 M-00904,49,M,Medicare Advantage,Pinecrest,2024-01-01,2025-07-22,,False,P-0026
 M-00905,71,F,Commercial,Pinecrest,2024-01-01,,2025-03-27,True,P-0006
-M-00906,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00906,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
 M-00907,47,M,Medicaid,Lakemont,2024-01-01,,,True,P-0024
-M-00908,92,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0022
+M-00908,92,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0008
 M-00909,45,M,Commercial,Lakemont,2024-01-01,2025-02-17,,False,P-0031
 M-00910,26,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00911,37,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0017
 M-00912,45,F,Commercial,Stonebridge,2024-01-01,,,False,P-0027
 M-00913,95,M,Medicaid,Stonebridge,2024-01-01,2024-05-01,,True,P-0004
-M-00914,56,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-00914,56,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-00915,70,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-00916,31,M,Commercial,Eastvale,2024-01-01,,,False,P-0013
 M-00917,59,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-00918,65,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0034
 M-00919,88,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0045
 M-00920,38,M,Commercial,Stonebridge,2024-01-01,,,False,P-0046
-M-00921,64,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
+M-00921,64,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-00922,58,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-00923,31,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
 M-00924,51,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00925,46,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-00926,5,F,Medicare Advantage,Stonebridge,2024-01-01,2025-07-27,,False,P-0014
 M-00927,63,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0005
-M-00928,62,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
-M-00929,43,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-00928,62,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-00929,43,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
 M-00930,25,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0045
 M-00931,81,M,Medicaid,Lakemont,2024-01-01,,,True,P-0003
 M-00932,57,M,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-00933,72,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-00934,80,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-00935,41,M,Medicare Advantage,Lakemont,2024-01-01,2024-07-25,,False,P-0038
-M-00936,68,F,Commercial,Pinecrest,2024-01-01,,,True,P-0002
-M-00937,47,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
-M-00938,50,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-00936,68,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
+M-00937,47,M,Commercial,Fairhaven,2024-01-01,,,False,P-0043
+M-00938,50,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0017
 M-00939,50,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-00940,51,F,Commercial,Stonebridge,2024-01-01,,,False,P-0018
-M-00941,74,F,Commercial,Pinecrest,2024-01-01,,,True,P-0001
+M-00941,74,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-00942,54,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0016
-M-00943,48,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
+M-00943,48,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-00944,46,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-00945,58,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
-M-00946,34,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-00946,34,M,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-00947,41,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00948,50,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-00949,40,M,Commercial,Eastvale,2024-01-01,,,False,P-0035
@@ -954,25 +954,25 @@ M-00952,92,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0016
 M-00953,78,M,Commercial,Lakemont,2024-01-01,2024-10-23,,True,P-0045
 M-00954,60,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
 M-00955,50,M,Commercial,Eastvale,2024-01-01,,,False,P-0044
-M-00956,95,M,Commercial,Rivergate,2024-01-01,,,True,P-0009
-M-00957,58,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-00958,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-00956,95,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-00957,58,F,Medicaid,Rivergate,2024-01-01,,,True,P-0010
+M-00958,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-00959,58,M,Commercial,Eastvale,2024-01-01,,,False,P-0033
-M-00960,58,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
+M-00960,58,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0005
 M-00961,80,M,Commercial,Lakemont,2024-01-01,,2025-03-29,True,P-0031
 M-00962,51,F,Commercial,Lakemont,2024-01-01,,,False,P-0019
 M-00963,93,M,Medicare Advantage,Stonebridge,2024-01-01,2025-06-11,,True,P-0004
 M-00964,34,F,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-00965,65,F,Commercial,Rivergate,2024-01-01,,,True,P-0042
-M-00966,31,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-00966,31,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-00967,88,M,Commercial,Stonebridge,2024-01-01,,,True,P-0011
 M-00968,45,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-00969,50,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0038
 M-00970,70,M,Medicare Advantage,Eastvale,2024-01-01,2024-10-06,,True,P-0003
 M-00971,77,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-00972,29,M,Medicaid,Lakemont,2024-01-01,,,True,P-0013
-M-00973,45,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
-M-00974,24,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
+M-00973,45,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
+M-00974,24,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-00975,54,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-00976,49,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0015
 M-00977,45,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
@@ -981,57 +981,57 @@ M-00979,44,M,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-00980,37,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-00981,62,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-00982,82,M,Commercial,Stonebridge,2024-01-01,,,True,P-0046
-M-00983,13,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-00983,13,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-00984,49,F,Commercial,Eastvale,2024-01-01,2024-11-30,,False,P-0043
 M-00985,43,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-00986,61,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00987,32,F,Medicare Advantage,Pinecrest,2024-01-01,2025-04-07,,False,P-0008
-M-00988,49,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-00988,49,M,Commercial,Fairhaven,2024-01-01,,,False,P-0026
 M-00989,31,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0001
-M-00990,65,M,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-00990,65,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-00991,53,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-00992,48,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0038
-M-00993,59,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-00993,59,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-00994,47,M,Commercial,Eastvale,2024-01-01,,,False,P-0035
 M-00995,20,F,Medicare Advantage,Pinecrest,2024-01-01,2024-10-19,,False,P-0008
 M-00996,63,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-00997,57,M,Commercial,Fairhaven,2024-01-01,,,False,P-0029
-M-00998,48,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0041
-M-00999,71,M,Medicaid,Eastvale,2024-01-01,,,True,P-0008
-M-01000,76,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-00998,48,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
+M-00999,71,M,Medicaid,Eastvale,2024-01-01,,,True,P-0038
+M-01000,76,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0008
 M-01001,30,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01002,36,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01003,82,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
-M-01004,80,F,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-01004,80,F,Commercial,Rivergate,2024-01-01,,,True,P-0002
 M-01005,37,F,Medicare Advantage,Lakemont,2024-01-01,2025-03-20,,False,P-0003
 M-01006,28,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0032
 M-01007,39,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
 M-01008,42,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-01009,20,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01009,20,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-01010,52,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01011,26,M,Commercial,Rivergate,2024-01-01,2025-07-16,,False,P-0001
 M-01012,27,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-01013,70,F,Commercial,Fairhaven,2024-01-01,,,True,P-0025
 M-01014,38,M,Commercial,Stonebridge,2024-01-01,,,False,P-0046
-M-01015,50,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0038
+M-01015,50,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
 M-01016,64,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
-M-01017,68,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0016
-M-01018,45,F,Commercial,Rivergate,2024-01-01,,,False,P-0042
-M-01019,52,F,Commercial,Rivergate,2024-01-01,,,False,P-0014
+M-01017,68,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0008
+M-01018,45,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01019,52,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01020,35,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
 M-01021,86,F,Medicaid,Eastvale,2024-01-01,,,True,P-0003
 M-01022,64,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-01023,29,F,Commercial,Stonebridge,2024-01-01,,,False,P-0043
 M-01024,52,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01025,66,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0036
-M-01026,61,F,Medicaid,Lakemont,2024-01-01,,,True,P-0036
+M-01026,61,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
 M-01027,88,F,Commercial,Lakemont,2024-01-01,,,True,P-0031
-M-01028,79,M,Commercial,Stonebridge,2024-01-01,,,True,P-0008
-M-01029,41,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-01028,79,M,Commercial,Stonebridge,2024-01-01,,,True,P-0032
+M-01029,41,M,Commercial,Stonebridge,2024-01-01,,,False,P-0031
 M-01030,50,M,Commercial,Stonebridge,2024-01-01,,,False,P-0016
-M-01031,26,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
-M-01032,56,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-01033,55,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-01031,26,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-01032,56,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01033,55,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0024
 M-01034,95,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01035,53,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-01036,10,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
@@ -1039,19 +1039,19 @@ M-01037,38,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01038,54,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01039,26,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-01040,34,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
-M-01041,44,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-01041,44,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0037
 M-01042,58,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
-M-01043,48,M,Medicare Advantage,Lakemont,2024-01-01,2024-06-19,,False,P-0031
+M-01043,48,M,Medicare Advantage,Lakemont,2024-01-01,2024-06-19,,False,P-0008
 M-01044,34,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
-M-01045,67,M,Medicare Advantage,Pinecrest,2024-01-01,2024-06-19,,True,P-0005
+M-01045,67,M,Medicare Advantage,Pinecrest,2024-01-01,2024-06-19,,True,P-0008
 M-01046,41,M,Commercial,Stonebridge,2024-01-01,,,False,P-0034
 M-01047,42,M,Commercial,Fairhaven,2024-01-01,,,False,P-0005
 M-01048,24,F,Commercial,Lakemont,2024-01-01,,,False,P-0024
 M-01049,36,F,Commercial,Lakemont,2024-01-01,,,False,P-0045
 M-01050,65,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-01051,19,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0028
+M-01051,19,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-01052,50,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01053,66,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0008
+M-01053,66,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-01054,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01055,56,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-01056,29,F,Medicaid,Rivergate,2024-01-01,,,True,P-0034
@@ -1059,21 +1059,21 @@ M-01057,78,F,Commercial,Stonebridge,2024-01-01,,,True,P-0003
 M-01058,74,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0013
 M-01059,56,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-01060,16,M,Medicaid,Pinecrest,2024-01-01,2025-04-23,,True,P-0008
-M-01061,31,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-01061,31,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01062,71,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0003
 M-01063,86,M,Commercial,Pinecrest,2024-01-01,,,True,P-0027
-M-01064,57,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0033
-M-01065,76,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
-M-01066,39,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
+M-01064,57,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
+M-01065,76,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01066,39,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01067,48,M,Commercial,Eastvale,2024-01-01,2024-05-07,,False,P-0030
 M-01068,52,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0014
 M-01069,60,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-01070,21,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01071,70,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0021
 M-01072,78,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
-M-01073,29,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
-M-01074,24,M,Commercial,Eastvale,2024-01-01,,,False,P-0025
-M-01075,59,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0017
+M-01073,29,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01074,24,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01075,59,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-01076,38,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-01077,4,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01078,68,M,Commercial,Stonebridge,2024-01-01,2025-07-31,,True,P-0004
@@ -1084,12 +1084,12 @@ M-01082,54,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-01083,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-01084,54,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01085,31,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-01086,36,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
-M-01087,59,M,Medicaid,Lakemont,2024-01-01,2025-06-29,,True,P-0008
-M-01088,40,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
+M-01086,36,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-01087,59,M,Medicaid,Lakemont,2024-01-01,2025-06-29,,True,P-0016
+M-01088,40,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-01089,42,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01090,85,M,Commercial,Fairhaven,2024-01-01,,,True,P-0031
-M-01091,69,M,Commercial,Lakemont,2024-01-01,,,True,P-0031
+M-01091,69,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-01092,68,M,Commercial,Lakemont,2024-01-01,,,True,P-0013
 M-01093,62,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01094,61,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
@@ -1100,37 +1100,37 @@ M-01098,32,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0032
 M-01099,46,F,Commercial,Rivergate,2024-01-01,,,False,P-0043
 M-01100,24,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-01101,45,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0021
-M-01102,62,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01103,81,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0003
+M-01102,62,M,Commercial,Pinecrest,2024-01-01,,,False,P-0002
+M-01103,81,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
 M-01104,38,M,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-01105,52,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-01106,44,M,Commercial,Rivergate,2024-01-01,,,False,P-0009
+M-01106,44,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01107,37,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0037
 M-01108,28,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-01109,53,M,Commercial,Fairhaven,2024-01-01,2025-05-19,,False,P-0006
-M-01110,17,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01110,17,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01111,54,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
 M-01112,52,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0013
 M-01113,38,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0020
 M-01114,31,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01115,24,F,Commercial,Lakemont,2024-01-01,,,False,P-0045
-M-01116,89,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
+M-01116,89,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-01117,25,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-01118,83,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
-M-01119,64,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
-M-01120,44,M,Commercial,Rivergate,2024-01-01,,,False,P-0025
+M-01119,64,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01120,44,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01121,28,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-01122,72,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0045
 M-01123,86,M,Medicaid,Lakemont,2024-01-01,,,True,P-0025
 M-01124,33,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0026
-M-01125,46,M,Commercial,Rivergate,2024-01-01,,,False,P-0026
+M-01125,46,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01126,73,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0005
 M-01127,58,F,Commercial,Lakemont,2024-01-01,,,False,P-0016
 M-01128,91,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0022
 M-01129,40,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-01130,62,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01131,26,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
-M-01132,93,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-01132,93,F,Commercial,Eastvale,2024-01-01,,,True,P-0003
 M-01133,37,M,Commercial,Fairhaven,2024-01-01,,,False,P-0019
 M-01134,7,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
 M-01135,49,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0021
@@ -1150,23 +1150,23 @@ M-01148,33,M,Commercial,Rivergate,2024-01-01,,,False,P-0042
 M-01149,76,M,Commercial,Pinecrest,2024-01-01,,,True,P-0043
 M-01150,24,M,Commercial,Eastvale,2024-01-01,,,False,P-0023
 M-01151,75,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0021
-M-01152,71,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-01152,71,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0003
 M-01153,50,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
-M-01154,36,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01154,36,M,Commercial,Rivergate,2024-01-01,,,False,P-0029
 M-01155,47,M,Medicaid,Eastvale,2024-01-01,,,True,P-0015
 M-01156,61,F,Commercial,Fairhaven,2024-01-01,,,False,P-0033
-M-01157,66,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-01157,66,F,Commercial,Eastvale,2024-01-01,,,True,P-0018
 M-01158,57,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-01159,71,F,Commercial,Rivergate,2024-01-01,,,True,P-0001
-M-01160,40,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
+M-01160,40,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-01161,56,M,Commercial,Stonebridge,2024-01-01,,,False,P-0046
 M-01162,20,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01163,67,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0043
-M-01164,55,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0042
+M-01164,55,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-01165,43,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
-M-01166,75,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
+M-01166,75,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
 M-01167,65,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
-M-01168,1,F,Commercial,Rivergate,2024-01-01,,,False,P-0017
+M-01168,1,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01169,52,M,Commercial,Eastvale,2024-01-01,,,False,P-0033
 M-01170,22,M,Commercial,Pinecrest,2024-01-01,,,False,P-0031
 M-01171,73,F,Commercial,Pinecrest,2024-01-01,,,True,P-0001
@@ -1176,29 +1176,29 @@ M-01174,53,M,Commercial,Pinecrest,2024-01-01,,,False,P-0018
 M-01175,46,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
 M-01176,59,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0025
 M-01177,64,M,Commercial,Fairhaven,2024-01-01,,,False,P-0017
-M-01178,77,M,Commercial,Pinecrest,2024-01-01,,,True,P-0008
+M-01178,77,M,Commercial,Pinecrest,2024-01-01,,,True,P-0001
 M-01179,32,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0022
-M-01180,83,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0008
+M-01180,83,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0046
 M-01181,33,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
-M-01182,57,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
+M-01182,57,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-01183,75,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-01184,66,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0014
 M-01185,33,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01186,37,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01187,42,M,Commercial,Lakemont,2024-01-01,,,False,P-0026
-M-01188,50,F,Commercial,Rivergate,2024-01-01,2025-02-16,,False,P-0001
+M-01188,50,F,Commercial,Rivergate,2024-01-01,2025-02-16,,False,P-0008
 M-01189,74,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0040
 M-01190,26,F,Commercial,Stonebridge,2024-01-01,,,False,P-0001
 M-01191,61,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
 M-01192,64,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
 M-01193,63,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0014
-M-01194,61,F,Medicaid,Rivergate,2024-01-01,,,True,P-0015
+M-01194,61,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
 M-01195,82,M,Medicare Advantage,Fairhaven,2024-01-01,2024-09-01,,True,P-0003
-M-01196,61,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-01196,61,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01197,69,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
-M-01198,63,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01198,63,F,Commercial,Lakemont,2024-01-01,,,False,P-0037
 M-01199,87,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
-M-01200,14,F,Commercial,Lakemont,2024-01-01,,,False,P-0013
+M-01200,14,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-01201,77,M,Medicare Advantage,Lakemont,2024-01-01,2024-12-11,,True,P-0045
 M-01202,46,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0022
 M-01203,46,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
@@ -1210,26 +1210,26 @@ M-01208,61,F,Commercial,Eastvale,2024-01-01,,,False,P-0025
 M-01209,22,F,Commercial,Lakemont,2024-01-01,,,False,P-0013
 M-01210,80,M,Commercial,Stonebridge,2024-01-01,,,True,P-0008
 M-01211,57,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
-M-01212,47,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01212,47,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-01213,37,F,Commercial,Lakemont,2024-01-01,,,False,P-0016
 M-01214,36,F,Commercial,Stonebridge,2024-01-01,,,False,P-0041
 M-01215,29,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0017
 M-01216,41,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
-M-01217,52,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0036
-M-01218,48,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
+M-01217,52,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-01218,48,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-01219,23,M,Commercial,Stonebridge,2024-01-01,,,False,P-0014
 M-01220,46,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
-M-01221,34,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-01222,55,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01223,89,M,Commercial,Fairhaven,2024-01-01,,,True,P-0002
+M-01221,34,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0027
+M-01222,55,M,Commercial,Pinecrest,2024-01-01,,,False,P-0041
+M-01223,89,M,Commercial,Fairhaven,2024-01-01,,,True,P-0008
 M-01224,64,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0019
 M-01225,45,F,Commercial,Stonebridge,2024-01-01,,,False,P-0001
 M-01226,19,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01227,23,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0009
 M-01228,18,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
-M-01229,66,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
+M-01229,66,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-01230,36,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-01231,53,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01231,53,M,Commercial,Rivergate,2024-01-01,,,False,P-0016
 M-01232,39,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
 M-01233,53,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-01234,80,M,Commercial,Lakemont,2024-01-01,,,True,P-0013
@@ -1259,18 +1259,18 @@ M-01257,54,F,Commercial,Lakemont,2024-01-01,,,False,P-0017
 M-01258,69,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-01259,55,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-01260,60,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0013
-M-01261,65,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-01262,11,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01261,65,F,Commercial,Lakemont,2024-01-01,,,True,P-0013
+M-01262,11,F,Commercial,Rivergate,2024-01-01,,,False,P-0034
 M-01263,81,M,Medicaid,Pinecrest,2024-01-01,2024-11-09,,True,P-0008
-M-01264,95,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0008
-M-01265,71,F,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-01264,95,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0021
+M-01265,71,F,Commercial,Rivergate,2024-01-01,,,True,P-0006
 M-01266,72,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0026
 M-01267,23,M,Medicaid,Eastvale,2024-01-01,,,True,P-0012
 M-01268,49,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0038
 M-01269,35,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01270,40,F,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-01271,71,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0029
-M-01272,35,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-01272,35,M,Commercial,Fairhaven,2024-01-01,,,False,P-0021
 M-01273,49,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
 M-01274,13,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-01275,48,F,Commercial,Stonebridge,2024-01-01,,,False,P-0018
@@ -1278,31 +1278,31 @@ M-01276,53,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01277,37,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
 M-01278,37,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01279,89,F,Commercial,Rivergate,2024-01-01,,,True,P-0002
-M-01280,27,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-01280,27,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01281,30,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-01282,35,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-01283,75,M,Commercial,Rivergate,2024-01-01,,,True,P-0003
+M-01283,75,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
 M-01284,94,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0046
 M-01285,58,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
 M-01286,37,M,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-01287,43,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-01288,73,M,Commercial,Rivergate,2024-01-01,,,True,P-0002
-M-01289,33,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-01289,33,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-01290,81,F,Commercial,Pinecrest,2024-01-01,,,True,P-0001
 M-01291,80,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0019
 M-01292,53,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01293,64,M,Commercial,Pinecrest,2024-01-01,,,False,P-0042
 M-01294,66,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
-M-01295,83,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
-M-01296,30,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-01297,75,M,Commercial,Stonebridge,2024-01-01,,,True,P-0008
+M-01295,83,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01296,30,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
+M-01297,75,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-01298,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01299,36,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01300,54,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
-M-01301,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
+M-01301,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-01302,32,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-01303,20,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-01304,33,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-01304,33,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-01305,81,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0003
 M-01306,91,M,Commercial,Pinecrest,2024-01-01,2024-11-16,,True,P-0011
 M-01307,65,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0044
@@ -1312,17 +1312,17 @@ M-01310,50,F,Commercial,Pinecrest,2024-01-01,,,False,P-0032
 M-01311,57,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01312,30,F,Medicaid,Lakemont,2024-01-01,,,True,P-0026
 M-01313,32,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0029
-M-01314,53,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-01314,53,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0038
 M-01315,45,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01316,30,F,Commercial,Pinecrest,2024-01-01,2024-07-19,,False,P-0027
 M-01317,59,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-01318,46,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01318,46,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
 M-01319,72,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
-M-01320,51,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0035
+M-01320,51,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-01321,45,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
-M-01322,54,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01322,54,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01323,48,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
-M-01324,38,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-01324,38,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01325,43,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0034
 M-01326,66,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0015
 M-01327,64,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0041
@@ -1333,36 +1333,36 @@ M-01331,43,M,Commercial,Lakemont,2024-01-01,,,False,P-0026
 M-01332,55,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
 M-01333,42,F,Medicare Advantage,Fairhaven,2024-01-01,2025-04-11,,False,P-0006
 M-01334,41,F,Commercial,Eastvale,2024-01-01,,,False,P-0035
-M-01335,67,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0034
+M-01335,67,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
 M-01336,55,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
-M-01337,28,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
-M-01338,78,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-01337,28,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
+M-01338,78,M,Medicaid,Lakemont,2024-01-01,,,True,P-0045
 M-01339,71,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01340,40,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-01341,68,F,Commercial,Rivergate,2024-01-01,2024-11-06,,True,P-0008
-M-01342,37,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
+M-01341,68,F,Commercial,Rivergate,2024-01-01,2024-11-06,,True,P-0003
+M-01342,37,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-01343,74,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-01344,47,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-01345,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0030
-M-01346,44,F,Medicare Advantage,Lakemont,2024-01-01,2024-12-02,,False,P-0016
-M-01347,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-01344,47,M,Medicaid,Rivergate,2024-01-01,,,True,P-0043
+M-01345,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01346,44,F,Medicare Advantage,Lakemont,2024-01-01,2024-12-02,,False,P-0008
+M-01347,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0016
 M-01348,55,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0045
 M-01349,55,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01350,52,F,Commercial,Stonebridge,2024-01-01,,,False,P-0035
 M-01351,40,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
-M-01352,1,M,Commercial,Rivergate,2024-01-01,,,False,P-0032
+M-01352,1,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01353,53,F,Commercial,Eastvale,2024-01-01,,,False,P-0035
 M-01354,14,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01355,56,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
-M-01356,74,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
+M-01356,74,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01357,57,M,Commercial,Stonebridge,2024-01-01,,,False,P-0017
 M-01358,44,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01359,48,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
-M-01360,49,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01361,41,F,Medicaid,Lakemont,2024-01-01,,,True,P-0022
+M-01359,48,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
+M-01360,49,M,Commercial,Pinecrest,2024-01-01,,,False,P-0002
+M-01361,41,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
 M-01362,40,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-01363,33,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-01364,75,M,Commercial,Pinecrest,2024-01-01,,,True,P-0026
+M-01364,75,M,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01365,51,F,Commercial,Stonebridge,2024-01-01,,,False,P-0046
 M-01366,71,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
 M-01367,46,F,Commercial,Lakemont,2024-01-01,,,False,P-0042
@@ -1373,140 +1373,140 @@ M-01371,68,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01372,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-01373,38,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0013
 M-01374,36,F,Commercial,Eastvale,2024-01-01,,,False,P-0015
-M-01375,85,M,Commercial,Fairhaven,2024-01-01,,,True,P-0017
+M-01375,85,M,Commercial,Fairhaven,2024-01-01,,,True,P-0008
 M-01376,46,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
-M-01377,46,M,Commercial,Pinecrest,2024-01-01,,,False,P-0040
-M-01378,81,M,Commercial,Rivergate,2024-01-01,2024-06-30,,True,P-0008
-M-01379,73,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0001
+M-01377,46,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01378,81,M,Commercial,Rivergate,2024-01-01,2024-06-30,,True,P-0007
+M-01379,73,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0008
 M-01380,62,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
-M-01381,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0044
+M-01381,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-01382,95,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0003
 M-01383,59,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01384,62,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0038
 M-01385,48,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
 M-01386,23,F,Commercial,Eastvale,2024-01-01,,,False,P-0029
-M-01387,25,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
-M-01388,60,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01387,25,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0013
+M-01388,60,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-01389,59,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
 M-01390,47,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0020
 M-01391,28,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01392,23,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01392,23,M,Commercial,Rivergate,2024-01-01,,,False,P-0034
 M-01393,45,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
 M-01394,22,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-01395,69,F,Commercial,Rivergate,2024-01-01,,,True,P-0001
-M-01396,75,M,Commercial,Eastvale,2024-01-01,,,True,P-0012
-M-01397,95,F,Commercial,Rivergate,2024-01-01,,,True,P-0002
-M-01398,69,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-01395,69,F,Commercial,Rivergate,2024-01-01,,,True,P-0008
+M-01396,75,M,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-01397,95,F,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-01398,69,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0026
 M-01399,40,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
-M-01400,34,F,Commercial,Fairhaven,2024-01-01,,,False,P-0044
+M-01400,34,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-01401,1,F,Commercial,Lakemont,2024-01-01,,,False,P-0044
-M-01402,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0010
+M-01402,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-01403,48,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
 M-01404,71,F,Medicare Advantage,Fairhaven,2024-01-01,2024-12-01,,True,P-0008
 M-01405,64,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0022
 M-01406,63,F,Medicaid,Lakemont,2024-01-01,,,True,P-0036
 M-01407,56,M,Commercial,Eastvale,2024-01-01,,,False,P-0038
-M-01408,65,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-01408,65,F,Medicaid,Eastvale,2024-01-01,,,True,P-0015
 M-01409,80,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-01410,30,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-01411,42,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01412,24,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01412,24,F,Commercial,Rivergate,2024-01-01,,,False,P-0010
 M-01413,84,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-01414,77,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-01414,77,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-01415,67,F,Commercial,Pinecrest,2024-01-01,,,True,P-0005
 M-01416,28,F,Commercial,Pinecrest,2024-01-01,,,False,P-0033
-M-01417,55,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01417,55,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
 M-01418,47,M,Medicaid,Lakemont,2024-01-01,,,True,P-0013
 M-01419,53,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01420,48,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01420,48,F,Commercial,Rivergate,2024-01-01,,,False,P-0009
 M-01421,62,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0036
 M-01422,44,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
 M-01423,69,M,Commercial,Fairhaven,2024-01-01,,,True,P-0010
 M-01424,56,M,Medicaid,Lakemont,2024-01-01,,,True,P-0031
 M-01425,46,F,Medicare Advantage,Lakemont,2024-01-01,2025-02-24,,False,P-0031
-M-01426,49,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01426,49,F,Commercial,Rivergate,2024-01-01,,,False,P-0033
 M-01427,43,F,Medicaid,Eastvale,2024-01-01,,,True,P-0010
-M-01428,68,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
-M-01429,46,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-01428,68,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-01429,46,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-01430,57,M,Medicaid,Eastvale,2024-01-01,,,True,P-0041
-M-01431,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
-M-01432,22,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0016
-M-01433,70,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0013
-M-01434,30,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01431,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
+M-01432,22,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-01433,70,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-01434,30,M,Commercial,Eastvale,2024-01-01,,,False,P-0015
 M-01435,65,M,Medicaid,Lakemont,2024-01-01,,,True,P-0003
-M-01436,60,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
+M-01436,60,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-01437,18,M,Commercial,Rivergate,2024-01-01,,,False,P-0043
 M-01438,33,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-01439,41,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01440,35,M,Medicaid,Eastvale,2024-01-01,,,True,P-0012
 M-01441,28,M,Medicare Advantage,Fairhaven,2024-01-01,2024-11-28,,False,P-0006
-M-01442,66,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-01442,66,F,Commercial,Lakemont,2024-01-01,,,True,P-0035
 M-01443,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0013
 M-01444,59,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-01445,43,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-01446,58,F,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-01447,36,F,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-01448,51,M,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-01449,63,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-01449,63,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-01450,52,M,Commercial,Rivergate,2024-01-01,2024-11-27,,False,P-0008
 M-01451,42,F,Commercial,Fairhaven,2024-01-01,,,False,P-0005
-M-01452,30,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01453,55,F,Commercial,Rivergate,2024-01-01,,,False,P-0034
+M-01452,30,M,Commercial,Pinecrest,2024-01-01,,,False,P-0036
+M-01453,55,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01454,58,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0031
 M-01455,46,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0024
-M-01456,36,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-01456,36,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01457,62,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0023
 M-01458,95,M,Commercial,Eastvale,2024-01-01,,,True,P-0029
-M-01459,45,F,Commercial,Eastvale,2024-01-01,,,False,P-0029
-M-01460,58,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01459,45,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01460,58,M,Commercial,Lakemont,2024-01-01,,,False,P-0031
 M-01461,59,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01462,1,F,Medicare Advantage,Stonebridge,2024-01-01,2025-08-03,,False,P-0046
 M-01463,54,F,Medicaid,Pinecrest,2024-01-01,2024-05-03,,True,P-0017
 M-01464,37,F,Medicaid,Eastvale,2024-01-01,,,True,P-0019
 M-01465,79,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0020
-M-01466,46,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01466,46,F,Commercial,Lakemont,2024-01-01,,,False,P-0045
 M-01467,36,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01468,47,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01469,55,F,Commercial,Eastvale,2024-01-01,,,False,P-0015
-M-01470,40,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01470,40,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01471,50,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-01472,24,F,Commercial,Stonebridge,2024-01-01,,,False,P-0018
 M-01473,47,M,Medicaid,Lakemont,2024-01-01,,,True,P-0020
 M-01474,67,F,Commercial,Pinecrest,2024-01-01,,,True,P-0001
-M-01475,91,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-01475,91,M,Commercial,Rivergate,2024-01-01,,,True,P-0008
 M-01476,66,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0033
 M-01477,57,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01478,75,F,Medicaid,Lakemont,2024-01-01,,,True,P-0020
-M-01479,72,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
-M-01480,85,F,Commercial,Fairhaven,2024-01-01,,,True,P-0032
+M-01479,72,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0022
+M-01480,85,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
 M-01481,73,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0031
-M-01482,49,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01482,49,F,Commercial,Rivergate,2024-01-01,,,False,P-0029
 M-01483,57,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01484,55,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-01485,58,M,Commercial,Fairhaven,2024-01-01,2024-10-24,,False,P-0033
 M-01486,56,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01487,36,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
-M-01488,9,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
+M-01488,9,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
 M-01489,38,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
-M-01490,11,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-01490,11,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-01491,53,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01492,52,F,Commercial,Lakemont,2024-01-01,,,False,P-0007
+M-01492,52,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-01493,18,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-01494,65,F,Commercial,Lakemont,2024-01-01,,,True,P-0013
-M-01495,69,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01495,69,F,Medicaid,Rivergate,2024-01-01,,,True,P-0042
 M-01496,53,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01497,85,F,Commercial,Stonebridge,2024-01-01,,,True,P-0004
+M-01497,85,F,Commercial,Stonebridge,2024-01-01,,,True,P-0008
 M-01498,89,M,Medicaid,Eastvale,2024-01-01,,,True,P-0003
 M-01499,27,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-01500,72,M,Commercial,Pinecrest,2024-01-01,,,True,P-0042
 M-01501,60,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-01502,60,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
-M-01503,70,M,Commercial,Lakemont,2024-01-01,,,True,P-0003
+M-01503,70,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-01504,37,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01505,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-01505,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01506,35,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-01507,36,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-01508,50,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01508,50,M,Commercial,Rivergate,2024-01-01,,,False,P-0034
 M-01509,22,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01510,31,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-01511,63,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
@@ -1514,38 +1514,38 @@ M-01512,50,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-01513,59,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-01514,14,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01515,36,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
-M-01516,40,F,Medicaid,Rivergate,2024-01-01,,,True,P-0016
-M-01517,52,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01516,40,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01517,52,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01518,40,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01519,70,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0003
 M-01520,50,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01521,52,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-01522,52,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0036
-M-01523,66,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0026
+M-01523,66,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0008
 M-01524,42,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0012
 M-01525,74,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
 M-01526,61,M,Commercial,Pinecrest,2024-01-01,,,False,P-0025
 M-01527,55,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0042
-M-01528,52,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01528,52,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01529,62,M,Commercial,Lakemont,2024-01-01,,,False,P-0031
-M-01530,72,F,Commercial,Eastvale,2024-01-01,2025-03-14,,True,P-0012
+M-01530,72,F,Commercial,Eastvale,2024-01-01,2025-03-14,,True,P-0008
 M-01531,70,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-01532,59,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-01533,69,M,Commercial,Stonebridge,2024-01-01,,,True,P-0003
 M-01534,54,F,Medicare Advantage,Lakemont,2024-01-01,2025-01-04,,False,P-0016
-M-01535,77,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0008
+M-01535,77,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0030
 M-01536,51,F,Commercial,Pinecrest,2024-01-01,2025-06-21,,False,P-0008
 M-01537,10,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
-M-01538,78,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0045
+M-01538,78,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
 M-01539,54,M,Medicaid,Lakemont,2024-01-01,,,True,P-0026
 M-01540,28,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0003
-M-01541,48,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-01541,48,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-01542,34,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-01543,94,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0017
 M-01544,61,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0018
-M-01545,20,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01545,20,F,Commercial,Lakemont,2024-01-01,,,False,P-0036
 M-01546,62,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0030
-M-01547,44,M,Commercial,Stonebridge,2024-01-01,,,False,P-0018
+M-01547,44,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-01548,90,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0013
 M-01549,30,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-01550,7,F,Commercial,Lakemont,2024-01-01,,,False,P-0010
@@ -1553,37 +1553,37 @@ M-01551,53,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01552,45,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-01553,43,M,Commercial,Lakemont,2024-01-01,,,False,P-0045
 M-01554,9,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01555,60,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
-M-01556,85,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
+M-01555,60,F,Commercial,Rivergate,2024-01-01,,,False,P-0017
+M-01556,85,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0003
 M-01557,13,M,Commercial,Eastvale,2024-01-01,,,False,P-0038
 M-01558,75,F,Commercial,Fairhaven,2024-01-01,,,True,P-0046
 M-01559,40,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
 M-01560,95,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0021
 M-01561,60,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0027
-M-01562,48,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-01562,48,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0012
 M-01563,74,F,Commercial,Eastvale,2024-01-01,2024-07-09,,True,P-0032
-M-01564,62,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
-M-01565,40,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01564,62,F,Commercial,Eastvale,2024-01-01,,,False,P-0035
+M-01565,40,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0010
 M-01566,66,F,Commercial,Pinecrest,2024-01-01,,,True,P-0002
 M-01567,41,F,Commercial,Eastvale,2024-01-01,,,False,P-0019
-M-01568,16,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01568,16,M,Commercial,Lakemont,2024-01-01,,,False,P-0011
 M-01569,92,F,Commercial,Stonebridge,2024-01-01,2024-12-04,,True,P-0018
 M-01570,45,F,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-01571,39,F,Medicaid,Rivergate,2024-01-01,,,True,P-0017
 M-01572,58,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01573,20,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-01573,20,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
 M-01574,24,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0028
 M-01575,42,M,Commercial,Eastvale,2024-01-01,,,False,P-0005
 M-01576,41,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-01577,53,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-01578,74,F,Commercial,Rivergate,2024-01-01,,,True,P-0007
-M-01579,42,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0021
-M-01580,61,F,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-01579,42,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01580,61,F,Commercial,Stonebridge,2024-01-01,,,False,P-0012
 M-01581,64,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0030
 M-01582,30,M,Commercial,Fairhaven,2024-01-01,,,False,P-0019
-M-01583,56,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0028
+M-01583,56,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-01584,33,M,Medicaid,Lakemont,2024-01-01,,,True,P-0024
-M-01585,73,M,Medicare Advantage,Rivergate,2024-01-01,2024-09-09,,True,P-0008
+M-01585,73,M,Medicare Advantage,Rivergate,2024-01-01,2024-09-09,,True,P-0011
 M-01586,61,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
 M-01587,52,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0042
 M-01588,25,M,Commercial,Lakemont,2024-01-01,,,False,P-0033
@@ -1592,14 +1592,14 @@ M-01590,36,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01591,66,F,Commercial,Eastvale,2024-01-01,,,True,P-0035
 M-01592,49,F,Medicare Advantage,Rivergate,2024-01-01,2025-02-28,,False,P-0034
 M-01593,35,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-01594,70,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
+M-01594,70,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
 M-01595,66,F,Commercial,Pinecrest,2024-01-01,2024-08-15,,True,P-0008
-M-01596,40,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01596,40,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01597,75,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-01598,46,F,Medicare Advantage,Fairhaven,2024-01-01,2025-05-21,,False,P-0006
 M-01599,45,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-01600,54,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0039
-M-01601,36,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0010
+M-01601,36,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
 M-01602,43,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
 M-01603,48,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-01604,82,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0026
@@ -1609,27 +1609,27 @@ M-01607,84,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-01608,51,F,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-01609,59,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01610,69,M,Commercial,Rivergate,2024-01-01,,,True,P-0011
-M-01611,57,F,Commercial,Stonebridge,2024-01-01,2025-07-30,,False,P-0008
+M-01611,57,F,Commercial,Stonebridge,2024-01-01,2025-07-30,,False,P-0004
 M-01612,95,F,Commercial,Pinecrest,2024-01-01,,,True,P-0021
 M-01613,56,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-01614,28,M,Medicaid,Eastvale,2024-01-01,,,True,P-0015
-M-01615,78,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
+M-01615,78,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0029
 M-01616,43,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
-M-01617,45,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
+M-01617,45,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-01618,1,M,Commercial,Eastvale,2024-01-01,,,False,P-0021
 M-01619,72,M,Commercial,Eastvale,2024-01-01,,,True,P-0028
 M-01620,68,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0029
-M-01621,67,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0008
+M-01621,67,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-01622,71,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0018
 M-01623,85,M,Medicaid,Lakemont,2024-01-01,,,True,P-0003
-M-01624,51,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-01624,51,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01625,70,M,Medicaid,Rivergate,2024-01-01,,,True,P-0034
 M-01626,37,F,Commercial,Lakemont,2024-01-01,,,False,P-0022
 M-01627,44,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0027
 M-01628,73,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-01629,59,M,Medicare Advantage,Stonebridge,2024-01-01,2025-08-02,,False,P-0004
 M-01630,25,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-01631,59,M,Commercial,Lakemont,2024-01-01,,,False,P-0011
+M-01631,59,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-01632,48,F,Commercial,Lakemont,2024-01-01,,,False,P-0015
 M-01633,35,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-01634,60,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0024
@@ -1639,34 +1639,34 @@ M-01637,29,F,Medicare Advantage,Lakemont,2024-01-01,2024-06-28,,False,P-0003
 M-01638,87,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0029
 M-01639,21,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01640,56,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
-M-01641,64,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01641,64,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01642,64,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
-M-01643,27,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
-M-01644,45,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0029
+M-01643,27,F,Commercial,Eastvale,2024-01-01,,,False,P-0026
+M-01644,45,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-01645,54,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0032
 M-01646,68,F,Medicaid,Eastvale,2024-01-01,,,True,P-0005
 M-01647,39,M,Medicaid,Fairhaven,2024-01-01,2025-03-06,,True,P-0044
 M-01648,28,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-01649,72,M,Medicaid,Lakemont,2024-01-01,,,True,P-0045
-M-01650,74,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
+M-01650,74,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0008
 M-01651,59,F,Commercial,Rivergate,2024-01-01,,,False,P-0009
 M-01652,39,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01653,60,F,Commercial,Rivergate,2024-01-01,,,False,P-0013
-M-01654,54,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
+M-01654,54,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-01655,68,F,Commercial,Eastvale,2024-01-01,,,True,P-0013
 M-01656,27,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-01657,54,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-01658,48,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01659,29,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
-M-01660,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
-M-01661,52,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
+M-01660,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01661,52,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01662,43,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-01663,59,M,Commercial,Eastvale,2024-01-01,,,False,P-0030
-M-01664,23,M,Commercial,Eastvale,2024-01-01,,,False,P-0025
+M-01664,23,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-01665,50,F,Commercial,Lakemont,2024-01-01,,,False,P-0020
 M-01666,60,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-01667,57,F,Medicaid,Rivergate,2024-01-01,,,True,P-0016
-M-01668,73,F,Commercial,Pinecrest,2024-01-01,,,True,P-0040
+M-01668,73,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01669,27,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0028
 M-01670,21,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-01671,56,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
@@ -1682,41 +1682,41 @@ M-01680,58,M,Commercial,Lakemont,2024-01-01,,,False,P-0027
 M-01681,66,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0033
 M-01682,63,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01683,88,F,Commercial,Pinecrest,2024-01-01,,,True,P-0001
-M-01684,57,F,Medicare Advantage,Rivergate,2024-01-01,2024-11-30,,False,P-0008
+M-01684,57,F,Medicare Advantage,Rivergate,2024-01-01,2024-11-30,,False,P-0034
 M-01685,76,F,Commercial,Rivergate,2024-01-01,,,True,P-0001
 M-01686,31,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
 M-01687,24,F,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-01688,80,M,Commercial,Lakemont,2024-01-01,,,True,P-0038
 M-01689,81,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
-M-01690,62,F,Medicaid,Eastvale,2024-01-01,,,True,P-0035
-M-01691,56,F,Medicaid,Eastvale,2024-01-01,,,True,P-0029
+M-01690,62,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
+M-01691,56,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-01692,55,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
-M-01693,38,M,Medicare Advantage,Stonebridge,2024-01-01,2025-05-25,,False,P-0014
-M-01694,82,F,Commercial,Stonebridge,2024-01-01,,,True,P-0004
+M-01693,38,M,Medicare Advantage,Stonebridge,2024-01-01,2025-05-25,,False,P-0008
+M-01694,82,F,Commercial,Stonebridge,2024-01-01,,,True,P-0008
 M-01695,65,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-01696,62,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-01697,59,F,Commercial,Lakemont,2024-01-01,2024-09-09,,False,P-0024
 M-01698,72,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0046
-M-01699,62,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
-M-01700,66,M,Commercial,Fairhaven,2024-01-01,,,True,P-0008
+M-01699,62,M,Medicaid,Lakemont,2024-01-01,,,True,P-0013
+M-01700,66,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-01701,28,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
-M-01702,62,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
+M-01702,62,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
 M-01703,95,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-01704,41,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
-M-01705,49,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
-M-01706,69,F,Commercial,Pinecrest,2024-01-01,2025-07-15,,True,P-0025
+M-01705,49,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01706,69,F,Commercial,Pinecrest,2024-01-01,2025-07-15,,True,P-0008
 M-01707,71,F,Commercial,Eastvale,2024-01-01,,,True,P-0033
 M-01708,64,F,Commercial,Pinecrest,2024-01-01,,,False,P-0038
 M-01709,19,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
-M-01710,62,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01710,62,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-01711,28,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
-M-01712,35,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
+M-01712,35,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
 M-01713,62,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0028
 M-01714,46,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0035
-M-01715,68,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
+M-01715,68,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0003
 M-01716,95,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
-M-01717,67,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
-M-01718,66,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-01717,67,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0002
+M-01718,66,M,Commercial,Rivergate,2024-01-01,,,True,P-0002
 M-01719,34,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01720,39,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
 M-01721,30,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0030
@@ -1724,21 +1724,21 @@ M-01722,41,M,Commercial,Fairhaven,2024-01-01,,,False,P-0033
 M-01723,30,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01724,38,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01725,47,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0003
-M-01726,31,F,Commercial,Eastvale,2024-01-01,,,False,P-0025
-M-01727,23,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
+M-01726,31,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-01727,23,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-01728,24,F,Commercial,Lakemont,2024-01-01,,,False,P-0016
 M-01729,61,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
-M-01730,53,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01730,53,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01731,72,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
 M-01732,72,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-01733,45,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0010
-M-01734,65,F,Commercial,Pinecrest,2024-01-01,,,True,P-0018
+M-01734,65,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01735,23,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01736,95,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
-M-01737,75,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
-M-01738,47,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01737,75,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
+M-01738,47,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01739,28,F,Commercial,Lakemont,2024-01-01,2025-07-27,,False,P-0011
-M-01740,59,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-01740,59,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0015
 M-01741,14,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0042
 M-01742,36,F,Commercial,Stonebridge,2024-01-01,,,False,P-0046
 M-01743,66,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0029
@@ -1746,7 +1746,7 @@ M-01744,53,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
 M-01745,42,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01746,71,F,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-01747,31,F,Commercial,Stonebridge,2024-01-01,2025-03-26,,False,P-0004
-M-01748,57,M,Commercial,Stonebridge,2024-01-01,,,False,P-0014
+M-01748,57,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-01749,42,F,Commercial,Rivergate,2024-01-01,,,False,P-0033
 M-01750,35,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
 M-01751,61,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
@@ -1756,13 +1756,13 @@ M-01754,40,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
 M-01755,91,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01756,30,F,Medicaid,Lakemont,2024-01-01,,,True,P-0013
 M-01757,64,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
-M-01758,28,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
+M-01758,28,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-01759,25,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-01760,55,M,Commercial,Pinecrest,2024-01-01,,,False,P-0010
 M-01761,65,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0038
-M-01762,26,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01762,26,M,Commercial,Pinecrest,2024-01-01,,,False,P-0037
 M-01763,75,F,Commercial,Eastvale,2024-01-01,,2025-03-17,True,P-0016
-M-01764,36,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01764,36,M,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-01765,54,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0033
 M-01766,59,M,Commercial,Lakemont,2024-01-01,,,False,P-0016
 M-01767,63,F,Medicaid,Eastvale,2024-01-01,,,True,P-0022
@@ -1771,39 +1771,39 @@ M-01769,84,F,Medicaid,Rivergate,2024-01-01,,,True,P-0009
 M-01770,63,F,Commercial,Eastvale,2024-01-01,,,False,P-0015
 M-01771,43,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0042
 M-01772,31,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0034
-M-01773,18,M,Commercial,Pinecrest,2024-01-01,,,False,P-0034
-M-01774,24,M,Medicaid,Rivergate,2024-01-01,,,True,P-0008
-M-01775,62,F,Commercial,Lakemont,2024-01-01,,,False,P-0045
-M-01776,45,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01773,18,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01774,24,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
+M-01775,62,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01776,45,M,Commercial,Lakemont,2024-01-01,,,False,P-0019
 M-01777,29,F,Commercial,Stonebridge,2024-01-01,,,False,P-0014
 M-01778,41,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-01779,83,M,Medicare Advantage,Eastvale,2024-01-01,2024-09-27,,True,P-0035
 M-01780,45,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
-M-01781,40,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-01781,40,M,Commercial,Lakemont,2024-01-01,,,False,P-0044
 M-01782,79,F,Commercial,Rivergate,2024-01-01,,,True,P-0001
 M-01783,61,F,Commercial,Lakemont,2024-01-01,,,False,P-0003
-M-01784,52,F,Medicaid,Rivergate,2024-01-01,,,True,P-0039
-M-01785,39,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
-M-01786,20,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-01784,52,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01785,39,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0013
+M-01786,20,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
 M-01787,28,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01788,42,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-01789,47,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-01790,59,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-01791,63,M,Commercial,Eastvale,2024-01-01,,,False,P-0039
-M-01792,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01792,56,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01793,56,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-01794,31,M,Commercial,Eastvale,2024-01-01,,,False,P-0013
 M-01795,8,F,Medicaid,Eastvale,2024-01-01,,,True,P-0035
-M-01796,41,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-01796,41,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
 M-01797,32,M,Medicaid,Rivergate,2024-01-01,,,True,P-0042
 M-01798,38,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01799,46,F,Commercial,Rivergate,2024-01-01,,,False,P-0034
 M-01800,27,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
 M-01801,29,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0035
 M-01802,49,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-01803,54,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-01804,38,F,Medicaid,Rivergate,2024-01-01,,,True,P-0029
-M-01805,61,M,Medicaid,Lakemont,2024-01-01,2024-07-23,,True,P-0013
+M-01803,54,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01804,38,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
+M-01805,61,M,Medicaid,Lakemont,2024-01-01,2024-07-23,,True,P-0008
 M-01806,47,M,Medicaid,Stonebridge,2024-01-01,2025-05-04,,True,P-0031
 M-01807,31,M,Commercial,Lakemont,2024-01-01,,,False,P-0022
 M-01808,52,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
@@ -1811,39 +1811,39 @@ M-01809,89,F,Commercial,Lakemont,2024-01-01,,,True,P-0030
 M-01810,38,M,Commercial,Pinecrest,2024-01-01,,,False,P-0014
 M-01811,75,F,Commercial,Rivergate,2024-01-01,2025-07-05,,True,P-0001
 M-01812,79,M,Commercial,Pinecrest,2024-01-01,,,True,P-0002
-M-01813,81,M,Medicaid,Lakemont,2024-01-01,,,True,P-0019
+M-01813,81,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
 M-01814,35,M,Commercial,Rivergate,2024-01-01,,,False,P-0042
 M-01815,92,F,Commercial,Lakemont,2024-01-01,,,True,P-0013
 M-01816,54,F,Commercial,Stonebridge,2024-01-01,,,False,P-0035
-M-01817,46,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
+M-01817,46,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01818,47,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-01819,64,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0038
-M-01820,53,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0017
+M-01820,53,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-01821,48,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01822,77,F,Medicaid,Eastvale,2024-01-01,2025-07-14,,True,P-0018
 M-01823,37,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01824,31,F,Commercial,Lakemont,2024-01-01,,,False,P-0024
-M-01825,67,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0029
+M-01825,67,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0008
 M-01826,66,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
 M-01827,73,F,Medicaid,Rivergate,2024-01-01,,,True,P-0034
 M-01828,30,M,Medicaid,Eastvale,2024-01-01,,,True,P-0035
 M-01829,73,M,Commercial,Eastvale,2024-01-01,,,True,P-0025
 M-01830,61,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-01831,87,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
-M-01832,27,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-01831,87,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
+M-01832,27,M,Commercial,Stonebridge,2024-01-01,,,False,P-0032
 M-01833,56,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-01834,46,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
 M-01835,20,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-01836,37,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
-M-01837,74,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-01837,74,M,Medicaid,Lakemont,2024-01-01,,,True,P-0006
 M-01838,42,M,Medicaid,Lakemont,2024-01-01,2024-12-28,,True,P-0024
 M-01839,37,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-01840,69,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-01841,71,M,Commercial,Rivergate,2024-01-01,,,True,P-0002
 M-01842,71,M,Commercial,Lakemont,2024-01-01,,,True,P-0011
 M-01843,36,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-01844,50,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
-M-01845,72,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0008
+M-01844,50,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01845,72,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0033
 M-01846,38,M,Medicaid,Eastvale,2024-01-01,,,True,P-0035
 M-01847,37,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-01848,68,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
@@ -1854,8 +1854,8 @@ M-01852,22,F,Commercial,Pinecrest,2024-01-01,2024-09-18,,False,P-0023
 M-01853,31,M,Commercial,Lakemont,2024-01-01,,,False,P-0022
 M-01854,49,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01855,64,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
-M-01856,49,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
-M-01857,37,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01856,49,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-01857,37,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-01858,55,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-01859,32,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0010
 M-01860,51,F,Commercial,Pinecrest,2024-01-01,,,False,P-0026
@@ -1868,19 +1868,19 @@ M-01866,43,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-01867,19,M,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-01868,37,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0023
 M-01869,37,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
-M-01870,69,M,Medicaid,Lakemont,2024-01-01,,,True,P-0022
+M-01870,69,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
 M-01871,43,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-01872,36,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0037
-M-01873,25,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01873,25,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-01874,28,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
-M-01875,50,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01875,50,M,Medicaid,Rivergate,2024-01-01,,,True,P-0003
 M-01876,47,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-01877,74,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-01878,39,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0004
-M-01879,73,F,Commercial,Rivergate,2024-01-01,,,True,P-0008
-M-01880,57,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01879,73,F,Commercial,Rivergate,2024-01-01,,,True,P-0001
+M-01880,57,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-01881,51,M,Commercial,Pinecrest,2024-01-01,,,False,P-0012
-M-01882,11,M,Commercial,Rivergate,2024-01-01,,,False,P-0009
+M-01882,11,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01883,26,F,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-01884,66,M,Medicare Advantage,Stonebridge,2024-01-01,2025-06-22,,True,P-0040
 M-01885,79,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0036
@@ -1888,25 +1888,25 @@ M-01886,56,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0027
 M-01887,67,F,Medicaid,Eastvale,2024-01-01,,,True,P-0003
 M-01888,43,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01889,44,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01890,38,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
+M-01890,38,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-01891,71,M,Commercial,Eastvale,2024-01-01,,,True,P-0008
 M-01892,58,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01893,47,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01894,45,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-01895,63,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
-M-01896,58,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01896,58,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01897,35,F,Commercial,Pinecrest,2024-01-01,,,False,P-0026
 M-01898,86,F,Commercial,Lakemont,2024-01-01,,,True,P-0031
-M-01899,57,M,Medicaid,Lakemont,2024-01-01,,,True,P-0036
+M-01899,57,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
 M-01900,52,F,Medicaid,Eastvale,2024-01-01,,,True,P-0026
 M-01901,81,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0024
 M-01902,72,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0002
 M-01903,50,M,Commercial,Fairhaven,2024-01-01,,,False,P-0004
-M-01904,62,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-01904,62,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
 M-01905,30,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01906,39,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
 M-01907,6,M,Commercial,Lakemont,2024-01-01,,,False,P-0040
-M-01908,76,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
+M-01908,76,M,Commercial,Rivergate,2024-01-01,,,True,P-0001
 M-01909,14,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-01910,65,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
 M-01911,35,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
@@ -1915,11 +1915,11 @@ M-01913,48,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0014
 M-01914,57,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-01915,64,F,Medicaid,Fairhaven,2024-01-01,2024-09-18,,True,P-0043
 M-01916,87,M,Commercial,Fairhaven,2024-01-01,,,True,P-0010
-M-01917,59,M,Commercial,Lakemont,2024-01-01,,,False,P-0011
+M-01917,59,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-01918,69,M,Commercial,Pinecrest,2024-01-01,,,True,P-0003
 M-01919,40,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01920,66,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0025
-M-01921,55,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
+M-01921,55,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-01922,42,M,Commercial,Pinecrest,2024-01-01,,,False,P-0011
 M-01923,50,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0041
 M-01924,50,M,Commercial,Rivergate,2024-01-01,,,False,P-0042
@@ -1929,23 +1929,23 @@ M-01927,41,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01928,37,F,Medicaid,Lakemont,2024-01-01,,,True,P-0019
 M-01929,66,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0030
 M-01930,18,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0004
-M-01931,39,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-01931,39,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01932,83,M,Commercial,Eastvale,2024-01-01,,,True,P-0012
-M-01933,1,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01933,1,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01934,38,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-01935,65,F,Commercial,Lakemont,2024-01-01,,,True,P-0016
-M-01936,18,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01936,18,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-01937,95,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0020
 M-01938,1,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0029
 M-01939,80,M,Commercial,Lakemont,2024-01-01,,,True,P-0016
-M-01940,83,F,Commercial,Lakemont,2024-01-01,,,True,P-0022
+M-01940,83,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-01941,70,F,Commercial,Rivergate,2024-01-01,,,True,P-0004
 M-01942,47,M,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-01943,59,M,Commercial,Fairhaven,2024-01-01,,,False,P-0005
 M-01944,34,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0005
 M-01945,68,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0013
 M-01946,29,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
-M-01947,46,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-01947,46,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-01948,71,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0003
 M-01949,29,F,Commercial,Eastvale,2024-01-01,,,False,P-0045
 M-01950,44,F,Commercial,Rivergate,2024-01-01,2024-05-07,,False,P-0002
@@ -1953,52 +1953,52 @@ M-01951,55,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01952,25,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01953,75,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0018
 M-01954,58,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0036
-M-01955,21,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
-M-01956,51,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0018
-M-01957,36,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-01955,21,F,Medicaid,Lakemont,2024-01-01,,,True,P-0003
+M-01956,51,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-01957,36,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-01958,38,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0045
 M-01959,53,M,Commercial,Lakemont,2024-01-01,,,False,P-0019
 M-01960,37,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-01961,71,M,Commercial,Pinecrest,2024-01-01,2024-08-27,,True,P-0008
 M-01962,37,F,Commercial,Stonebridge,2024-01-01,,,False,P-0018
-M-01963,71,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
-M-01964,51,M,Commercial,Rivergate,2024-01-01,2025-04-02,,False,P-0007
+M-01963,71,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0003
+M-01964,51,M,Commercial,Rivergate,2024-01-01,2025-04-02,,False,P-0001
 M-01965,69,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-01966,41,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-01966,41,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0014
 M-01967,41,M,Medicare Advantage,Stonebridge,2024-01-01,2025-04-05,,False,P-0035
-M-01968,28,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
+M-01968,28,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
 M-01969,63,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-01970,70,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-01971,94,M,Medicare Advantage,Rivergate,2024-01-01,2025-04-21,,True,P-0007
-M-01972,77,M,Commercial,Eastvale,2024-01-01,,,True,P-0003
-M-01973,56,F,Commercial,Rivergate,2024-01-01,,,False,P-0012
-M-01974,47,F,Commercial,Rivergate,2024-01-01,2024-06-27,,False,P-0007
-M-01975,59,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01972,77,M,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-01973,56,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01974,47,F,Commercial,Rivergate,2024-01-01,2024-06-27,,False,P-0008
+M-01975,59,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-01976,51,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-01977,81,M,Commercial,Stonebridge,2024-01-01,,,True,P-0031
 M-01978,70,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
-M-01979,35,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
+M-01979,35,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-01980,38,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
 M-01981,79,F,Commercial,Stonebridge,2024-01-01,,,True,P-0003
-M-01982,58,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0030
-M-01983,47,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-01982,58,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-01983,47,M,Commercial,Rivergate,2024-01-01,,,False,P-0037
 M-01984,75,M,Commercial,Pinecrest,2024-01-01,,,True,P-0003
 M-01985,44,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-01986,46,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-01987,42,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-01988,12,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
+M-01988,12,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-01989,69,F,Medicaid,Eastvale,2024-01-01,,,True,P-0028
 M-01990,27,M,Commercial,Eastvale,2024-01-01,,,False,P-0028
-M-01991,40,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-01991,40,F,Medicaid,Rivergate,2024-01-01,,,True,P-0012
 M-01992,37,M,Commercial,Eastvale,2024-01-01,,,False,P-0015
 M-01993,66,M,Commercial,Fairhaven,2024-01-01,,,True,P-0003
 M-01994,50,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-01995,52,F,Commercial,Lakemont,2024-01-01,,,False,P-0013
-M-01996,18,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
+M-01996,18,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-01997,50,M,Commercial,Lakemont,2024-01-01,,,False,P-0031
 M-01998,22,F,Medicaid,Lakemont,2024-01-01,2025-03-10,,True,P-0036
 M-01999,58,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0010
-M-02000,59,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
+M-02000,59,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0005
 M-02001,51,M,Commercial,Fairhaven,2024-01-01,,,False,P-0017
 M-02002,92,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-02003,62,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0011
@@ -2007,7 +2007,7 @@ M-02005,54,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
 M-02006,48,M,Commercial,Fairhaven,2024-01-01,,,False,P-0037
 M-02007,71,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0003
 M-02008,74,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0027
-M-02009,25,M,Commercial,Lakemont,2024-01-01,,,False,P-0033
+M-02009,25,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-02010,73,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0002
 M-02011,62,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-02012,71,M,Commercial,Lakemont,2024-01-01,,,True,P-0011
@@ -2018,7 +2018,7 @@ M-02016,88,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0034
 M-02017,57,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-02018,23,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0018
 M-02019,58,F,Commercial,Fairhaven,2024-01-01,,,False,P-0005
-M-02020,44,F,Medicaid,Eastvale,2024-01-01,,,True,P-0029
+M-02020,44,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-02021,15,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-02022,6,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-02023,19,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0027
@@ -2028,7 +2028,7 @@ M-02026,47,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-02027,57,F,Commercial,Lakemont,2024-01-01,,,False,P-0019
 M-02028,64,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-02029,9,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0017
-M-02030,45,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
+M-02030,45,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
 M-02031,35,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-02032,27,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-02033,41,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
@@ -2040,15 +2040,15 @@ M-02038,92,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-02039,30,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-02040,18,M,Commercial,Fairhaven,2024-01-01,,,False,P-0036
 M-02041,57,M,Commercial,Eastvale,2024-01-01,,,False,P-0017
-M-02042,63,M,Commercial,Lakemont,2024-01-01,,,False,P-0011
+M-02042,63,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-02043,61,M,Commercial,Stonebridge,2024-01-01,,,False,P-0026
 M-02044,29,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0018
 M-02045,71,F,Commercial,Rivergate,2024-01-01,,,True,P-0003
 M-02046,36,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0032
 M-02047,29,F,Commercial,Rivergate,2024-01-01,,,False,P-0041
-M-02048,39,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-02048,39,M,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-02049,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
-M-02050,66,M,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-02050,66,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-02051,64,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0039
 M-02052,51,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-02053,70,F,Commercial,Rivergate,2024-01-01,,,True,P-0026
@@ -2056,14 +2056,14 @@ M-02054,53,M,Medicaid,Eastvale,2024-01-01,,,True,P-0023
 M-02055,69,F,Commercial,Lakemont,2024-01-01,,,True,P-0016
 M-02056,23,M,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-02057,20,F,Commercial,Stonebridge,2024-01-01,,,False,P-0014
-M-02058,67,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-02059,24,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
+M-02058,67,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
+M-02059,24,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0030
 M-02060,45,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0018
 M-02061,50,F,Commercial,Rivergate,2024-01-01,,,False,P-0042
-M-02062,42,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
-M-02063,42,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-02062,42,M,Commercial,Lakemont,2024-01-01,,,False,P-0022
+M-02063,42,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-02064,79,M,Commercial,Eastvale,2024-01-01,,,True,P-0016
-M-02065,1,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
+M-02065,1,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-02066,69,M,Commercial,Fairhaven,2024-01-01,,,True,P-0037
 M-02067,95,F,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-02068,52,F,Commercial,Lakemont,2024-01-01,,,False,P-0020
@@ -2073,7 +2073,7 @@ M-02071,88,M,Commercial,Pinecrest,2024-01-01,,,True,P-0041
 M-02072,28,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0018
 M-02073,53,F,Medicare Advantage,Eastvale,2024-01-01,2025-05-26,,False,P-0018
 M-02074,48,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
-M-02075,63,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-02075,63,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
 M-02076,55,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
 M-02077,65,M,Medicaid,Rivergate,2024-01-01,,,True,P-0030
 M-02078,43,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0027
@@ -2083,16 +2083,16 @@ M-02081,38,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
 M-02082,49,M,Commercial,Lakemont,2024-01-01,,,False,P-0021
 M-02083,49,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-02084,28,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0022
-M-02085,83,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0005
+M-02085,83,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
 M-02086,49,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-02087,24,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-02088,74,F,Commercial,Lakemont,2024-01-01,,,True,P-0024
-M-02089,37,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-02088,74,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-02089,37,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0030
 M-02090,62,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-02091,51,F,Medicaid,Lakemont,2024-01-01,,,True,P-0022
 M-02092,57,F,Commercial,Stonebridge,2024-01-01,,,False,P-0025
 M-02093,55,M,Medicaid,Eastvale,2024-01-01,,,True,P-0028
-M-02094,40,F,Commercial,Fairhaven,2024-01-01,,,False,P-0010
+M-02094,40,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
 M-02095,52,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-02096,92,F,Commercial,Fairhaven,2024-01-01,,,True,P-0044
 M-02097,7,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
@@ -2109,68 +2109,68 @@ M-02107,61,F,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-02108,64,F,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-02109,75,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-02110,60,M,Commercial,Stonebridge,2024-01-01,,,False,P-0021
-M-02111,54,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
+M-02111,54,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-02112,55,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0020
 M-02113,79,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0022
 M-02114,68,F,Commercial,Eastvale,2024-01-01,,,True,P-0029
-M-02115,31,M,Medicaid,Rivergate,2024-01-01,,,True,P-0042
-M-02116,39,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-02115,31,M,Medicaid,Rivergate,2024-01-01,,,True,P-0007
+M-02116,39,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-02117,58,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
 M-02118,39,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0010
-M-02119,44,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-02119,44,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0029
 M-02120,32,F,Commercial,Pinecrest,2024-01-01,,,False,P-0013
 M-02121,46,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-02122,60,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
+M-02122,60,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-02123,71,M,Commercial,Eastvale,2024-01-01,,,True,P-0035
-M-02124,52,M,Medicare Advantage,Eastvale,2024-01-01,2024-08-20,,False,P-0008
+M-02124,52,M,Medicare Advantage,Eastvale,2024-01-01,2024-08-20,,False,P-0012
 M-02125,93,F,Commercial,Rivergate,2024-01-01,,,True,P-0001
 M-02126,50,F,Medicaid,Eastvale,2024-01-01,,,True,P-0029
 M-02127,95,F,Commercial,Stonebridge,2024-01-01,,,True,P-0003
 M-02128,72,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-02129,61,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-02130,42,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
-M-02131,1,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0043
+M-02130,42,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
+M-02131,1,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-02132,48,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0046
 M-02133,55,M,Commercial,Lakemont,2024-01-01,,,False,P-0003
-M-02134,90,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
-M-02135,24,M,Commercial,Stonebridge,2024-01-01,,,False,P-0042
-M-02136,90,F,Commercial,Lakemont,2024-01-01,,,True,P-0003
+M-02134,90,M,Commercial,Lakemont,2024-01-01,,,True,P-0023
+M-02135,24,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-02136,90,F,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-02137,46,M,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-02138,66,M,Commercial,Eastvale,2024-01-01,,,True,P-0029
 M-02139,1,M,Medicaid,Rivergate,2024-01-01,,,True,P-0017
 M-02140,54,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0015
-M-02141,45,M,Commercial,Stonebridge,2024-01-01,2025-06-13,,False,P-0008
+M-02141,45,M,Commercial,Stonebridge,2024-01-01,2025-06-13,,False,P-0004
 M-02142,65,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
-M-02143,53,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-02143,53,F,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-02144,29,F,Commercial,Fairhaven,2024-01-01,,,False,P-0017
-M-02145,70,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0046
+M-02145,70,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0008
 M-02146,65,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0025
 M-02147,63,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
-M-02148,72,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
-M-02149,74,F,Medicaid,Lakemont,2024-01-01,,,True,P-0003
+M-02148,72,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
+M-02149,74,F,Medicaid,Lakemont,2024-01-01,,,True,P-0008
 M-02150,51,F,Medicaid,Eastvale,2024-01-01,2024-09-29,,True,P-0029
 M-02151,24,M,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-02152,24,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0037
 M-02153,78,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-02154,66,M,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-02155,54,F,Commercial,Fairhaven,2024-01-01,,,False,P-0044
-M-02156,43,F,Medicaid,Rivergate,2024-01-01,,,True,P-0007
-M-02157,52,M,Commercial,Rivergate,2024-01-01,2024-07-16,,False,P-0017
+M-02156,43,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
+M-02157,52,M,Commercial,Rivergate,2024-01-01,2024-07-16,,False,P-0007
 M-02158,52,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0035
 M-02159,45,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0022
 M-02160,38,M,Medicaid,Eastvale,2024-01-01,2025-05-26,,True,P-0038
-M-02161,95,F,Medicare Advantage,Pinecrest,2024-01-01,2025-02-19,,True,P-0008
+M-02161,95,F,Medicare Advantage,Pinecrest,2024-01-01,2025-02-19,,True,P-0003
 M-02162,56,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
-M-02163,39,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-02163,39,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0019
 M-02164,25,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0018
 M-02165,37,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
-M-02166,66,M,Commercial,Rivergate,2024-01-01,,,True,P-0001
+M-02166,66,M,Commercial,Rivergate,2024-01-01,,,True,P-0007
 M-02167,67,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0035
 M-02168,47,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-02169,53,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
 M-02170,45,M,Medicare Advantage,Fairhaven,2024-01-01,2025-07-05,,False,P-0033
 M-02171,29,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
-M-02172,78,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0008
+M-02172,78,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0017
 M-02173,59,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-02174,95,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-02175,36,M,Medicaid,Eastvale,2024-01-01,,,True,P-0030
@@ -2186,67 +2186,67 @@ M-02184,72,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-02185,71,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-02186,58,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
 M-02187,52,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-02188,46,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
+M-02188,46,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0044
 M-02189,63,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-02190,70,F,Medicare Advantage,Lakemont,2024-01-01,2025-04-17,,True,P-0003
-M-02191,53,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-02191,53,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-02192,60,F,Commercial,Eastvale,2024-01-01,,,False,P-0016
 M-02193,45,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-02194,23,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-02195,31,M,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-02196,67,F,Commercial,Eastvale,2024-01-01,2024-08-31,,True,P-0035
-M-02197,60,F,Commercial,Rivergate,2024-01-01,,,False,P-0020
+M-02197,60,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-02198,83,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
-M-02199,53,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
+M-02199,53,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-02200,69,F,Commercial,Eastvale,2024-01-01,,,True,P-0035
-M-02201,78,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0008
+M-02201,78,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0022
 M-02202,71,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0001
-M-02203,39,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
-M-02204,48,M,Commercial,Lakemont,2024-01-01,2025-04-06,,False,P-0008
-M-02205,54,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
+M-02203,39,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0044
+M-02204,48,M,Commercial,Lakemont,2024-01-01,2025-04-06,,False,P-0020
+M-02205,54,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-02206,32,M,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-02207,61,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-02208,72,M,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-02209,42,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0013
-M-02210,91,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
-M-02211,46,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-02212,47,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-02210,91,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
+M-02211,46,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-02212,47,F,Commercial,Fairhaven,2024-01-01,,,False,P-0037
 M-02213,47,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0020
 M-02214,37,M,Commercial,Pinecrest,2024-01-01,2024-12-10,,False,P-0013
 M-02215,60,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
-M-02216,52,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
-M-02217,85,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
+M-02216,52,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-02217,85,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
 M-02218,64,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
 M-02219,62,M,Commercial,Eastvale,2024-01-01,,,False,P-0021
-M-02220,47,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0008
-M-02221,23,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-02220,47,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0006
+M-02221,23,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-02222,50,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-02223,34,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0026
 M-02224,71,M,Commercial,Rivergate,2024-01-01,,,True,P-0008
 M-02225,51,M,Commercial,Lakemont,2024-01-01,,,False,P-0038
 M-02226,85,F,Medicaid,Rivergate,2024-01-01,2025-02-07,,True,P-0002
 M-02227,66,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0022
-M-02228,68,M,Commercial,Pinecrest,2024-01-01,,,True,P-0008
+M-02228,68,M,Commercial,Pinecrest,2024-01-01,,,True,P-0001
 M-02229,56,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-02230,56,M,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-02231,65,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0017
 M-02232,70,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0008
-M-02233,37,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
+M-02233,37,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-02234,61,F,Commercial,Rivergate,2024-01-01,2025-06-02,,False,P-0034
 M-02235,95,M,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-02236,50,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-02237,46,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-02238,38,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0022
+M-02237,46,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-02238,38,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
 M-02239,23,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-02240,75,M,Medicaid,Rivergate,2024-01-01,,,True,P-0002
 M-02241,53,F,Commercial,Stonebridge,2024-01-01,,,False,P-0018
-M-02242,57,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
+M-02242,57,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-02243,88,F,Medicaid,Rivergate,2024-01-01,,,True,P-0002
-M-02244,95,M,Commercial,Lakemont,2024-01-01,,,True,P-0036
+M-02244,95,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
 M-02245,34,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
-M-02246,73,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-02246,73,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-02247,64,F,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-02248,59,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0026
+M-02248,59,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0008
 M-02249,61,F,Medicaid,Lakemont,2024-01-01,,,True,P-0020
 M-02250,51,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
 M-02251,83,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0003
@@ -2256,23 +2256,23 @@ M-02254,76,M,Commercial,Pinecrest,2024-01-01,,,True,P-0001
 M-02255,69,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-02256,61,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
 M-02257,58,M,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0019
-M-02258,87,M,Commercial,Lakemont,2024-01-01,,,True,P-0008
+M-02258,87,M,Commercial,Lakemont,2024-01-01,,,True,P-0022
 M-02259,62,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0016
-M-02260,50,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
+M-02260,50,M,Commercial,Stonebridge,2024-01-01,,,False,P-0046
 M-02261,34,F,Medicaid,Eastvale,2024-01-01,,,True,P-0030
 M-02262,45,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-02263,31,F,Commercial,Stonebridge,2024-01-01,,,False,P-0004
 M-02264,54,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
-M-02265,57,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-02265,57,F,Commercial,Eastvale,2024-01-01,,,False,P-0030
 M-02266,11,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0012
-M-02267,52,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-02267,52,M,Commercial,Rivergate,2024-01-01,,,False,P-0034
 M-02268,65,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-02269,55,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
-M-02270,32,F,Commercial,Pinecrest,2024-01-01,,,False,P-0002
-M-02271,77,F,Commercial,Eastvale,2024-01-01,,,True,P-0015
+M-02270,32,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-02271,77,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
 M-02272,38,F,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-02273,27,F,Commercial,Fairhaven,2024-01-01,,,False,P-0044
-M-02274,30,M,Commercial,Stonebridge,2024-01-01,,,False,P-0018
+M-02274,30,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-02275,51,M,Medicaid,Rivergate,2024-01-01,,,True,P-0042
 M-02276,71,F,Medicare Advantage,Stonebridge,2024-01-01,,,True,P-0004
 M-02277,75,F,Commercial,Lakemont,2024-01-01,,,True,P-0043
@@ -2286,19 +2286,19 @@ M-02284,54,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0043
 M-02285,64,F,Medicaid,Eastvale,2024-01-01,,,True,P-0025
 M-02286,49,F,Commercial,Pinecrest,2024-01-01,,,False,P-0027
 M-02287,61,M,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-02288,33,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0008
+M-02288,33,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0013
 M-02289,22,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
 M-02290,39,M,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-02291,75,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0013
 M-02292,72,F,Commercial,Lakemont,2024-01-01,,,True,P-0033
 M-02293,42,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0002
-M-02294,76,F,Commercial,Fairhaven,2024-01-01,,,True,P-0008
+M-02294,76,F,Commercial,Fairhaven,2024-01-01,,,True,P-0006
 M-02295,45,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0001
 M-02296,82,M,Commercial,Lakemont,2024-01-01,,,True,P-0013
 M-02297,61,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-02298,42,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
 M-02299,67,F,Commercial,Stonebridge,2024-01-01,,,True,P-0004
-M-02300,36,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
+M-02300,36,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-02301,33,F,Commercial,Pinecrest,2024-01-01,,,False,P-0025
 M-02302,22,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
 M-02303,57,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
@@ -2307,7 +2307,7 @@ M-02305,50,M,Medicare Advantage,Rivergate,2024-01-01,2025-02-15,,False,P-0034
 M-02306,43,F,Commercial,Lakemont,2024-01-01,,,False,P-0013
 M-02307,80,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
 M-02308,43,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
-M-02309,37,M,Commercial,Rivergate,2024-01-01,2025-01-07,,False,P-0007
+M-02309,37,M,Commercial,Rivergate,2024-01-01,2025-01-07,,False,P-0002
 M-02310,76,F,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0023
 M-02311,80,F,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0002
 M-02312,58,F,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0015
@@ -2320,7 +2320,7 @@ M-02318,24,M,Commercial,Stonebridge,2024-01-01,,,False,P-0026
 M-02319,65,M,Commercial,Fairhaven,2024-01-01,,,True,P-0010
 M-02320,39,M,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-02321,78,M,Commercial,Fairhaven,2024-01-01,,,True,P-0003
-M-02322,50,M,Commercial,Lakemont,2024-01-01,,,False,P-0019
+M-02322,50,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-02323,72,M,Commercial,Eastvale,2024-01-01,,,True,P-0030
 M-02324,39,F,Commercial,Pinecrest,2024-01-01,,,False,P-0034
 M-02325,23,F,Commercial,Stonebridge,2024-01-01,,,False,P-0024
@@ -2329,20 +2329,20 @@ M-02327,39,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-02328,31,F,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-02329,76,M,Medicare Advantage,Eastvale,2024-01-01,,,True,P-0036
 M-02330,78,F,Commercial,Eastvale,2024-01-01,,,True,P-0030
-M-02331,57,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-02331,57,F,Commercial,Lakemont,2024-01-01,,,False,P-0003
 M-02332,31,F,Commercial,Pinecrest,2024-01-01,,,False,P-0038
 M-02333,49,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-02334,38,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0001
+M-02334,38,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
 M-02335,81,M,Commercial,Lakemont,2024-01-01,,,True,P-0011
 M-02336,58,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-02337,61,F,Medicare Advantage,Rivergate,2024-01-01,2024-11-14,,False,P-0007
-M-02338,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-02338,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0038
 M-02339,11,M,Medicaid,Rivergate,2024-01-01,,,True,P-0016
 M-02340,36,M,Commercial,Fairhaven,2024-01-01,,,False,P-0044
 M-02341,29,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
-M-02342,59,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-02342,59,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0002
 M-02343,53,F,Commercial,Eastvale,2024-01-01,,,False,P-0041
-M-02344,35,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0046
+M-02344,35,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
 M-02345,44,M,Medicaid,Lakemont,2024-01-01,,,True,P-0024
 M-02346,83,F,Medicaid,Lakemont,2024-01-01,,,True,P-0016
 M-02347,32,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0027
@@ -2350,27 +2350,27 @@ M-02348,33,F,Commercial,Stonebridge,2024-01-01,,,False,P-0001
 M-02349,47,F,Commercial,Eastvale,2024-01-01,,,False,P-0023
 M-02350,38,M,Commercial,Lakemont,2024-01-01,,,False,P-0036
 M-02351,43,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-02352,62,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
+M-02352,62,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-02353,86,M,Medicare Advantage,Pinecrest,2024-01-01,,,True,P-0022
 M-02354,16,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0026
-M-02355,51,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
-M-02356,52,M,Medicaid,Fairhaven,2024-01-01,2024-08-14,,True,P-0037
+M-02355,51,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
+M-02356,52,M,Medicaid,Fairhaven,2024-01-01,2024-08-14,,True,P-0008
 M-02357,50,M,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0004
 M-02358,48,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-02359,45,M,Commercial,Rivergate,2024-01-01,,,False,P-0001
 M-02360,72,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-02361,42,F,Commercial,Pinecrest,2024-01-01,,,False,P-0025
 M-02362,49,F,Medicaid,Lakemont,2024-01-01,,,True,P-0030
-M-02363,51,M,Commercial,Rivergate,2024-01-01,,,False,P-0007
-M-02364,54,M,Commercial,Stonebridge,2024-01-01,,,False,P-0035
+M-02363,51,M,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-02364,54,M,Commercial,Stonebridge,2024-01-01,,,False,P-0008
 M-02365,48,M,Commercial,Stonebridge,2024-01-01,,,False,P-0037
 M-02366,71,M,Commercial,Stonebridge,2024-01-01,,,True,P-0030
 M-02367,51,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0044
 M-02368,55,F,Commercial,Stonebridge,2024-01-01,,,False,P-0016
 M-02369,50,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0029
-M-02370,31,F,Medicaid,Rivergate,2024-01-01,,,True,P-0034
+M-02370,31,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
 M-02371,35,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0034
-M-02372,30,F,Medicaid,Rivergate,2024-01-01,,,True,P-0019
+M-02372,30,F,Medicaid,Rivergate,2024-01-01,,,True,P-0008
 M-02373,55,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-02374,37,F,Commercial,Eastvale,2024-01-01,,,False,P-0015
 M-02375,30,F,Commercial,Fairhaven,2024-01-01,,,False,P-0019
@@ -2383,16 +2383,16 @@ M-02381,49,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0016
 M-02382,73,M,Commercial,Stonebridge,2024-01-01,,,True,P-0004
 M-02383,53,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0042
 M-02384,39,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
-M-02385,95,M,Commercial,Eastvale,2024-01-01,2024-10-05,,True,P-0025
-M-02386,30,F,Commercial,Lakemont,2024-01-01,,,False,P-0031
+M-02385,95,M,Commercial,Eastvale,2024-01-01,2024-10-05,,True,P-0008
+M-02386,30,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-02387,50,M,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-02388,68,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0040
 M-02389,30,M,Medicaid,Stonebridge,2024-01-01,,,True,P-0018
 M-02390,49,F,Commercial,Lakemont,2024-01-01,,,False,P-0017
 M-02391,59,M,Medicaid,Stonebridge,2024-01-01,2024-10-21,,True,P-0004
-M-02392,95,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0008
-M-02393,34,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
-M-02394,51,F,Commercial,Rivergate,2024-01-01,,,False,P-0017
+M-02392,95,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0003
+M-02393,34,M,Commercial,Lakemont,2024-01-01,,,False,P-0020
+M-02394,51,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-02395,65,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-02396,53,M,Commercial,Rivergate,2024-01-01,2024-06-19,,False,P-0016
 M-02397,27,M,Medicaid,Stonebridge,2024-01-01,2025-02-20,,True,P-0004
@@ -2400,31 +2400,31 @@ M-02398,60,M,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0024
 M-02399,54,F,Medicaid,Lakemont,2024-01-01,,,True,P-0031
 M-02400,60,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0013
 M-02401,74,F,Commercial,Fairhaven,2024-01-01,,,True,P-0017
-M-02402,72,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0002
-M-02403,60,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
+M-02402,72,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-02403,60,F,Commercial,Pinecrest,2024-01-01,,,False,P-0041
 M-02404,58,F,Commercial,Stonebridge,2024-01-01,,,False,P-0021
 M-02405,30,M,Medicaid,Rivergate,2024-01-01,,,True,P-0001
 M-02406,49,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0026
-M-02407,56,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0008
+M-02407,56,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0044
 M-02408,43,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0034
 M-02409,53,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0044
 M-02410,35,F,Commercial,Eastvale,2024-01-01,,,False,P-0017
 M-02411,82,M,Medicaid,Lakemont,2024-01-01,,,True,P-0046
-M-02412,95,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0002
+M-02412,95,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
 M-02413,44,M,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0031
 M-02414,60,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0026
 M-02415,47,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
 M-02416,77,M,Commercial,Fairhaven,2024-01-01,,,True,P-0003
 M-02417,60,M,Commercial,Eastvale,2024-01-01,,,False,P-0008
-M-02418,53,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0008
-M-02419,47,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
+M-02418,53,M,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
+M-02419,47,F,Commercial,Eastvale,2024-01-01,,,False,P-0029
 M-02420,54,F,Commercial,Pinecrest,2024-01-01,,,False,P-0001
 M-02421,31,M,Commercial,Eastvale,2024-01-01,,,False,P-0012
 M-02422,65,F,Commercial,Eastvale,2024-01-01,,,True,P-0008
-M-02423,37,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-02423,37,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-02424,62,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0001
 M-02425,54,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0029
-M-02426,73,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0044
+M-02426,73,M,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0008
 M-02427,51,F,Commercial,Lakemont,2024-01-01,,,False,P-0019
 M-02428,72,M,Commercial,Pinecrest,2024-01-01,,,True,P-0027
 M-02429,33,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
@@ -2436,47 +2436,47 @@ M-02434,70,F,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0003
 M-02435,11,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
 M-02436,58,F,Medicaid,Eastvale,2024-01-01,,,True,P-0038
 M-02437,22,F,Commercial,Lakemont,2024-01-01,,,False,P-0030
-M-02438,76,M,Commercial,Eastvale,2024-01-01,,,True,P-0008
+M-02438,76,M,Commercial,Eastvale,2024-01-01,,,True,P-0012
 M-02439,12,F,Commercial,Lakemont,2024-01-01,2025-04-04,,False,P-0013
 M-02440,31,F,Medicaid,Pinecrest,2024-01-01,,,True,P-0002
 M-02441,18,M,Commercial,Eastvale,2024-01-01,,,False,P-0045
 M-02442,84,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
 M-02443,26,F,Medicare Advantage,Lakemont,2024-01-01,,,False,P-0011
-M-02444,54,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
+M-02444,54,F,Commercial,Rivergate,2024-01-01,,,False,P-0002
 M-02445,41,F,Commercial,Pinecrest,2024-01-01,,,False,P-0008
 M-02446,16,M,Commercial,Pinecrest,2024-01-01,,,False,P-0008
-M-02447,45,M,Commercial,Lakemont,2024-01-01,,,False,P-0016
-M-02448,65,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
+M-02447,45,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-02448,65,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0001
 M-02449,48,F,Commercial,Lakemont,2024-01-01,,,False,P-0019
 M-02450,70,M,Medicaid,Stonebridge,2024-01-01,2024-07-27,,True,P-0018
-M-02451,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
+M-02451,44,F,Commercial,Rivergate,2024-01-01,,,False,P-0008
 M-02452,52,F,Medicare Advantage,Fairhaven,2024-01-01,,,False,P-0032
-M-02453,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0033
+M-02453,44,F,Commercial,Eastvale,2024-01-01,,,False,P-0008
 M-02454,58,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0017
 M-02455,89,M,Commercial,Lakemont,2024-01-01,,,True,P-0013
 M-02456,59,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0033
-M-02457,55,F,Commercial,Fairhaven,2024-01-01,,,False,P-0017
-M-02458,39,M,Commercial,Lakemont,2024-01-01,,,False,P-0008
+M-02457,55,F,Commercial,Fairhaven,2024-01-01,,,False,P-0008
+M-02458,39,M,Commercial,Lakemont,2024-01-01,,,False,P-0013
 M-02459,36,F,Commercial,Stonebridge,2024-01-01,,,False,P-0046
 M-02460,81,F,Commercial,Pinecrest,2024-01-01,,,True,P-0008
 M-02461,29,F,Commercial,Fairhaven,2024-01-01,,,False,P-0006
 M-02462,33,M,Medicaid,Rivergate,2024-01-01,2024-09-21,,True,P-0007
 M-02463,50,F,Medicaid,Fairhaven,2024-01-01,,,True,P-0037
 M-02464,43,M,Commercial,Lakemont,2024-01-01,,,False,P-0024
-M-02465,91,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0042
+M-02465,91,F,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0008
 M-02466,4,M,Commercial,Eastvale,2024-01-01,,,False,P-0015
 M-02467,59,M,Commercial,Eastvale,2024-01-01,,,False,P-0035
 M-02468,66,M,Medicare Advantage,Lakemont,2024-01-01,,,True,P-0024
-M-02469,29,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0008
-M-02470,39,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0008
+M-02469,29,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-02470,39,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
 M-02471,60,F,Medicaid,Stonebridge,2024-01-01,,,True,P-0004
-M-02472,84,M,Commercial,Eastvale,2024-01-01,,,True,P-0008
-M-02473,33,F,Medicare Advantage,Lakemont,2024-01-01,2025-07-10,,False,P-0008
+M-02472,84,M,Commercial,Eastvale,2024-01-01,,,True,P-0025
+M-02473,33,F,Medicare Advantage,Lakemont,2024-01-01,2025-07-10,,False,P-0011
 M-02474,20,F,Medicaid,Eastvale,2024-01-01,,,True,P-0008
 M-02475,71,M,Medicare Advantage,Rivergate,2024-01-01,,,True,P-0007
 M-02476,82,F,Medicare Advantage,Fairhaven,2024-01-01,,,True,P-0006
 M-02477,45,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0008
-M-02478,7,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0008
+M-02478,7,F,Medicare Advantage,Stonebridge,2024-01-01,,,False,P-0005
 M-02479,81,F,Commercial,Eastvale,2024-01-01,,,True,P-0035
 M-02480,48,F,Medicare Advantage,Pinecrest,2024-01-01,2024-07-27,,False,P-0008
 M-02481,74,M,Medicaid,Eastvale,2024-01-01,,,True,P-0030
@@ -2489,13 +2489,13 @@ M-02487,9,F,Commercial,Stonebridge,2024-01-01,,,False,P-0014
 M-02488,33,F,Medicare Advantage,Pinecrest,2024-01-01,,,False,P-0027
 M-02489,87,F,Commercial,Stonebridge,2024-01-01,2025-07-26,,True,P-0024
 M-02490,44,M,Medicaid,Eastvale,2024-01-01,,,True,P-0012
-M-02491,24,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0007
+M-02491,24,M,Medicare Advantage,Rivergate,2024-01-01,,,False,P-0001
 M-02492,52,F,Commercial,Rivergate,2024-01-01,,,False,P-0007
 M-02493,49,M,Commercial,Eastvale,2024-01-01,,,False,P-0025
-M-02494,50,M,Commercial,Fairhaven,2024-01-01,,,False,P-0008
-M-02495,42,F,Commercial,Lakemont,2024-01-01,,,False,P-0024
+M-02494,50,M,Commercial,Fairhaven,2024-01-01,,,False,P-0032
+M-02495,42,F,Commercial,Lakemont,2024-01-01,,,False,P-0008
 M-02496,45,F,Commercial,Eastvale,2024-01-01,,,False,P-0025
-M-02497,42,M,Commercial,Eastvale,2024-01-01,2025-05-01,,False,P-0008
+M-02497,42,M,Commercial,Eastvale,2024-01-01,2025-05-01,,False,P-0012
 M-02498,58,M,Medicaid,Rivergate,2024-01-01,,,True,P-0024
 M-02499,35,M,Medicaid,Fairhaven,2024-01-01,,,True,P-0006
 M-02500,46,M,Medicare Advantage,Eastvale,2024-01-01,,,False,P-0027

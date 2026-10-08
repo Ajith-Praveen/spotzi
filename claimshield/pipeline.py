@@ -13,6 +13,9 @@ import analytics as A
 import gen
 sys.path.insert(0, str(Path(__file__).parent / "kaggle_model"))
 import transfer as KT
+import sentinel as SN
+import brain as BR
+import hashlib
 from rules import RULES, RULESET_VERSION, apply_rules
 
 ROOT = Path(__file__).parent
@@ -176,8 +179,23 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
             if "shared_members" in kinds: s = max(s, .6 if qr >= .35 else .2)
         gs[p] = s
     PT["graph_score"] = pd.Series(gs)
+    sen, paths, sen_fit = SN.run(L, M, T["stays"], P, END)
+    for col in ("twin_pct", "path_pct", "sentinel", "oe_paid", "unexplained_paid", "exp_paid", "share_rare"):
+        PT[col] = sen[col].reindex(PT.index)
+    L["path_p"] = L.line_id.map(paths.set_index("line_id").p)
+    step("SpotZ Sentinel", f"case-mix twin (R² {sen_fit['r2_paid']:.2f}) + care-pathway model on {len(paths):,} journey steps")
+    cps = BR.change_points(L, M, P)
+    PT["drift_raw"] = pd.Series({k: v["score"] for k, v in cps.items()}).reindex(PT.index).fillna(0)
+    PT["mix_raw"] = BR.code_mix(L, P, END).reindex(PT.index).fillna(0)
+    for c in ("drift", "mix"):
+        PT[f"{c}_pct"] = .7 * PT.groupby("family")[f"{c}_raw"].rank(pct=True).fillna(.5) + .3 * PT[f"{c}_raw"].rank(pct=True).fillna(.5)
+    PT["rule_pct"] = .5 + .49 * PT.rule_score
+    bw, bb, _, _ = BR.learn(PT, {})
+    PT["brain"], brain_contrib = BR.score(PT, bw, bb)
+    step("Nexus Brain", f"change-point + code-mix detectors; fusion over {len(BR.DETECTORS)} detectors (prior weights)")
     aadj = ((PT.anomaly_pct - .5) / .5).clip(0, 1)
-    PT["risk"] = (100 * (.55 * PT.rule_score + .20 * aadj + .25 * PT.graph_score)).clip(0, 100)
+    sadj = ((PT.sentinel.fillna(.5) - .6) / .4).clip(0, 1)
+    PT["risk"] = (100 * (.50 * PT.rule_score + .15 * aadj + .20 * PT.graph_score + .15 * sadj)).clip(0, 100)
     # low-volume guard: no case from tiny providers
     PT.loc[PT.n_lines < 15, "risk"] *= .5
     for h in (30, 60, 90):
@@ -209,17 +227,19 @@ def run_pipeline(data_dir=DATA, seed=None, n_members=2500, progress=None):
 
     # ---- network explorer payload ----
     net = network_payload(G, H, PT, comms, L)
-    run = dict(run_id=f"RUN-{time.strftime('%Y%m%d-%H%M%S')}", as_of=str(END.date()), created=time.strftime("%Y-%m-%d %H:%M:%S"),
+    fp = hashlib.sha1((Path(data_dir) / "claim_lines.csv").read_bytes()[:5_000_000] + RULESET_VERSION.encode() + MODEL_VERSION.encode()).hexdigest()[:10]
+    run = dict(run_id=f"RUN-{fp}", as_of=str(END.date()), created=time.strftime("%Y-%m-%d %H:%M:%S"),
                ruleset=RULESET_VERSION, model=MODEL_VERSION, seed=seed, log=log, validation=val, evaluation=ev, forecast_metrics=fc["metrics"],
                calibration=fc["calibration"], model_choice=fc["model_choice"], seconds=round(time.time() - t0, 1))
     run["own_model"] = own_metrics
-    return dict(run=run, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
+    run["sentinel_fit"] = sen_fit
+    return dict(run=run, paths=paths, change_points=cps, brain_contrib=brain_contrib, L=L, F=F, detail=detail, PT=PT, cases=cases, G=G, H=H, T=T, net=net, fc=fc, adrivers=adrivers, comms=comms, X_end=X_end)
 
 
 # ---------------------------------------------------------------- case construction
 def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
     W = L[L.service_date > END - pd.Timedelta(days=LOOKBACK)]
-    primary = set(PT.index[PT.risk >= PRIMARY_RISK])
+    primary = set(PT.index[(PT.risk >= PRIMARY_RISK) | ((PT.brain >= .9) & (PT.n_lines >= 30))])
     groups, seen = [], set()
     for comp in nx.connected_components(H):
         pr = comp & primary
@@ -232,23 +252,29 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
     inv = T["investigations"]
     for prim, comp in groups:
         sub = W[W.provider_id.isin(prim) & W.any_flag]
-        if sub.empty: continue
+        brain_lead = all(PT.at[p, "risk"] < PRIMARY_RISK for p in prim)
+        if sub.empty and not brain_lead: continue
         fam = sorted({PT.at[p, "family"] for p in prim})
         rule_counts = {k: int(sub[f"f_{k}"].sum()) for k in RULES if sub[f"f_{k}"].sum() > 0}
         rule_paid = {k: float(sub.loc[sub[f"f_{k}"], "paid"].sum()) for k in rule_counts}
         exposure = float(sub.paid.sum())
         members = sub.member_id.nunique()
+        if brain_lead:  # no rule fired: scope = unexplained spend from the case-mix twin
+            allw = W[W.provider_id.isin(prim)]
+            exposure = float(sum(PT.at[p, "unexplained_paid"] for p in prim if PT.at[p, "unexplained_paid"] == PT.at[p, "unexplained_paid"])) or float(allw.paid.sum())
+            members = allw.member_id.nunique(); sub = allw
         mv = T["members"].set_index("member_id").vulnerable.reindex(sub.member_id.unique()).fillna(False)
         n_vuln = int(mv.sum())
         sev_w = {k: RULES[k]["severity"] for k in rule_counts}
-        severity = 100 * (max(sev_w.values()) * .7 + np.average(list(sev_w.values()), weights=[rule_paid[k] + 1 for k in sev_w]) * .3)
+        severity = 100 * (max(sev_w.values()) * .7 + np.average(list(sev_w.values()), weights=[rule_paid[k] + 1 for k in sev_w]) * .3) if sev_w else 55.0
         prov_all = W[W.provider_id.isin(prim)]
         dx_missing = float(prov_all.dx.isna().mean()); ref_missing = float(prov_all.referring_provider_id.isna().mean())
         anomalous = max(PT.at[p, "anomaly_pct"] for p in prim) >= .9
         has_graph = len(comp) > 1 and max(PT.at[p, "graph_score"] for p in prim) >= .5
         escal = max(PT.at[p, "escalation"] for p in prim) > .5 and max(PT.at[p, "flag_paid30"] for p in prim) > 1500
-        signals = int(len(rule_counts) > 0) + int(anomalous) + int(has_graph) + int(escal)
-        ev = 12 * signals + (14 if len(rule_counts) >= 2 else 4 if rule_counts else 0) + 24 * min(1, len(sub) / 40) \
+        learned = max(max(PT.at[p, "sentinel"], PT.at[p, "drift_pct"]) for p in prim) >= .85
+        signals = int(len(rule_counts) > 0) + int(anomalous) + int(has_graph) + int(escal) + int(learned)
+        ev = 10 * signals + (14 if len(rule_counts) >= 2 else 4 if rule_counts else 0) + 24 * min(1, len(sub) / 40) \
             + 10 * (1 - dx_missing) + (8 if sub.claim_anomaly.mean() > .85 else 0) + (8 if any(PT.at[p, "n_lines"] >= 60 for p in prim) else 0)
         ev += 12 if any(sev_w.get(k, 0) >= .95 and rule_counts[k] >= 5 for k in rule_counts) else 0
         prior_conf = int(inv[inv.provider_id.isin(prim) & inv.outcome.str.startswith("Confirmed")].shape[0])
@@ -257,31 +283,32 @@ def build_cases(L, PT, G, H, T, detail, fc, adrivers, END, ties):
         benign_ctx = bool(ctx) and not has_graph
         if benign_ctx: ev -= 22
         ev = float(np.clip(ev, 5, 98))
-        risk = float(max(PT.at[p, "risk"] for p in prim))
+        risk = float(max(max(PT.at[p, "risk"], 80 * PT.at[p, "brain"] if brain_lead else 0) for p in prim))
         fcs = {h: float(max(PT.at[p, f"fc{h}"] for p in prim)) for h in (30, 60, 90)}
         why = {}
         for h in (30, 60, 90):
             top = max(prim, key=lambda p: PT.at[p, f"fc{h}"])
             why[h] = fc["why"].get(top, {}).get(h, [])
-        flagged_lines = int(len(sub))
+        flagged_lines = int(sub.any_flag.sum()) if brain_lead else int(len(sub))
         effort = float(np.round(8 + 7 * len(prim) + 1.4 * np.sqrt(flagged_lines) + 0.09 * members, 1))
         top_prov = max(prim, key=lambda p: PT.at[p, "risk"])
         pid_num = min(int(p.split("-")[1]) for p in prim)
         net = len(comp) > 1
         title = PT.at[top_prov, "name"] + (f" + {len(comp) - 1} linked" if net else "")
-        rules_sorted = sorted(rule_counts, key=lambda k: -rule_paid[k])
-        ctype = case_type(rules_sorted, fam, net)
+        rules_sorted = [] if brain_lead else sorted(rule_counts, key=lambda k: -rule_paid[k])  # stray hits do not steer a learned-detector lead
+        ctype = case_type(rules_sorted, fam, net) if not brain_lead else "Behaviour shift found by learned detectors (no rule fired)"
         cid = f"CS-{pid_num:04d}"
         lane = "Investigate"
-        if ev < 35: lane = "Needs more data"
+        if brain_lead: lane = "Brain lead"
+        elif ev < 35: lane = "Needs more data"
         elif benign_ctx and ev < 60: lane = "Validate context first"
         cases.append(dict(
             case_id=cid, title=title, type=ctype, primary=prim, providers=comp, families=fam, network=net,
             risk=risk, exposure=exposure, members=int(members), vulnerable=n_vuln, severity=float(severity), evidence=ev,
             forecast=fcs, forecast_why=why, flagged_lines=flagged_lines, effort_hours=effort, rules=rules_sorted,
             rule_counts=rule_counts, rule_paid=rule_paid, signals=signals, lane=lane, benign_context=ctx,
-            anomalous=bool(anomalous), has_graph=bool(has_graph), escalating=bool(escal), dx_missing=dx_missing,
-            signal_flags=dict(rules=bool(rule_counts), anomaly=bool(anomalous), graph=bool(has_graph), temporal=bool(escal)),
+            brain_lead=bool(brain_lead), anomalous=bool(anomalous), has_graph=bool(has_graph), escalating=bool(escal), dx_missing=dx_missing,
+            signal_flags=dict(rules=bool(rule_counts), anomaly=bool(anomalous), graph=bool(has_graph), temporal=bool(escal), sentinel=bool(learned)),
         ))
     return cases
 
@@ -304,6 +331,11 @@ def evaluate(L, PT, cases, fc, T):
         flagged_providers=int((PT.any_share > 0).sum()),
         decoys_in_cases=[p for c in cases for p in c["primary"] if p not in truth_prov],
         note="Computed against hidden synthetic scenario labels. Not evidence of real-world performance.")
+    from sklearn.metrics import roc_auc_score
+    y = [int(p in truth_prov) for p in PT.index]
+    out["detector_auc"] = {k: float(roc_auc_score(y, PT[c].fillna(0))) for k, c in [("Rules", "rule_score"), ("Isolation Forest", "anomaly_pct"), ("Graph", "graph_score"),
+                           ("Sentinel case-mix twin", "twin_pct"), ("Sentinel care pathway", "path_pct"), ("Sentinel (fused)", "sentinel"), ("Combined risk", "risk")] if c in PT}
+    out["sentinel_only_leads"] = [p for p in PT.index if PT.at[p, "sentinel"] >= .9 and PT.at[p, "rule_score"] < .3]
     return out
 
 

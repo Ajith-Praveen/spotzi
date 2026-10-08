@@ -1,0 +1,270 @@
+# SpotZ^i — Product Feature Reference
+
+**Evidence-first fraud, waste and abuse (FWA) intelligence for healthcare payer Special Investigations Units.**
+
+SpotZ^i turns thousands of unexplained claim alerts into a short, ranked list of evidence-backed cases that an investigator can understand, challenge and act on. Every number traces to source rows, every recommendation shows its reasoning, and every outcome is decided by a named human.
+
+> **Data notice.** SpotZ^i currently runs on fully synthetic data (no real member, provider or payer data). All accuracy figures in this document are measured against hidden synthetic labels and do **not** describe real-world performance.
+
+---
+
+## 1. At a glance
+
+| | |
+|---|---|
+| Claim lines analysed per run | 64,879 synthetic lines · 8 service families · 132 providers · 2,500 members |
+| Raw alerts → ranked cases | 5,179 flagged lines → **12 cases** (2 of them found by learned models with no rule firing) |
+| Detectors | **7** (rules, Isolation Forest, network graph, case-mix twin, care-pathway, change-point, code-mix) fused by the **Nexus Brain** |
+| Forecast | Discrete-time hazard model, 30 / 60 / 90 days, calibrated |
+| Second brain | Knowledge wiki (ingest → lint → human review → versioned memory) + 6-step decision chain |
+| Full pipeline run | ~14 seconds on a laptop |
+| External AI required | **None.** All detection, ranking, reasoning and knowledge is in-house. LLM features are optional add-ons. |
+
+### Run it
+```bash
+pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy
+cd claimshield && python3 server.py        # → http://localhost:8000
+```
+
+---
+
+## 2. The user journey
+
+**Load → validate → detect → connect → forecast → rank → investigate → decide → learn.**
+
+1. **Data & pipeline** loads nine tables, validates them, and runs every model. If validation fails, the run stops and the previous analysis stays live.
+2. **Overview** shows the funnel from raw alerts to cases inside review capacity.
+3. **Nexus Brain** surfaces what changed, what the detectors disagree on, and leads no rule caught.
+4. **SIU queue** ranks cases by a transparent weighted priority and packs them into the review hours you have.
+5. **Case workspace** explains the case: brief, decision chain, evidence, network, timeline, forecast, Challenge Lab, precedents, claims.
+6. **Decision** — a named investigator records an outcome with written rationale; referral needs a second person.
+7. **Knowledge** — the decision becomes proposed knowledge; once a human approves it, it informs the next similar case and nudges the Brain's detector weights.
+
+**When the system is uncertain** it says so: weak-evidence cases are held in *Needs more data* and cannot be referred; benign context sends a case to *Validate context first*; learned-detector-only findings arrive as *Brain lead*; "No safe precedent found" is a normal answer.
+
+---
+
+## 3. Data layer
+
+| Table | Contents |
+|---|---|
+| `claim_lines` | line, claim, member, provider, facility, referring provider, family, service/paid dates, code, units, billed, paid, place of service, diagnosis, documented minutes |
+| `providers` | synthetic NPI, family, specialty, city, ownership org, address, bank account, context notes |
+| `members` | age, sex, plan, region, enrolment, termination, death, vulnerability flag, primary-care provider |
+| `facilities`, `inpatient_stays`, `referrals`, `relationships`, `investigations` | supporting context |
+| `data/hidden/scenario_truth.csv` | evaluation-only labels — **never used for detection** |
+
+**Synthetic generator** (`gen.py`): reproducible by seed, eight seeded schemes, three benign decoys, plus one **held-out scheme no rule targets**:
+
+| Scenario | What it simulates |
+|---|---|
+| S1 lab referral ring | lab + two practices under shared ownership; repeat panels, unbundling, upcoding |
+| S2 DME / home-health ring | equipment and visits billed during inpatient stays and after death; shared address and bank |
+| S3 behavioral health | impossible hours, daily sessions, 60-min codes with 35-min documentation |
+| S4 upcoding | level-5 visit inflation |
+| S5 compounding pharmacy | compounded drugs from one prescriber, early opioid refills |
+| S6 ambulance | ALS billed for BLS, inflated mileage, transports during stays |
+| S7 facility duplicates | duplicate emergency claims |
+| S8 home-health phantom | visits during stays |
+| **S9 recruitment mill (held-out)** | sudden wave of out-of-region members, one templated visit + lab bundle each |
+| Decoys | oncology (legitimately high-level visits), dialysis lab (legitimate repeat labs), chain pharmacies (routine shared ownership) |
+
+**Validation checks:** schema, unique IDs, provider and member foreign keys, non-negative amounts, date ranges, paid-after-service, diagnosis completeness, referral coverage, documented-time coverage, label isolation.
+
+---
+
+## 4. AI models — the detection brain
+
+All seven detectors are built and trained in-house on the claims themselves.
+
+| # | Detector | How it works | What it catches | AUC* |
+|---|---|---|---|---|
+| 1 | **Rules engine** | 7 versioned rules, each citing the exact line and reason: duplicates (incl. cross-pharmacy), repeat-inside-interval / early refill, unbundling, upcoding (level share + time-based codes + ALS share), services not plausibly rendered (inside stays, after coverage end / death), impossible timing (>16 h/day, overlapping sessions), excessive utilisation | Known billing patterns | 0.937 |
+| 2 | **Isolation Forest** | Provider anomaly on 11 peer-normalised features; separate claim-line Isolation Forest | Unusual multivariate behaviour | 0.969 |
+| 3 | **Network graph** | Referral flow, shared ownership / address / bank, shared-member overlap; Louvain communities; "suspicious-tie" subgraph groups providers into network cases | Coordinated rings | 0.744 |
+| 4 | **Sentinel case-mix twin** | Gradient-boosted model of what a provider's own patients *should* cost (age, plan, diagnosis profile, utilisation elsewhere). Cross-fitted by provider groups; small panels shrunk (empirical Bayes) | Spend that case mix cannot explain (e.g. a pharmacy billing 32× expectation) | 0.823 |
+| 5 | **Sentinel care-pathway** | Back-off sequence model of member journeys: next service given previous service, time gap, inside-stay, after-coverage-end. Leave-provider-out counts so a ring can't normalise its own pattern | Improbable care sequences (e.g. wheelchair during an inpatient stay: <0.01% of comparable journeys) | 0.897 |
+| 6 | **Behaviour change-point** | Searches each provider's monthly history for the split that best explains a shift in volume, members, new members, out-of-region share, paid per line and service mix | *When* behaviour changed and how ("From 2025-03: new members 2/mo → 32/mo") | 0.966 |
+| 7 | **Peer code-mix divergence** | Jensen–Shannon divergence of service mix vs family peers, volume-shrunk | Unusual service mix | 0.891 |
+| ★ | **Nexus Brain (fused)** | One-sided evidence fusion: a quiet detector adds nothing (rule silence is not innocence). Logistic fusion with expert prior weights | All of the above | **0.997** |
+
+\*Ranking AUC against hidden synthetic labels, all 132 providers.
+
+**Held-out proof.** The recruitment mill (S9) was written so that no rule fires. Rules scored both providers ≈0 (risk 23 and 35, below the case threshold). The Brain ranked them **#9 and #13 of 132** and opened both as *Brain lead* cases (CS-0052, CS-0009).
+
+### Learning from humans
+Detector weights start at expert priors and update from every recorded decision (*substantiated* vs *cleared*) by MAP logistic estimation with a strong Gaussian prior and non-negative weights. One decision moves a weight by roughly a tenth at most; the weights are recomputed from the decision log, so learning is reproducible and auditable. Learned changes appear in the Brain feed.
+
+### Forecast — 30 / 60 / 90-day repeat or escalating FWA
+- **Discrete-time hazard model:** intervals (0,30], (30,60], (60,90]; covariates frozen at the anchor date; `P60 = 1-(1-h1)(1-h2)` so horizons can never contradict each other.
+- Baseline pooled logistic hazard vs gradient-boosting challenger; the challenger is chosen by a frozen rule (lower training-period log loss) — currently gradient boosting.
+- Sigmoid calibration cross-fitted by provider group on the training period only; temporal holdout with a 90-day purge.
+- Held-out results: AUC 0.951 / 0.950 / 0.935 · Brier 0.055 / 0.039 / 0.032 · calibration error 0.070 / 0.050 / 0.028 (30 / 60 / 90 days). Probabilities capped at 1–97 %.
+- Local drivers shown per provider.
+
+### Optional models
+| Model | Status |
+|---|---|
+| **Own model trained on Kaggle provider-fraud data** (`kaggle_model/`) | Code ready; transfers relative provider behaviour from public Medicare-style claims. Needs your Kaggle token to train. |
+| **Second-brain LLM** (blind dossier review) | Code ready; uses Anthropic or any local OpenAI-compatible server. Citation-checked; not required. |
+| **AI narrative & copilot** | Code ready; grounded in the case evidence package, citation-verified. Not required. |
+
+---
+
+## 5. The second brain — knowledge layer
+
+SpotZ^i keeps a persistent, linked memory that improves with every approved update.
+
+| Stage | What happens |
+|---|---|
+| **Ingest** | Every run proposes provider and case pages; every human decision proposes a decision record and a *lesson learned* on the matching scheme page. Every fact carries a source. |
+| **Lint** | Automatic checks: uncited facts, member identifiers (blocked — data minimisation), broken links, empty sections, a change to a prior conclusion, fraud wording stated as a conclusion. |
+| **Review** | A named human approves or rejects, side-by-side with the current version. Updates that change a conclusion require a review note; lint-clean updates can be bulk-approved. |
+| **Update** | Approved pages are versioned; history is kept; nothing is silently overwritten. Backlinks connect pages. |
+| **Query** | TF-IDF retrieval over approved knowledge only. |
+| **Compounds** | The decision chain retrieves approved memory, so the next similar case starts with what the team already learned. |
+
+Seed knowledge: 7 rule/policy pages, 8 scheme pages, the human-decision policy.
+
+### Decision chain (case tab)
+A traceable reasoning path for every case:
+
+1. **Retrieve** — approved policy, scheme and memory pages + comparable precedents
+2. **Interpret** — observed facts, hypotheses, data gaps (each labelled)
+3. **Apply rules** — rules fired, exception logic, benign-context and abstention policies
+4. **Propose** — recommended human action and the highest-value next evidence check
+5. **Score** — evidence strength, ambiguity (bits), impact (dollars, members, vulnerable members), precedent fit
+6. **Cite** — claim lines, wiki pages with versions, run / ruleset / model versions, precedent IDs, and the five human checkpoints
+
+**Output:** a grounded recommendation with evidence, confidence, impact and a path to human approval. It never decides.
+
+---
+
+## 6. Precedent Intelligence — where it is used
+
+Precedents are retrieved for every case and used in **three places**:
+
+1. **Precedents tab** — closest quality-approved prior cases, with *material differences shown before the prior outcome*.
+2. **Decision chain** — step 1 retrieves them; step 5 scores precedent fit and difference count; step 6 cites them.
+3. **Review blueprint** — an editable checklist built from the precedents' checks (requires acknowledging the differences first).
+
+How it works:
+- **Library:** 54 simulated human-reviewed cases across 18 scenario families (clearly labelled *simulated*), plus live cases once a supervisor (not the decision-maker) quality-approves them.
+- **Eligibility then similarity:** same service family required; similarity = pattern overlap 25 % · provider context 20 % · evidence coverage 15 % · temporal shape 15 % · graph motif 15 % · financial/member band 10 %.
+- **Diversity:** best match per scenario, so look-alikes with *opposite* outcomes appear together — e.g. the recruitment mill retrieves both a legitimate practice expansion (closed) and a confirmed recruitment scheme (referred).
+- **Learned-detector leads** match behaviour-shift precedents.
+- **Safeguards:** shows *retrieval similarity* (not fraud probability); warns on high similarity with contradictions; "No safe precedent found" is valid; never prefills an outcome; every blueprint item records its source; skipping an item requires a reason.
+
+---
+
+## 7. Evidence Challenge Lab
+
+Helps the investigator test legitimate against suspicious explanations before deciding.
+
+- **Competing explanations:** unsupported billing · legitimate explanation · data gap — prior and current belief shown.
+- **Next best evidence check:** ranked by expected information gain per review hour; each check marked *can clear* and/or *can confirm*, so the system looks for exonerating evidence too.
+- **Approve & reveal:** a named human approves each check; it reveals a pre-generated synthetic artifact (evidence vault). Nothing is sent to anyone.
+- **Scenario branches:** for the top checks, every possible outcome with its probability, resulting belief and exposure impact — hypothetical, never overwrites observed evidence.
+- **Evidence fragility:** "concern supported under N of M configured tests" (removing graph, anomaly, escalation, or individual findings).
+- **Replay:** revealed checks persist and feed the decision record.
+
+---
+
+## 8. SIU queue & prioritisation
+
+- Transparent priority: **risk 22 % · forecast 15 % · potential dollars 20 % · member impact 10 % · severity 15 % · evidence strength 18 %** — all adjustable live with sliders.
+- Case risk blends rule-based risk with the current (learned) Brain score.
+- **Capacity packing:** investigators × hours/week × weeks; each case has an effort estimate; cases are marked *scheduled* or *over capacity*.
+- Gates: *Needs more data* ×0.65 and never scheduled; *Validate context first* and *Brain lead* ×0.9.
+- Columns: priority with contribution bar, risk, Brain score, forecast, exposure, members (vulnerable), severity, evidence, hours, lane, status, second-brain agreement.
+- Horizon switch (30 / 60 / 90 days) and CSV export.
+
+---
+
+## 9. Case workspace
+
+| Tab | Contents |
+|---|---|
+| **Brief** | summary, recommended human action, confidence rationale, signal families, competing explanations, LLM second opinion (optional), AI narrative (optional), limitations |
+| **Decision chain** | the six-step reasoning path (§5) |
+| **Evidence** | every rule finding with example lines and reasons, Isolation Forest drivers, Sentinel findings with improbable transitions, Brain fusion breakdown, behaviour change before→after, graph links, prior investigations, Kaggle model (if trained) — each with source |
+| **Network** | interactive ego graph (zoom, pan, click) + provider roles; linked providers may be innocent bystanders |
+| **Timeline** | monthly paid vs flagged; first-flag events; prior investigations |
+| **Forecast** | 30/60/90-day probability, drivers, held-out metrics |
+| **Challenge lab** | §7 |
+| **Precedents** | §6 + review blueprint |
+| **AI copilot** | optional grounded Q&A |
+| **Claims** | highest-anomaly flagged lines with rules and reasons |
+| **Decision** | outcome, rationale, role; history; four-eyes referral approval |
+
+**Export:** investigation brief as Markdown; print layout.
+
+---
+
+## 10. Other screens
+
+- **Overview** — KPIs, user-journey strip, top priorities, alert-to-action funnel, flagged lines by rule, flagged dollars by family, monthly trend, synthetic self-check.
+- **Nexus Brain** — held-out test result, insight feed (leads, behaviour changes, detector disagreements, what it learned), detector weights prior → learned, ranking power per detector, highest-suspicion providers with driver breakdown.
+- **Knowledge** — search, approved pages by kind, review queue with lint, version history, page view with backlinks.
+- **Network explorer** — whole-portfolio graph tiled by component, risk filter, search, Louvain communities.
+- **Providers & claims** — provider table (risk, rules, anomaly, graph, Sentinel, own model, forecast), provider page (scores, rule hits, anomaly drivers, monthly chart, top codes, relationships), claims explorer with filters, member timeline against inpatient stays.
+- **Second brain (LLM)** — optional blind LLM review with agreement quadrant (requires a model).
+- **Data & pipeline** — validation results, step-by-step run log, table schemas, code reference, regenerate with any seed and size.
+- **Governance** — principles, limitations, synthetic self-evaluation, forecast model card with calibration plots, Sentinel model card, own-model card, rule catalogue (benign explanations + distinguishing checks), decision log, audit trail.
+
+---
+
+## 11. Human control & responsible AI
+
+- The system recommends; **a named human decides** every outcome. No automated payment hold, provider contact or referral exists.
+- Decisions require a written rationale (≥15 characters).
+- **Four-eyes:** referral requires a supervisor who is not the recommender; precedent quality approval requires a reviewer who is not the decision-maker.
+- **Abstention:** weak-evidence cases cannot be referred.
+- **Uncertainty visible:** competing explanations, ambiguity in bits, fragility, missing-data rates, confidence labels.
+- **No hidden-label leakage:** scenario truth is used only for evaluation, forecast labels and the Challenge-Lab vault.
+- **Knowledge governance:** only human-approved pages are retrieved; member IDs are blocked from the wiki; history is never overwritten.
+- **Audit:** every run, decision, evidence check, blueprint edit, wiki approval and export is logged with run, ruleset and model versions.
+- **Fail safe:** failed validation or model steps keep the previous analysis live; optional AI layers degrade to deterministic output.
+- Work is keyed to a data fingerprint, so it survives restarts.
+
+---
+
+## 12. Architecture
+
+```
+gen.py ──► data/synthetic/*.csv ──► pipeline.py
+                                     ├─ rules.py          (rules engine)
+                                     ├─ analytics.py      (features, Isolation Forest, hazard forecast, graph)
+                                     ├─ sentinel.py       (case-mix twin, care pathway)
+                                     ├─ brain.py          (change-point, code mix, fusion, learning, feed)
+                                     └─ kaggle_model/     (optional own model)
+server.py (FastAPI) ─┬─ briefs.py      (ranking, case detail, Markdown brief)
+                     ├─ lab.py         (Challenge Lab)
+                     ├─ precedents.py  (Precedent Intelligence)
+                     ├─ knowledge.py   (wiki, lint, retrieval, decision chain)
+                     ├─ llm.py         (optional LLM layer)
+                     └─ SQLite data/app.db (decisions, audit, lab events, blueprints, wiki, precedent quality)
+static/ (vanilla JS single-page app, no build step)
+```
+
+**Main API groups:** `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/secondbrain` · `/api/llm/status`.
+
+---
+
+## 13. Honest limitations
+
+- **Synthetic only.** The scenarios were written with rules in mind, so rules look stronger than they would on real claims; all metrics are synthetic.
+- Rule thresholds and Challenge-Lab outcome probabilities are expert estimates, not measured.
+- The precedent library is simulated; real retrieval will be messier.
+- Peer baselines are by service family, not specialty; claims run-out is not modelled.
+- Storage is SQLite + in-memory analysis — suitable for one machine and a small team, not production scale.
+- No user authentication yet; the reviewer's name and role are self-declared.
+
+## 14. Roadmap
+
+1. Postgres, authentication and role-based access for multi-user pilots.
+2. Real-claims ingestion (837 mapping) and data-quality monitoring.
+3. Learning-to-rank from investigator outcomes; continuous-time care-pathway model.
+4. Precedent quality-review screen; automation-bias evaluation.
+5. Drift monitoring, model registry with human-approved promotion.
+6. Case split/merge, assignments, notifications, offline-capable PWA.

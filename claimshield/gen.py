@@ -460,6 +460,17 @@ def generate(seed: int = 7, n_members: int = 2500, out_dir: str | Path = "data/s
         s = ST("2025-04-01") + pd.Timedelta(days=int(rng.integers(0, 120)))
         ds = [s + pd.Timedelta(days=3 * j) for j in range(6) if s + pd.Timedelta(days=3 * j) <= END]
         inject(line([mi] * len(ds), h1, "HH", "G0299", ds, ref=m.pcp.values[mi], pos="12"), "S8-hh-phantom", truth=False)
+    # S9 HELD-OUT scheme (no rule targets it): patient-recruitment mill. A practice suddenly sees a wave of
+    # members from distant regions, each getting one identical visit bundle plus a lab panel at one lab.
+    mill, mlab = P("PRO", 8), P("LAB", 5)
+    setp(mill, name="Northgate Wellness Partners", specialty="Family medicine", region=5, city=REGIONS[5][0])
+    far = rng.choice(np.where(np.isin(m.region.values, [0, 1, 3]) & m.death_date.isna().values & m.term_date.isna().values)[0], 190, replace=False)
+    md = ST("2025-03-03") + pd.to_timedelta(rng.integers(0, 170, len(far)), unit="D")
+    md = pd.to_datetime([d - pd.Timedelta(days=max(0, d.dayofweek - 4)) for d in md])
+    inject(line(far, mill, "PRO", "99214", md, dx=np.array(["Z00.00"] * len(far))), "S9-recruitment-mill")
+    inject(line(far, mill, "PRO", "93000", md, dx=np.array(["Z00.00"] * len(far))), "S9-recruitment-mill")
+    for code in ("80053", "85025", "83036"):
+        inject(line(far, mlab, "LAB", code, md, ref=np.array([mill] * len(far)), pos="81", dx=np.array(["Z00.00"] * len(far))), "S9-recruitment-mill")
     # decoys: oncology upcoding-like mix, dialysis lab monitoring, high-volume regional clinic
     onc = P("PRO", 6)
     om = rng.choice(np.where(m.region.values == 0)[0], 90, replace=False)

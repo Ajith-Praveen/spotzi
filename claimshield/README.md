@@ -28,9 +28,20 @@ First start generates ~64k synthetic claim lines (8 service families, 132 provid
 
 Screens: Overview · SIU queue · Case brief (Brief / Evidence / Network / Timeline / Forecast / Challenge lab / Claims / Decision) · Network explorer · Providers & claims · Data & pipeline (regenerate with new seed) · Governance.
 
+## Second brain (all in-house, no external model needed)
+
+| Layer | What it does | File |
+|---|---|---|
+| 7 detectors | rules · Isolation Forest · network graph · Sentinel case-mix twin · Sentinel care-pathway · behaviour change-point · peer code-mix divergence | `rules.py`, `analytics.py`, `sentinel.py`, `brain.py` |
+| Nexus Brain | one-sided evidence fusion; weights learn from human decisions (MAP update around expert priors, non-negative, steady); insight feed | `brain.py` |
+| Knowledge wiki | ingest (runs + decisions propose pages) → lint (citations, member IDs, contradictions) → human review → versioned pages → TF-IDF retrieval | `knowledge.py` |
+| Decision chain | Retrieve → Interpret → Apply rules → Propose → Score → Cite, per case | `knowledge.py` |
+| Challenge lab / precedents | information-gain evidence checks; difference-first precedent retrieval | `lab.py`, `precedents.py` |
+
+Held-out test: scenario `S9-recruitment-mill` is targeted by no rule. Rules score it ~0; the learned detectors open it as a "Brain lead" case.
+
 ## Honest notes
 
-- Hidden scenario truth (`data/hidden/`) is used only for evaluation and forecast labels, never for detection.
-- Decoy providers (oncology, dialysis, chain pharmacies) look suspicious but are benign, to exercise the uncertainty paths.
-- Synthetic performance numbers do not transfer to real claims.
-- Design docs live in `../idea/`.
+- Hidden scenario truth (`data/hidden/`) is used only for evaluation, forecast labels and the Challenge-Lab evidence vault — never for detection.
+- Decoys (oncology, dialysis, chain pharmacies) are benign look-alikes that exercise the uncertainty paths.
+- Synthetic performance does not transfer to real claims.
