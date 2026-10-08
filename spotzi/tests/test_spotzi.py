@@ -577,3 +577,87 @@ def _replay_api(self):
 
 
 ApiTests.test_prediction_replay = _replay_api
+
+
+def _delivery_api(self):
+    import socket
+    from operations import notify as NT
+    for port in (2525, 2526):
+        s_ = socket.socket()
+        try:
+            if s_.connect_ex(("127.0.0.1", port)) == 0: self.skipTest("test-inbox ports in use (server running)")
+        finally: s_.close()
+    adm, alex = self.login("admin"), self.login("alex")
+    self.assertEqual(alex.get("/api/settings/delivery").status_code, 403)
+    self.assertEqual(adm.put("/api/settings/delivery", json={"slack_webhook": "http://evil.example.com/x", "slack_enabled": True}).status_code, 400)
+    r = adm.post("/api/settings/delivery/test-inbox", json={}).json()
+    self.assertTrue(r["channels"]["email"] and r["channels"]["slack"]); self.assertNotIn("2526/hook", json.dumps(r))
+    self.assertTrue(adm.post("/api/settings/delivery/test", json={"channel": "email", "to": "qa@example.test"}).json()["ok"])
+    self.assertTrue(adm.post("/api/settings/delivery/test", json={"channel": "slack"}).json()["ok"])
+    time.sleep(.5)
+    inbox = adm.get("/api/settings/delivery").json()["inbox"]
+    self.assertEqual({m["channel"] for m in inbox} >= {"email", "slack"}, True)
+    self.assertTrue(any(m["recipient"] == "qa@example.test" and "SpotZ" in m["subject"] for m in inbox))
+    # opted-in user + real notification → outbox → delivered by the worker path
+    alex.post("/api/me/prefs", json={"email": "alex@example.test", "notify_email": True, "notify_slack": True})
+    sam = self.login("sam"); sam.post("/api/cases/CS-0005/assign", json={"assignee": "alex"})
+    NT.deliver(self.server.db); time.sleep(.5)
+    inbox = adm.get("/api/settings/delivery").json()["inbox"]
+    self.assertTrue(any(m["recipient"] == "alex@example.test" and "CS-0005" in m["body"] for m in inbox))
+    self.assertFalse(any("Lakemont" in m["body"] or "P-00" in m["body"] for m in inbox), "no provider details in external copies")
+    NT.configure(None)
+
+
+ApiTests.test_email_and_slack_delivery_via_test_inbox = _delivery_api
+
+
+def _roles_api(self):
+    adm = self.login("admin")
+    mk = lambda **k: adm.post("/api/users", json={"name": "QA " + k.get("role", "x"), "password": "Role-Check-2026!", **k})
+    users = {r: f"qa_{r}" for r in ("investigator", "supervisor", "analyst", "admin")}
+    for r, un in users.items(): self.assertEqual(mk(username=un, role=r).status_code, 200, r)
+    self.assertEqual(mk(username="qa_investigator", role="investigator").status_code, 400)          # duplicate
+    self.assertIn("already taken", mk(username="qa_investigator", role="investigator").json()["detail"])
+    self.assertEqual(mk(username="x", role="investigator").status_code, 400)                        # bad username
+    self.assertEqual(mk(username="qa_bad_role", role="superuser").status_code, 400)
+    self.assertEqual(adm.post("/api/users", json={"username": "qa_weak", "name": "Weak", "role": "analyst", "password": "short"}).status_code, 400)
+    from fastapi.testclient import TestClient
+    def login(un, pw="Role-Check-2026!"):
+        c = TestClient(self.server.app); r = c.post("/api/login", json={"username": un, "password": pw}); return c, r.status_code
+    cl = {r: login(un)[0] for r, un in users.items()}
+    self.assertEqual(cl["investigator"].post("/api/users", json={"username": "qa_x", "name": "X", "role": "admin", "password": "Role-Check-2026!"}).status_code, 403)
+    checks = {   # permission → (request, roles that must be allowed)
+        "decide": (lambda c: c.post("/api/cases/CS-0004/decision", json={"outcome": "Monitor", "reason": "Role matrix check: monitoring only."}), {"investigator", "supervisor", "admin"}),
+        "investigate": (lambda c: c.post("/api/cases/CS-0004/chart-review", json={"n": 4}), {"investigator", "supervisor", "admin"}),
+        "assign": (lambda c: c.post("/api/cases/CS-0004/assign", json={"assignee": "qa_investigator"}), {"supervisor", "admin"}),
+        "review_knowledge": (lambda c: c.post("/api/wiki/proposals/approve-clean", json={}), {"analyst", "supervisor", "admin"}),
+        "approve_precedent": (lambda c: c.post("/api/precedents/CS-0004/quality", json={"quality": "good", "note": "role check"}), {"supervisor", "admin"}),
+        "run_models": (lambda c: c.post("/api/rules/preview", json={"conditions": [{"field": "code", "op": "=", "value": "99215"}]}), {"analyst", "admin"}),
+        "manage_users": (lambda c: c.get("/api/settings/llm"), {"admin"}),
+    }
+    for perm, (call, allowed) in checks.items():
+        for role, c in cl.items():
+            code = call(c).status_code
+            if role in allowed: self.assertNotEqual(code, 403, f"{role} should be allowed: {perm}")
+            else: self.assertEqual(code, 403, f"{role} must be blocked: {perm} (got {code})")
+    # four-eyes referral: investigator recommends; investigator cannot approve; supervisor approves
+    self.assertEqual(cl["investigator"].post("/api/cases/CS-0063/decision", json={"outcome": "Recommend referral", "reason": "Unit inflation across many members.", "acknowledge_gaps": True}).status_code, 200)
+    self.assertEqual(cl["analyst"].post("/api/cases/CS-0063/decision", json={"outcome": "Approve referral", "reason": "analyst should not approve"}).status_code, 403)
+    self.assertEqual(cl["investigator"].post("/api/cases/CS-0063/decision", json={"outcome": "Approve referral", "reason": "investigator should not approve"}).status_code, 403)
+    self.assertEqual(cl["supervisor"].post("/api/cases/CS-0063/decision", json={"outcome": "Approve referral", "reason": "Reviewed evidence; approved."}).status_code, 200)
+    # lifecycle: role change is immediate; deactivation ends sessions; password reset; last admin protected
+    ids = {r["username"]: r["id"] for r in adm.get("/api/users").json()}
+    adm.patch(f"/api/users/{ids['qa_analyst']}", json={"role": "investigator"})
+    self.assertNotEqual(cl["analyst"].post("/api/cases/CS-0004/chart-review", json={"n": 4}).status_code, 403)
+    adm.patch(f"/api/users/{ids['qa_supervisor']}", json={"active": False})
+    self.assertEqual(cl["supervisor"].get("/api/queue").status_code, 401); self.assertEqual(login("qa_supervisor")[1], 401)
+    adm.patch(f"/api/users/{ids['qa_supervisor']}", json={"active": True, "password": "New-Role-Pass-2026"})
+    self.assertEqual(login("qa_supervisor", "New-Role-Pass-2026")[1], 200)
+    self.assertEqual(cl["investigator"].get("/api/users").json()[0].keys() >= {"username", "name", "role"}, True)
+    self.assertNotIn("email", cl["investigator"].get("/api/users").json()[0])
+    adm.patch(f"/api/users/{ids['qa_admin']}", json={"active": False})
+    me_id = next(r["id"] for r in adm.get("/api/users").json() if r["username"] == "admin")
+    self.assertEqual(adm.patch(f"/api/users/{me_id}", json={"role": "analyst"}).status_code, 400)     # last active admin
+
+
+ApiTests.test_user_admin_and_role_matrix = _roles_api

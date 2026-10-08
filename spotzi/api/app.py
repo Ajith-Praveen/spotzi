@@ -35,6 +35,8 @@ async def _lifespan(app_):
     boot()
     try: load_llm_settings()
     except Exception as e: print("SpotZⁱ: LLM settings not loaded:", e)
+    try: load_delivery_settings()
+    except Exception as e: print("SpotZⁱ: delivery settings not loaded:", e)
     yield
 
 
@@ -163,6 +165,8 @@ def _schema(c):
     AU.schema(c); AU.migrate(c)
     from operations import notify as NT
     NT.schema(c)
+    from operations import devinbox as DI
+    DI.schema(c)
     from operations import scope as SC
     SC.schema(c)
     from operations import ops as OP
@@ -649,6 +653,104 @@ def _llm_public():
                 providers={**{p: dict(base_url=b, model=m) for p, (b, m) in llm.PRESETS.items()}, "anthropic": dict(base_url=llm.ANTHROPIC_DEFAULT[0], model=llm.ANTHROPIC_DEFAULT[1]),
                            "local": dict(base_url=llm.LOCAL_URL, model="")},
                 note="The API key is stored on the server in an owner-only file, never in the database, never returned to the browser and never written to the audit log.")
+
+
+# ---------------------------------------------------------------- email & Slack delivery (admin)
+SECRETS = Path(os.environ.get("SPOTZI_SECRETS_DIR", ROOT / "data" / "secrets"))
+
+
+def _secret(name, value=None, clear=False):
+    p = SECRETS / name
+    if value is None and not clear:
+        try: return p.read_text().strip()
+        except FileNotFoundError: return ""
+    SECRETS.mkdir(parents=True, exist_ok=True); SECRETS.chmod(0o700)
+    if clear or not value: p.unlink(missing_ok=True); return ""
+    p.touch(mode=0o600); p.chmod(0o600); p.write_text(value); return value
+
+
+def load_delivery_settings():
+    from operations import notify as NT, devinbox as DI
+    c = db(); r = c.execute("SELECT value FROM app_settings WHERE key='delivery'").fetchone(); c.close()
+    if not r: NT.configure(None); return
+    cfg = json.loads(r["value"]); cfg["smtp_password"] = _secret("smtp_password"); cfg["slack_webhook"] = _secret("slack_webhook")
+    NT.configure(cfg)
+    if cfg.get("test_inbox"): DI.start(db)
+
+
+def _delivery_public():
+    from operations import notify as NT, devinbox as DI
+    c_ = NT.config(); hook = c_.get("slack_webhook") or ""
+    cx = db(); inbox = [dict(r) for r in cx.execute("SELECT * FROM dev_inbox ORDER BY id DESC LIMIT 15").fetchall()]; cx.close()
+    return dict(email_enabled=bool(c_.get("email_enabled")), smtp_host=c_.get("smtp_host", ""), smtp_port=int(c_.get("smtp_port") or 587), smtp_user=c_.get("smtp_user", ""),
+                smtp_from=c_.get("smtp_from", ""), smtp_security=c_.get("smtp_security", "starttls"), smtp_password_set=bool(c_.get("smtp_password")),
+                slack_enabled=bool(c_.get("slack_enabled")), slack_webhook_set=bool(hook), slack_webhook_hint=(hook[:24] + "…") if hook else "",
+                base_url=NT.base_url(), test_inbox=bool(c_.get("test_inbox")), test_inbox_running=DI._started["on"], channels=NT.channels(), inbox=inbox,
+                note="SMTP password and webhook URL are stored on the server in owner-only files — never in the database, never shown again, never logged.")
+
+
+@app.get("/api/settings/delivery")
+def delivery_get(req: Request):
+    need(req, "manage_users"); return J(_delivery_public())
+
+
+@app.put("/api/settings/delivery")
+async def delivery_put(req: Request):
+    from operations import notify as NT
+    u = need(req, "manage_users"); b = json.loads(await req.body() or b"{}")
+    host = (b.get("smtp_host") or "").strip(); hook = (b.get("slack_webhook") or "").strip()
+    if host and not _re.match(r"^[A-Za-z0-9.\-]{1,253}$", host): raise HTTPException(400, "SMTP host must be a host name or IP address")
+    try: port = int(b.get("smtp_port") or 587); assert 1 <= port <= 65535
+    except Exception: raise HTTPException(400, "SMTP port must be 1–65535")
+    if b.get("smtp_security", "starttls") not in ("starttls", "ssl", "none"): raise HTTPException(400, "Security must be starttls, ssl or none")
+    if hook and not (_re.match(r"^https://[\w.\-]+(:\d+)?/\S*$", hook) or _re.match(r"^http://(127\.0\.0\.1|localhost)(:\d+)?/\S*$", hook)):
+        raise HTTPException(400, "Webhook URL must be https:// (plain http only for a local test receiver)")
+    frm = (b.get("smtp_from") or "").strip()
+    if frm and not _re.match(r"^[^@\s]+@[^@\s]+$", frm.split("<")[-1].strip(">")): raise HTTPException(400, "From address looks invalid")
+    cfg = dict(email_enabled=bool(b.get("email_enabled")), smtp_host=host, smtp_port=port, smtp_user=(b.get("smtp_user") or "").strip()[:200], smtp_from=frm[:200],
+               smtp_security=b.get("smtp_security", "starttls"), slack_enabled=bool(b.get("slack_enabled")), test_inbox=bool(b.get("test_inbox")),
+               base_url=(b.get("base_url") or "").strip()[:200] or None)
+    if b.get("clear_smtp_password"): _secret("smtp_password", clear=True)
+    elif b.get("smtp_password"): _secret("smtp_password", str(b["smtp_password"])[:300])
+    if b.get("clear_slack_webhook"): _secret("slack_webhook", clear=True)
+    elif hook: _secret("slack_webhook", hook)
+    c = db(); c.execute("DELETE FROM app_settings WHERE key='delivery'")
+    c.execute("INSERT INTO app_settings(key,value,updated_by,ts) VALUES(?,?,?,?)", ("delivery", json.dumps(cfg), u["name"], time.strftime("%Y-%m-%d %H:%M:%S"))); c.commit(); c.close()
+    load_delivery_settings()
+    audit(u["name"], u["role"], "delivery_settings_changed", "", json.dumps({k: v for k, v in cfg.items() if k != "smtp_user"}))
+    return J(_delivery_public())
+
+
+@app.post("/api/settings/delivery/test-inbox")
+def delivery_test_inbox(req: Request):
+    """One click: route email and Slack to the built-in local test inbox (127.0.0.1 only)."""
+    from operations import devinbox as DI
+    u = need(req, "manage_users")
+    if not DI.start(db): raise HTTPException(409, "Could not start the local test inbox (ports 2525/2526 in use)")
+    _secret("slack_webhook", f"http://127.0.0.1:{DI.HOOK_PORT}/hook"); _secret("smtp_password", clear=True)
+    cfg = dict(email_enabled=True, smtp_host="127.0.0.1", smtp_port=DI.SMTP_PORT, smtp_user="", smtp_from="spotzi@localhost", smtp_security="none", slack_enabled=True, test_inbox=True)
+    c = db(); c.execute("DELETE FROM app_settings WHERE key='delivery'")
+    c.execute("INSERT INTO app_settings(key,value,updated_by,ts) VALUES(?,?,?,?)", ("delivery", json.dumps(cfg), u["name"], time.strftime("%Y-%m-%d %H:%M:%S"))); c.commit(); c.close()
+    load_delivery_settings(); audit(u["name"], u["role"], "delivery_test_inbox_enabled", "")
+    return J(_delivery_public())
+
+
+@app.post("/api/settings/delivery/test")
+async def delivery_test(req: Request):
+    from operations import notify as NT
+    u = need(req, "manage_users"); b = json.loads(await req.body() or b"{}"); ch = b.get("channel")
+    if ch not in ("email", "slack"): raise HTTPException(400, "channel must be email or slack")
+    if not NT.channels()[ch]: raise HTTPException(409, f"{ch} is not configured or switched off")
+    to = (b.get("to") or u.get("email") or "").strip()
+    if ch == "email" and not _re.match(r"^[^@\s]+@[^@\s]+$", to): raise HTTPException(400, "Enter an email address to send the test to")
+    try:
+        await asyncio.to_thread(NT.send_test, ch, to)
+        audit(u["name"], u["role"], "delivery_test_sent", ch, to if ch == "email" else ""); return J(dict(ok=True))
+    except Exception as e:
+        msg = str(e)
+        for sec in (NT.config().get("smtp_password"), NT.config().get("slack_webhook")):
+            if sec: msg = msg.replace(sec, "***")
+        return J(dict(ok=False, error=f"{type(e).__name__}: {msg[:200]}"))
 
 
 @app.get("/api/settings/llm")
@@ -1140,6 +1242,11 @@ async def users_create(req: Request):
 async def users_update(uid: int, req: Request):
     u = need(req, "manage_users"); b = json.loads(await req.body() or b"{}"); c = db()
     if uid == u["id"] and b.get("active") is False: c.close(); raise HTTPException(400, "You cannot deactivate yourself.")
+    tgt = c.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone()
+    if not tgt: c.close(); raise HTTPException(404, "Unknown user")
+    admins = c.execute("SELECT COUNT(*) AS n FROM users WHERE role='admin' AND active=1").fetchone()["n"]
+    losing_admin = tgt["role"] == "admin" and tgt["active"] and (("role" in b and b["role"] != "admin") or b.get("active") is False)
+    if losing_admin and admins <= 1: c.close(); raise HTTPException(400, "SpotZⁱ must keep at least one active admin.")
     try:
         if "role" in b:
             if b["role"] not in AU.ROLES: raise ValueError("unknown role")

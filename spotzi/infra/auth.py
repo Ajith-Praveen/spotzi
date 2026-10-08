@@ -36,8 +36,13 @@ def _hash(pw, salt):
 
 
 def create_user(c, username, name, role, password):
+    import re
+    username = (username or "").lower().strip()
+    if not re.match(r"^[a-z0-9][a-z0-9._-]{2,31}$", username): raise ValueError("username must be 3–32 characters: letters, digits, dot, dash or underscore")
+    if not (name or "").strip(): raise ValueError("name is required")
     if role not in ROLES: raise ValueError("unknown role")
     if len(password) < 10: raise ValueError("password must be at least 10 characters")
+    if c.execute("SELECT 1 FROM users WHERE username=?", (username,)).fetchone(): raise ValueError(f"username '{username}' is already taken")
     salt = secrets.token_hex(16)
     c.execute("INSERT INTO users(username,name,role,salt,pw_hash,active,created) VALUES(?,?,?,?,?,1,?)",
               (username.lower().strip(), name.strip(), role, salt, _hash(password, salt), time.strftime("%Y-%m-%d %H:%M:%S")))
