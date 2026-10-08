@@ -198,3 +198,8 @@ body.offline .btn.pri,body.offline [data-reveal],body.offline #mkbp,body.offline
 .cpgraph{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .cpgraph .graph{border:0;border-radius:0}
 .cpfoot{padding:8px 14px;background:var(--sunk)}
+/* Link analysis: one toolbar for both views */
+.nettools{display:flex;align-items:center;gap:12px;margin:-4px 0 14px;flex-wrap:wrap}
+.nettools .seg button{padding:5px 12px}
+.nettools-sub{max-width:520px}
+.nettools input{height:32px}

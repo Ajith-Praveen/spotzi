@@ -74,6 +74,8 @@ async def require_login(request: Request, call_next):
     resp = await call_next(request)
     resp.headers["Content-Security-Policy"] = CSP
     resp.headers["X-Content-Type-Options"] = "nosniff"
+    if p.startswith("/static/") and not p.startswith("/static/vendor/"):
+        resp.headers["Cache-Control"] = "no-cache"      # always revalidate app code so users never run a stale UI
     resp.headers["X-Frame-Options"] = "DENY"
     resp.headers["Referrer-Policy"] = "no-referrer"
     resp.headers["X-SpotZi-Contract"] = CONTRACT

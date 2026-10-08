@@ -221,14 +221,22 @@ function graph3dHTML(g, { height = 640, onNode = "openProv", id = "g", labelMin 
   GRAPHS[id] = { nodes: Object.fromEntries(g.nodes.map(n => [n.id, { ...n }])), adj: Object.fromEntries(Object.entries(adj).map(([k, v]) => [k, [...v]])), onNode, edges: g.edges, labelMin, three: true, hullSet: hullSet ? [...hullSet] : null, communities };
   const present = new Set(g.edges.map(e => e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind));
   return `<div class="graph net g3d" id="${id}-wrap" data-g3d="${id}" style="height:${height}px"><div class="g3c"></div>
-    <div class="gctl"><button data-g3="in" title="Zoom in">+</button><button data-g3="out" title="Zoom out">−</button><button data-g3="fit" title="Reset view">⤢</button><button data-g3="top" title="Top-down">⊙</button><button data-g3="spin" title="Auto-rotate">↻</button></div>
-    <div class="g3hint">Drag to orbit · scroll to zoom · right-drag to pan · height = risk${g.nodes.some(n => n.community != null) ? " · one island per community · dashed arcs = links between communities" : ""}</div>
+    <div class="gctl"><button data-g3="in" title="Zoom in">+</button><button data-g3="out" title="Zoom out">−</button><button data-g3="fit" title="Reset view">⤢</button><button data-g3="rl" title="Rotate left 45°">⟲</button><button data-g3="rr" title="Rotate right 45°">⟳</button><button data-g3="top" title="Top-down">⊙</button><button data-g3="spin" title="Auto-rotate 360°">↻</button></div>
+    <div class="g3hint">Drag to rotate 360° · scroll to zoom · right-drag to pan · height = risk${g.nodes.some(n => n.community != null) ? " · one island per community · dashed arcs = links between communities" : ""}</div>
     <div class="gtip"></div><div class="gpanel"></div></div>${graphLegend(present)}`;
 }
 function mount3d() {
   const els = document.querySelectorAll("[data-g3d]"); if (!els.length) return;
   import("/static/net3d.js").then(m => els.forEach(el => m.mount(el, GRAPHS[el.dataset.g3d], { riskColor, FICON, EICON, EDGE, FAM, ARROW, card: nodeCard, onNode: nodeClick })))
     .catch(err => els.forEach(el => { el.querySelector(".g3c").innerHTML = `<div class="loading">3D view unavailable in this browser (${esc(err.message)}). Switch to 2D.</div>`; }));
+}
+// one header + one toolbar for both Link-analysis views: view switch left; search and 2D | 3D right, always in the same place
+function netTop(view, extra) {
+  const sub = view === "map" ? "Every provider with a notable relationship, grouped into communities — highest risk first. Click a provider to pin its details."
+    : "Pick a hospital, doctor, supplier or patient and follow its relationships — claims billed, referrals, hospital stays, shared ownership.";
+  return hdr("Link analysis", "How providers, patients and organisations are connected, and where risk concentrates.") +
+    `<div class="nettools"><div class="seg"><button data-netview="investigate" class="${view === "investigate" ? "on" : ""}">Investigate an entity</button><button data-netview="map" class="${view === "map" ? "on" : ""}">Portfolio risk map</button></div>
+     <span class="sm mut nettools-sub">${sub}</span><span class="sp"></span>${extra}${dimSeg()}</div>`;
 }
 const dimSeg = () => `<div class="seg" title="View"><button data-netdim="2d" class="${NET.dim !== "3d" ? "on" : ""}">2D</button><button data-netdim="3d" class="${NET.dim === "3d" ? "on" : ""}">3D</button></div>`;
 
@@ -380,7 +388,8 @@ async function vCase() {
         : e.kind === "anomaly" ? `<div class="sm">Provider ${e.provider} sits at the <b>${pc(e.pct)}</b> percentile of an Isolation Forest within its peer family. Main peer-relative drivers: ${e.drivers.map(x => `${esc(x.feature)} (${x.peer_z > 0 ? "+" : ""}${x.peer_z.toFixed(1)}σ)`).join(", ") || "n/a"}.</div>` : `<div class="sm">${esc(e.detail)}</div>`}
       <div class="sm mut" style="margin-top:6px">Source: ${esc(e.source)}</div></div>`).join("");
   } else if (tab === "network") {
-    body = `<div class="card" style="padding:0;overflow:hidden">${graphHTML(d.network, { id: "cg", height: 520 })}</div><div class="card" style="margin-top:12px"><h3>Providers in this case</h3><div class="grid g3">${d.providers.map(p => `<div style="margin-bottom:10px"><a href="#/provider/${p.provider_id}" class="b">${esc(p.name)}</a> <span class="tag ${p.role === "primary" ? "t-crit" : "t-gray"}">${p.role}</span><div class="sm mut">${FAM[p.family]} · ${esc(p.specialty)} · ${p.city}<br>risk ${Math.round(p.risk)} · ${num(p.lines)} lines (180d) · flagged ${money(p.flagged_paid)}${p.context ? `<br><i>${esc(p.context)}</i>` : ""}</div></div>`).join("")}</div><div class="sm mut">Linked providers can be innocent bystanders (e.g. a referral source). Links show where to look, not who is culpable.</div></div>`;
+    body = `<div class="row" style="margin-bottom:8px"><span class="sm mut">Case providers and every provider directly linked to them — referrals, shared ownership, address, bank account, shared patients.</span><span class="sp"></span>${dimSeg()}</div>
+    <div class="card" style="padding:0;overflow:hidden">${NET.dim === "3d" ? graph3dHTML(d.network, { id: "cg", height: 560 }) : graphHTML(d.network, { id: "cg", height: 520 })}</div><div class="card" style="margin-top:12px"><h3>Providers in this case</h3><div class="grid g3">${d.providers.map(p => `<div style="margin-bottom:10px"><a href="#/provider/${p.provider_id}" class="b">${esc(p.name)}</a> <span class="tag ${p.role === "primary" ? "t-crit" : "t-gray"}">${p.role}</span><div class="sm mut">${FAM[p.family]} · ${esc(p.specialty)} · ${p.city}<br>risk ${Math.round(p.risk)} · ${num(p.lines)} lines (180d) · flagged ${money(p.flagged_paid)}${p.context ? `<br><i>${esc(p.context)}</i>` : ""}</div></div>`).join("")}</div><div class="sm mut">Linked providers can be innocent bystanders (e.g. a referral source). Links show where to look, not who is culpable.</div></div>`;
   } else if (tab === "timeline") {
     body = `<div class="grid g21"><div class="card"><h3>Paid vs flagged by month <small>case providers, all history</small></h3>${monthChart(d.timeline.monthly, { h: 230 })}</div><div class="card"><h3>Key events</h3><div class="tl">${d.timeline.events.map(e => `<div class="${e.kind === "history" ? "h" : ""}"><b>${e.date}</b><br><span class="sm">${esc(e.label)}</span></div>`).join("") || "<span class='mut'>No events.</span>"}</div></div></div>`;
   } else if (tab === "forecast") {
@@ -672,7 +681,7 @@ async function vNetwork() {
   const types = {}; g.nodes.forEach(n => { if (n.id !== NET.focus) types[n.type] = (types[n.type] || 0) + 1; });
   const flaggedEdges = g.edges.filter(e => e.flagged > 0).length;
   setTimeout(() => wbInspect(NET.focus), 0);
-  return `<div class="wbtop"><div><h1>Link analysis</h1><p>Pick a hospital, doctor, supplier or patient and see who they are connected to — claims billed, referrals, hospital stays, shared ownership.</p></div><span class="sp"></span><div class="seg"><button class="on">Investigate an entity</button><button data-netview="map">Portfolio risk map</button></div></div>
+  return netTop("investigate", "") + `
   <div class="wb">
     <aside class="wbside">
       <div class="wbsearch"><input type="text" id="wbq" placeholder="Search hospital, doctor, lab, patient ID…" autocomplete="off"><div id="wbres"></div></div>
@@ -684,7 +693,7 @@ async function vNetwork() {
       <div class="wbsec"><div class="wbh">Most-involved patients <span class="mut" style="font-weight:400">(may be victims)</span></div>${st.patients.slice(0, 6).map(e => entRow(e, ` · ${e.flagged} flagged`)).join("")}</div>
     </aside>
     <section class="wbmain">
-      <div class="wbbar">${typeIcon(focusNode.type, 18, "#18181B")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div>${dimSeg()}</div>
+      <div class="wbbar">${typeIcon(focusNode.type, 18, "#18181B")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div></div>
       <div class="wbgraph">${g.nodes.length > 1 ? (NET.dim === "3d" ? graph3dHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect" }) : graphHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect", canvas: Math.max(560, Math.min(1250, 170 * Math.sqrt(g.nodes.length))) })) : `<div class="loading">No relationships of the selected types${NET.flagged ? " with flagged claims" : ""}.</div>`}</div>
     </section>
     <aside class="wbinspect" id="wbinsp"><div class="mut sm">Select an entity.</div></aside>
@@ -741,7 +750,7 @@ async function vNetworkMap() {
   const nodes = n.nodes.filter(x => keep.has(x.id)).map(x => ({ ...x, kind: "provider", primary: false }));
   const edges = n.edges.filter(e => keep.has(e.source) && keep.has(e.target)).flatMap(e => e.kinds.map(k => ({ source: e.source, target: e.target, kind: k, strong: e.strong, label: k })));
   const comms = n.communities.sort((a, b) => b.max_risk - a.max_risk);
-  return `<div class="wbtop"><div><h1>Portfolio risk map</h1><p>Every provider with a notable relationship, grouped into communities. Click a provider to pin details; use <b>Investigate</b> to open it in link analysis.</p></div><span class="sp"></span><input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:200px">${dimSeg()}<div class="seg"><button data-netview="investigate">Investigate an entity</button><button class="on">Portfolio risk map</button></div></div>
+  return netTop("map", `<input type="text" id="netq" placeholder="Search provider or case…" value="${esc(S.netQ || "")}" style="width:220px">`) + `
     ${NET.dim === "3d" ? `<div class="card" style="padding:0;overflow:hidden">${graph3dHTML({ nodes, edges }, { height: 760, id: "ng", labelMin: 40, onNode: "select", communities: comms.map(c => ({ id: c.id, max_risk: c.max_risk, ties: c.ties, size: c.size, paid: c.paid })) })}</div>` : communityBoard(nodes, edges, comms, n)}`;
 }
 
