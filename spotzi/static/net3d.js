@@ -34,30 +34,30 @@ function nodeTexture(n, H) {
   if (ent) {
     const c = EDGE[n.kind].c, w = Math.max(70, n.label.length * 6.4 + 34), h = 24;
     return texture(ctx => {
-      rr(ctx, 0, 0, w, h, 5); ctx.fillStyle = "#FAFAF9"; ctx.fill(); ctx.shadowColor = "transparent";
+      rr(ctx, 0, 0, w, h, 5); ctx.fillStyle = "#F6F7F8"; ctx.fill(); ctx.shadowColor = "transparent";
       ctx.setLineDash([3, 2]); ctx.strokeStyle = c; ctx.globalAlpha = .7; ctx.lineWidth = 1; ctx.stroke(); ctx.globalAlpha = 1; ctx.setLineDash([]);
       iconPath(ctx, EICON[n.kind], 13, h / 2, 13, c);
-      ctx.fillStyle = "#3F3F46"; ctx.font = `500 11px ${FONT}`; ctx.textBaseline = "middle"; ctx.fillText(n.label, 25, h / 2 + .5);
+      ctx.fillStyle = "#4A4E55"; ctx.font = `500 11px ${FONT}`; ctx.textBaseline = "middle"; ctx.fillText(n.label, 25, h / 2 + .5);
     }, w, h);
   }
   if (pat) {
-    const prim = n.primary, w = prim ? 190 : 132, h = prim ? 44 : 30, ic = n.risk >= 60 ? "#B45309" : n.risk >= 30 ? "#CA8A04" : "#A8A29E";
+    const prim = n.primary, w = prim ? 190 : 132, h = prim ? 44 : 30, ic = n.risk >= 60 ? "#B4423C" : n.risk >= 30 ? "#C28A1B" : "#A0A4AB";
     return texture(ctx => {
       rr(ctx, 0, 0, w, h, h / 2); ctx.fillStyle = "#fff"; ctx.fill(); ctx.shadowColor = "transparent";
-      ctx.strokeStyle = prim ? "#18181B" : "#D6D3D1"; ctx.lineWidth = prim ? 1.4 : 1; ctx.stroke();
-      iconPath(ctx, "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0", h / 2, h / 2, h * .5, "#44403C");
-      ctx.fillStyle = "#18181B"; ctx.font = `${prim ? 600 : 500} ${prim ? 12.5 : 11}px ${FONT}`; ctx.textBaseline = "middle";
+      ctx.strokeStyle = prim ? "#1E2024" : "#C8CBD0"; ctx.lineWidth = prim ? 1.4 : 1; ctx.stroke();
+      iconPath(ctx, "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0", h / 2, h / 2, h * .5, "#3E4566");
+      ctx.fillStyle = "#1E2024"; ctx.font = `${prim ? 600 : 500} ${prim ? 12.5 : 11}px ${FONT}`; ctx.textBaseline = "middle";
       ctx.fillText(n.label.replace("Patient ", ""), h - 2, prim ? h / 2 - 6 : h / 2 + .5);
-      if (prim) { ctx.fillStyle = "#78716C"; ctx.font = `400 10.5px ${FONT}`; ctx.fillText("Patient", h - 2, h / 2 + 9); }
+      if (prim) { ctx.fillStyle = "#6E727A"; ctx.font = `400 10.5px ${FONT}`; ctx.fillText("Patient", h - 2, h / 2 + 9); }
       const bw = prim ? 28 : 22, bh = prim ? 20 : 16; rr(ctx, w - bw - 8, (h - bh) / 2, bw, bh, prim ? 5 : 8); ctx.fillStyle = ic; ctx.fill();
       ctx.fillStyle = "#fff"; ctx.font = `700 ${prim ? 11 : 9.5}px ${FONT}`; ctx.textAlign = "center"; ctx.fillText(Math.round(n.risk), w - bw / 2 - 8, h / 2 + .5);
     }, w, h);
   }
-  const col = riskColor(n.risk), tint = n.risk >= 60 ? "#FEF2F2" : n.risk >= 40 ? "#FFF7ED" : n.risk >= 25 ? "#FEFCE8" : "#F5F5F4";
+  const col = riskColor(n.risk), tint = n.risk >= 60 ? "#FCE6E6" : n.risk >= 40 ? "#FCEBD9" : n.risk >= 25 ? "#FBF0CF" : "#EEF0F3";
   if (!n._card) {
     return texture(ctx => {
-      rr(ctx, 0, 0, 34, 34, 8); ctx.fillStyle = "#fff"; ctx.fill(); ctx.shadowColor = "transparent"; ctx.strokeStyle = "#D6D3D1"; ctx.lineWidth = 1; ctx.stroke();
-      iconPath(ctx, FICON[n.family] || FICON.PRO, 17, 15.5, 17, "#57534E"); rr(ctx, 7, 29.5, 20, 2.5, 1.25); ctx.fillStyle = col; ctx.fill();
+      rr(ctx, 0, 0, 34, 34, 8); ctx.fillStyle = "#fff"; ctx.fill(); ctx.shadowColor = "transparent"; ctx.strokeStyle = "#C8CBD0"; ctx.lineWidth = 1; ctx.stroke();
+      iconPath(ctx, FICON[n.family] || FICON.PRO, 17, 15.5, 17, "#5A5E66"); rr(ctx, 7, 29.5, 20, 2.5, 1.25); ctx.fillStyle = col; ctx.fill();
     }, 34, 34);
   }
   const w = 212, h = 44, isCase = n.primary || n.case_id;
@@ -65,11 +65,11 @@ function nodeTexture(n, H) {
   return texture(ctx => {
     rr(ctx, 0, 0, w, h, 8); ctx.fillStyle = "#fff"; ctx.fill(); ctx.shadowColor = "transparent";
     ctx.save(); rr(ctx, 0, 0, w, h, 8); ctx.clip(); ctx.fillStyle = tint; ctx.fillRect(0, 0, 40, h); ctx.restore();
-    rr(ctx, 0, 0, w, h, 8); ctx.strokeStyle = isCase ? "#18181B" : "#D6D3D1"; ctx.lineWidth = isCase ? 1.4 : 1; ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(40, 0); ctx.lineTo(40, h); ctx.strokeStyle = "#EEECEA"; ctx.lineWidth = 1; ctx.stroke();
-    iconPath(ctx, FICON[n.family] || FICON.PRO, 20, h / 2, 19, n.risk >= 25 ? col : "#3F3F46");
-    ctx.textBaseline = "middle"; ctx.fillStyle = "#18181B"; ctx.font = `600 12.5px ${FONT}`; ctx.fillText(name, 49, h / 2 - 7);
-    ctx.fillStyle = "#78716C"; ctx.font = `400 10.5px ${FONT}`; ctx.fillText(`${FAM[n.family] || ""}${n.case_id ? " · " + n.case_id : ""}`, 49, h / 2 + 8);
+    rr(ctx, 0, 0, w, h, 8); ctx.strokeStyle = isCase ? "#1E2024" : "#C8CBD0"; ctx.lineWidth = isCase ? 1.4 : 1; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(40, 0); ctx.lineTo(40, h); ctx.strokeStyle = "#E9EBF3"; ctx.lineWidth = 1; ctx.stroke();
+    iconPath(ctx, FICON[n.family] || FICON.PRO, 20, h / 2, 19, n.risk >= 25 ? col : "#4A4E55");
+    ctx.textBaseline = "middle"; ctx.fillStyle = "#1E2024"; ctx.font = `600 12.5px ${FONT}`; ctx.fillText(name, 49, h / 2 - 7);
+    ctx.fillStyle = "#6E727A"; ctx.font = `400 10.5px ${FONT}`; ctx.fillText(`${FAM[n.family] || ""}${n.case_id ? " · " + n.case_id : ""}`, 49, h / 2 + 8);
     rr(ctx, w - 36, h / 2 - 10, 28, 20, 5); ctx.fillStyle = col; ctx.fill();
     ctx.fillStyle = "#fff"; ctx.font = `700 11px ${FONT}`; ctx.textAlign = "center"; ctx.fillText(Math.round(n.risk), w - 22, h / 2 + .5);
   }, w, h);
@@ -135,14 +135,14 @@ export function mount(wrap, G, H) {
 
   // ---- ground: subtle grid in the theme's line colours (+ one floor disc per island)
   const ext = Math.max(...P.map(p => Math.max(Math.abs(p.x), Math.abs(p.z))), ...islands.map(o => Math.max(Math.abs(o.cx), Math.abs(o.cz)) + o.r)) + 90;
-  const grid = new THREE.GridHelper(ext * 2, Math.round(ext / 40), 0xE2DFDB, 0xEFEDEA); grid.material.transparent = true; grid.material.opacity = .8; scene.add(grid);
-  const plane = new THREE.Mesh(new THREE.CircleGeometry(ext * 1.02, 64), new THREE.MeshBasicMaterial({ color: 0xFAFAF9, transparent: true, opacity: .7, side: THREE.DoubleSide, depthWrite: false }));
+  const grid = new THREE.GridHelper(ext * 2, Math.round(ext / 40), 0xD4D8E6, 0xE9EBF3); grid.material.transparent = true; grid.material.opacity = .8; scene.add(grid);
+  const plane = new THREE.Mesh(new THREE.CircleGeometry(ext * 1.02, 64), new THREE.MeshBasicMaterial({ color: 0xF6F7FB, transparent: true, opacity: .7, side: THREE.DoubleSide, depthWrite: false }));
   plane.rotation.x = -Math.PI / 2; plane.position.y = -.5; scene.add(plane);
   islands.forEach(o => {
     const disc = new THREE.Mesh(new THREE.CircleGeometry(o.r, 64), new THREE.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: .85, depthWrite: false, side: THREE.DoubleSide }));
     disc.rotation.x = -Math.PI / 2; disc.position.set(o.cx, .2, o.cz); scene.add(disc);
     const rim = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 97 }, (_, k) => new THREE.Vector3(o.cx + Math.cos(k / 96 * Math.PI * 2) * o.r, .6, o.cz + Math.sin(k / 96 * Math.PI * 2) * o.r))),
-      new THREE.LineBasicMaterial({ color: 0xD6D3D1, transparent: true, opacity: .95 }));
+      new THREE.LineBasicMaterial({ color: 0xC9CDDC, transparent: true, opacity: .95 }));
     scene.add(rim); o.floor = [disc, rim];
   });
 
@@ -157,7 +157,7 @@ export function mount(wrap, G, H) {
     scene.add(sp); sprites.push(sp); byId[n.id] = { sp, stems: [] };
     if (!ent(n)) {   // drop-line + footprint: reads height (risk) against the ground
       const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p.x, 0, p.z), new THREE.Vector3(p.x, p.y, p.z)]);
-      const stem = new THREE.Line(g, new THREE.LineDashedMaterial({ color: 0xA8A29E, dashSize: 4, gapSize: 4, transparent: true, opacity: .55 }));
+      const stem = new THREE.Line(g, new THREE.LineDashedMaterial({ color: 0x9A9FB6, dashSize: 4, gapSize: 4, transparent: true, opacity: .55 }));
       stem.computeLineDistances(); scene.add(stem);
       const dot = new THREE.Mesh(new THREE.RingGeometry(3, 5.5, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(H.riskColor(n.risk || 0)), transparent: true, opacity: .55, side: THREE.DoubleSide }));
       dot.rotation.x = -Math.PI / 2; dot.position.set(p.x, .3, p.z); scene.add(dot);
@@ -212,7 +212,7 @@ export function mount(wrap, G, H) {
     const a = new THREE.Vector3(A.cx + dx / d * A.r, 2, A.cz + dz / d * A.r), b = new THREE.Vector3(B.cx - dx / d * B.r, 2, B.cz - dz / d * B.r);
     const m = a.clone().add(b).multiplyScalar(.5); m.y = 30 + a.distanceTo(b) * .18;
     const geo = new LineGeometry(); geo.setPositions(new THREE.QuadraticBezierCurve3(a, m, b).getPoints(32).flatMap(p => [p.x, p.y, p.z]));
-    const line = new Line2(geo, new LineMaterial({ color: 0x78716C, linewidth: Math.min(5, 1.2 + Math.log2(v.n + 1)), transparent: true, opacity: .5, dashed: true, dashSize: 14, gapSize: 10, resolution: res }));
+    const line = new Line2(geo, new LineMaterial({ color: 0x6B7190, linewidth: Math.min(5, 1.2 + Math.log2(v.n + 1)), transparent: true, opacity: .5, dashed: true, dashSize: 14, gapSize: 10, resolution: res }));
     line.computeLineDistances(); scene.add(line); edges.push({ a: null, b: null, parts: [line], op: .5, between: [ca, cb] });
   });
 

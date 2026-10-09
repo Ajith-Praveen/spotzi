@@ -15,3 +15,5 @@ spotzi/data/workspaces/
 spotzi/data/training/
 spotzi/data/secrets/
 spotzi/data/models/encoders/
+spotzi/data/*.sqlite
+spotzi/data/*.sqlite.bak*

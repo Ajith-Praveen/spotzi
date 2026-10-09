@@ -1,14 +1,16 @@
-# SpotZⁱ
+# SpotZⁱ — ClaimShield Nexus
 
 Healthcare payer FWA (fraud, waste, abuse) intelligence for Special Investigations Units. **Synthetic data only — no real or public datasets are used anywhere.** Humans make every decision.
 
 ## Run
 
 ```bash
-pip install fastapi uvicorn pandas numpy scipy scikit-learn networkx psycopg cryptography httpx joblib
-cd spotzi && ./start.sh            # PostgreSQL (data/pg, port 5544) + web app → http://localhost:8000
+cd spotzi
+pip install -r requirements.txt
+./start.sh                         # web app → http://localhost:8000 (uses PostgreSQL in data/pg if present, else SQLite)
 ./stop.sh
 ```
+A fresh clone needs no database setup: without `data/pg` or `SPOTZI_DB_URL`, the app runs on SQLite.
 Demo accounts and passwords: `cat data/seed_users.json` (owner-readable only).
 
 ## Project layout
@@ -22,7 +24,7 @@ spotzi/
 │   └── app.py                FastAPI routes, auth middleware, CSRF/CSP, RBAC, audit
 ├── detection/                detection engine
 │   ├── pipeline.py           load → validate → detect → connect → forecast → cases
-│   ├── rules.py              10 explainable rules + analyst custom-rule language
+│   ├── rules.py              9 explainable rules + analyst custom-rule language
 │   ├── analytics.py          features, Isolation Forest, 30/60/90 hazard forecast, provider graph
 │   ├── sentinel.py           case-mix twin, care-pathway model
 │   ├── brain.py              change-point, code mix, patient panel, Nexus Brain fusion + learning
@@ -57,7 +59,7 @@ spotzi/
 │   └── evaluate_llm.py       chart-review reviewer comparison
 ├── scripts/migrate_to_postgres.py
 ├── static/                   web app (PWA): index.html, app.js, styles.css, sw.js
-├── tests/test_spotzi.py      41 tests (run on PostgreSQL and SQLite)
+├── tests/test_spotzi.py      50 tests (run on PostgreSQL and SQLite)
 └── data/                     runtime data (mostly git-ignored)
     ├── synthetic/ · hidden/  demo claims world · its hidden labels (evaluation only)
     ├── pg/ · db.env          PostgreSQL cluster · connection string

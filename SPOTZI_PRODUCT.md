@@ -12,12 +12,12 @@ SpotZⁱ turns thousands of unexplained claim alerts into a short, ranked list o
 
 | | |
 |---|---|
-| Claim lines analysed per run | 64,879 synthetic lines · 8 service families · 132 providers · 2,500 members |
-| Raw alerts → ranked cases | 5,179 flagged lines → **12 cases** (2 of them found by learned models with no rule firing) |
-| Detectors | **8** (rules, Isolation Forest, network graph, case-mix twin, care-pathway, change-point, code-mix, patient-panel shift) fused by the **Nexus Brain** |
+| Claim lines analysed per run | 62,507 synthetic lines · 8 service families · 132 providers · 2,500 members |
+| Raw alerts → ranked cases | 5,577 flagged lines → **13 cases** (one provider in them, Juniper Clinical Lab, has no rule hit at all and was surfaced by the learned detectors) |
+| Detectors | **9** (rules, Isolation Forest, network graph, case-mix twin, care-pathway, change-point, code-mix, patient-panel shift, temporal evolution) fused by the **Nexus Brain** |
 | Forecast | Discrete-time hazard model, 30 / 60 / 90 days, calibrated |
 | Second brain | Knowledge wiki (ingest → lint → human review → versioned memory) + 6-step decision chain |
-| Full pipeline run | ~14 seconds on a laptop |
+| Full pipeline run | ~18 seconds on a laptop |
 | External AI required | **None.** All detection, ranking, reasoning and knowledge is in-house. LLM features are optional add-ons. |
 
 ### Run it
@@ -31,7 +31,7 @@ On first start SpotZⁱ creates five local demo accounts (2 investigators, 1 sup
 
 ### Test it
 ```bash
-cd spotzi && python3 -m unittest discover -s tests -v                               # SQLite, ~85 s
+cd spotzi && python3 -m unittest discover -s tests -v                               # SQLite, ~2 min
 cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests -v  # PostgreSQL (separate spotzi_test database)
 ```
 
@@ -111,7 +111,7 @@ SpotZⁱ uses only its own generator (`spotzi/synthdata/gen.py`). No real, publi
   - ~1.5% missing diagnoses;
   - format-valid NPIs (10 digits, Luhn) in a range real NPIs never use.
 - **Fraud and context:**
-  - 9 seeded schemes plus an exclusion;
+  - 9 seeded schemes (S1–S9) plus an excluded provider;
   - decoys (oncology, dialysis, high-volume clinic, chain pharmacies);
   - 4 legitimate anomalies with observable business events, plus an adversarial upcoder with a genuine event;
   - hidden ground truth at claim, provider, timing and ring level.
@@ -128,7 +128,7 @@ Training uses other seeds (101–106). Held-out tests use seeds 201–202 and th
 | `facilities`, `inpatient_stays`, `referrals`, `relationships`, `investigations` | supporting context |
 | `data/hidden/scenario_truth.csv` | evaluation-only labels — **never used for detection** |
 
-**Synthetic generator** (`gen.py`): reproducible by seed, eight seeded schemes, three benign decoys, plus one **held-out scheme no rule targets**:
+**Synthetic generator** (`gen.py`): reproducible by seed, 9 seeded schemes (S1–S8 plus **S9, held out from rule design**), an excluded provider, and benign decoys:
 
 | Scenario | What it simulates |
 |---|---|
@@ -153,23 +153,24 @@ Training uses other seeds (101–106). Held-out tests use seeds 201–202 and th
 
 ## 5. AI models — the detection brain
 
-All eight detectors are built in-house and run on the claims themselves; no third-party or real-world data is used.
+All nine detectors are built in-house and run on the claims themselves; no third-party or real-world data is used.
 
 | # | Detector | How it works | What it catches | AUC* |
 |---|---|---|---|---|
-| 1 | **Rules engine** | 7 versioned rules, each citing the exact line and reason: duplicates (incl. cross-pharmacy), repeat-inside-interval / early refill, unbundling, upcoding (level share + time-based codes + ALS share), services not plausibly rendered (inside stays, after coverage end / death), impossible timing (>16 h/day, overlapping sessions), excessive utilisation | Known billing patterns | 0.937 |
-| 2 | **Isolation Forest** | Provider anomaly on 11 peer-normalised features; separate claim-line Isolation Forest | Unusual multivariate behaviour | 0.969 |
-| 3 | **Network graph** | Referral flow, shared ownership / address / bank, shared-member overlap; Louvain communities; "suspicious-tie" subgraph groups providers into network cases | Coordinated rings | 0.744 |
-| 4 | **Sentinel case-mix twin** | Gradient-boosted model of what a provider's own patients *should* cost (age, plan, diagnosis profile, utilisation elsewhere). Cross-fitted by provider groups; small panels shrunk (empirical Bayes) | Spend that case mix cannot explain (e.g. a pharmacy billing 32× expectation) | 0.823 |
-| 5 | **Sentinel care-pathway** | Back-off sequence model of member journeys: next service given previous service, time gap, inside-stay, after-coverage-end. Leave-provider-out counts so a ring can't normalise its own pattern | Improbable care sequences (e.g. wheelchair during an inpatient stay: <0.01% of comparable journeys) | 0.897 |
-| 6 | **Behaviour change-point** | Searches each provider's monthly history for the split that best explains a shift in volume, members, new members, out-of-region share, paid per line and service mix | *When* behaviour changed and how ("From 2025-03: new members 2/mo → 32/mo") | 0.966 |
-| 7 | **Peer code-mix divergence** | Jensen–Shannon divergence of service mix vs family peers, volume-shrunk | Unusual service mix | 0.891 |
-| 8 | **Patient-panel shift** | Among patients new to a provider in the review window: share given one templated bundle, share with no other care in the plan, share from outside the usual catchment — each vs peer baselines | Patient recruitment / brokering ("67 new patients, 100% same bundle, none seen elsewhere") | see EVALUATION.md |
-| ★ | **Nexus Brain (fused)** | One-sided evidence fusion: a quiet detector adds nothing (rule silence is not innocence). Logistic fusion with expert prior weights | All of the above | **0.997** |
+| 1 | **Rules engine** | 9 versioned built-in rules (plus analyst custom rules), each citing the exact line and reason: duplicates (incl. cross-pharmacy), repeat-inside-interval / early refill, unbundling, upcoding (level share + time-based codes + ALS share), services not plausibly rendered (inside stays, after coverage end / death), impossible timing (>16 h/day, overlapping sessions), excessive utilisation | Known billing patterns | 0.956 |
+| 2 | **Isolation Forest** | Provider anomaly on 11 peer-normalised features; separate claim-line Isolation Forest | Unusual multivariate behaviour | 0.962 |
+| 3 | **Network graph** | Referral flow, shared ownership / address / bank, shared-member overlap; Louvain communities; "suspicious-tie" subgraph groups providers into network cases | Coordinated rings | 0.798 |
+| 4 | **Sentinel case-mix twin** | Gradient-boosted model of what a provider's own patients *should* cost (age, plan, diagnosis profile, utilisation elsewhere). Cross-fitted by provider groups; small panels shrunk (empirical Bayes) | Spend that case mix cannot explain (e.g. a pharmacy billing 32× expectation) | 0.750 |
+| 5 | **Sentinel care-pathway** | Back-off sequence model of member journeys: next service given previous service, time gap, inside-stay, after-coverage-end. Leave-provider-out counts so a ring can't normalise its own pattern | Improbable care sequences (e.g. wheelchair during an inpatient stay: <0.01% of comparable journeys) | 0.727 |
+| 6 | **Behaviour change-point** | Searches each provider's monthly history for the split that best explains a shift in volume, members, new members, out-of-region share, paid per line and service mix | *When* behaviour changed and how ("From 2025-03: new members 2/mo → 32/mo") | 0.939 |
+| 7 | **Peer code-mix divergence** | Jensen–Shannon divergence of service mix vs family peers, volume-shrunk | Unusual service mix | 0.876 |
+| 8 | **Patient-panel shift** | Among patients new to a provider in the review window: share given one templated bundle, share with no other care in the plan, share from outside the usual catchment — each vs peer baselines | Patient recruitment / brokering ("67 new patients, 100% same bundle, none seen elsewhere") | 0.751 |
+| 9 | **Temporal evolution** | Monthly trajectories of 7 behaviours against the provider's own de-seasonalised baseline: bursts, CUSUM build-up, trend, sustained months (`detection/temporal.py`) | Schemes that grow or persist over time | 0.973 |
+| ★ | **Nexus Brain (fused)** | One-sided evidence fusion: a quiet detector adds nothing (rule silence is not innocence). Logistic fusion with expert prior weights | All of the above | **0.998** |
 
-\*Ranking AUC against hidden synthetic labels, all 132 providers.
+\*Ranking AUC against hidden synthetic labels, all 132 providers of the demo world (seed 7), as shown on the Nexus Brain page.
 
-**Held-out proof.** The recruitment mill (S9) was written so that no rule fires. Rules scored both providers ≈0 (risk 23 and 35, below the case threshold). The Brain ranked them **#9 and #13 of 132** and opened both as *Brain lead* cases (CS-0052, CS-0009).
+**Held-out proof.** The recruitment mill (S9) was written without any rule targeting it. Its lab, **Juniper Clinical Lab**, has **no rule hit at all** (rule score 0, risk 29, below the case threshold); the Brain ranks it **#11 of 132**. Its clinic, **Northgate Wellness Partners**, trips only incidental upcoding/timing rules (risk 49) and is ranked **#9** by the Brain. Both are joined as one network case, **CS-0009**, so the lab no rule would have flagged reaches an investigator.
 
 ### Learning from humans
 Detector weights start at expert priors and update from every recorded decision (*substantiated* vs *cleared*) by MAP logistic estimation with a strong Gaussian prior and non-negative weights. One decision moves a weight by roughly a tenth at most; the weights are recomputed from the decision log, so learning is reproducible and auditable. Learned changes appear in the Brain feed.
@@ -178,7 +179,7 @@ Detector weights start at expert priors and update from every recorded decision 
 - **Discrete-time hazard model:** intervals (0,30], (30,60], (60,90]; covariates frozen at the anchor date; `P60 = 1-(1-h1)(1-h2)` so horizons can never contradict each other.
 - Baseline pooled logistic hazard vs gradient-boosting challenger; the challenger is chosen by a frozen rule (lower training-period log loss) — currently gradient boosting.
 - Sigmoid calibration cross-fitted by provider group on the training period only; temporal holdout with a 90-day purge.
-- Held-out results: AUC 0.951 / 0.950 / 0.935 · Brier 0.055 / 0.039 / 0.032 · calibration error 0.070 / 0.050 / 0.028 (30 / 60 / 90 days). Probabilities capped at 1–97 %.
+- Held-out results: AUC 0.955 / 0.956 / 0.953 · Brier 0.050 / 0.032 / 0.027 · calibration error 0.063 / 0.034 / 0.014 (30 / 60 / 90 days). Probabilities capped at 1–97 %.
 - Local drivers shown per provider.
 
 ### Task models (trained per SIU process) — `spotzi/ai/models/`
@@ -187,8 +188,8 @@ Each model is trained by `python3 -m ai.models.train_all` on synthetic data only
 | Model | Process | Method | Held-out result |
 |---|---|---|---|
 | **Pre-payment line risk** | Operations → Pre-payment | Gradient-boosted trees on 18 behaviour features | see EVALUATION.md (held-out worlds) |
-| **Chart documentation** | Case → Chart review | TF-IDF (word + char) → logistic regression over documented E/M level; parsed time rules | Unseen clinician wording: 100% vs 36% for a keyword reviewer |
-| **Tip triage** | Tips → automatic structuring | Ensemble: TF-IDF → logistic regression + local sentence encoder (bge-small, frozen) → logistic regression; 9 scheme types | Unseen templates and names: **94%** (v1 was 53%; keyword matching 20%). An urgency model failed its test and was not shipped |
+| **Chart documentation** | Case → Chart review | TF-IDF (word + char) → logistic regression over documented E/M level; parsed time rules | Unseen clinician wording: 100% vs 38% for a keyword reviewer |
+| **Tip triage** | Tips → automatic structuring | Ensemble: TF-IDF → logistic regression + local sentence encoder (bge-small, frozen) → logistic regression; 9 scheme types | Unseen templates and names: **93%** (v1 was 54%; keyword matching 20%). An urgency model failed its test and was not shipped |
 | **Case outcome** | Cases / providers | Logistic regression on detector outputs, learned from simulated closed cases | see EVALUATION.md |
 
 Design rule kept in the code: features must mean the same thing in any claims system (no family one-hots or data-completeness artefacts), so models learn behaviour, not the generator.
@@ -412,7 +413,7 @@ api/app.py (FastAPI) ─┬─ intelligence/  briefs · lab · precedents · kno
                       ├─ infra/         auth (sessions, roles, TOTP, OIDC) · dbcompat (PostgreSQL / SQLite)
                       └─ PostgreSQL     users, sessions, decisions, audit, assignments, notes, outbox, scope, tips + AI triage,
                                         documents, chart reviews, custom rules, pre-payment log, recoveries, wiki, settings
-static/  vanilla JS PWA, no build step  ·  tests/test_spotzi.py  41 tests  ·  evaluation/  accuracy scripts
+static/  vanilla JS PWA, no build step  ·  tests/test_spotzi.py  50 tests  ·  evaluation/  accuracy scripts
 ```
 
 **Main API groups:** `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/llm/status`.

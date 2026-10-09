@@ -19,9 +19,9 @@ const api = async (u, opt = {}) => {
 };
 const post = (u, body) => api(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 const FAM = { PRO: "Professional", LAB: "Laboratory", FAC: "Facility", PHARM: "Pharmacy", AMB: "Ambulance", BH: "Behavioral health", HH: "Home health", DME: "DME" };
-const COMP = { risk: "#B91C1C", forecast: "#B45309", dollars: "#57534E", members: "#CA8A04", severity: "#EA580C", evidence: "#18181B" };
+const COMP = { risk: "#B4423C", forecast: "#A0A4AB", dollars: "#5A5E66", members: "#C28A1B", severity: "#D9772B", evidence: "#1E2024" };
 const COMP_L = { risk: "Risk", forecast: "Forecast", dollars: "Dollars", members: "Member impact", severity: "Severity", evidence: "Evidence" };
-const riskColor = r => r < 25 ? "#A8A29E" : r < 40 ? "#CA8A04" : r < 60 ? "#EA580C" : "#B91C1C";
+const riskColor = r => r < 25 ? "#A0A4AB" : r < 40 ? "#C28A1B" : r < 60 ? "#D9772B" : "#B4423C";
 const sevTag = l => `<span class="tag ${l === "Critical" ? "t-crit" : l === "High" ? "t-high" : "t-med"}">${l}</span>`;
 const laneTag = l => `<span class="tag ${l === "Investigate" ? "t-ok" : l === "Needs more data" || l === "Explained by context" ? "t-gray" : l === "Brain lead" ? "t-vio" : "t-high"}">${esc(l)}</span>`;
 
@@ -31,7 +31,7 @@ let toastT;
 function toast(msg) { let t = $(".toast"); if (t) t.remove(); t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 3200); }
 
 /* ------------------------------------------------------------ charts */
-function barsH(items, { fmt = num, color = "#18181B", max } = {}) {
+function barsH(items, { fmt = num, color = "#1E2024", max } = {}) {
   const m = max || Math.max(...items.map(i => i.value), 1);
   return items.map(i => `<div style="display:grid;grid-template-columns:150px 1fr 90px;gap:10px;align-items:center;margin:6px 0"><span class="sm">${esc(i.label)}</span><div class="bar"><i style="width:${Math.max(1, 100 * i.value / m)}%;background:${i.color || color}"></i></div><span class="sm num" style="text-align:right">${fmt(i.value)}</span></div>`).join("");
 }
@@ -41,21 +41,21 @@ function monthChart(rows, { a = "paid", b = "flagged", h = 190 } = {}) {
   let s = `<svg viewBox="0 0 ${W} ${H + 24}" width="100%">`;
   rows.forEach((r, i) => {
     const x = p + i * bw, hh = (H - 20) * r[a] / mx, h2 = (H - 20) * r[b] / mb;
-    s += `<rect x="${x + 2}" y="${H - hh}" width="${bw - 4}" height="${hh}" fill="#E7E5E4"><title>${r.month || r.m}: ${money(r[a])} paid</title></rect>`;
-    s += `<rect x="${x + bw * .25}" y="${H - h2}" width="${bw * .5}" height="${h2}" fill="#B91C1C" opacity=".85"><title>${r.month || r.m}: ${money(r[b])} flagged</title></rect>`;
-    if (i % 3 === 0 || n < 10) s += `<text x="${x + bw / 2}" y="${H + 14}" font-size="10" text-anchor="middle" fill="#78716C">${(r.month || r.m).slice(2)}</text>`;
+    s += `<rect x="${x + 2}" y="${H - hh}" width="${bw - 4}" height="${hh}" fill="#DDE0EA"><title>${r.month || r.m}: ${money(r[a])} paid</title></rect>`;
+    s += `<rect x="${x + bw * .25}" y="${H - h2}" width="${bw * .5}" height="${h2}" fill="#B4423C" opacity=".85"><title>${r.month || r.m}: ${money(r[b])} flagged</title></rect>`;
+    if (i % 3 === 0 || n < 10) s += `<text x="${x + bw / 2}" y="${H + 14}" font-size="10" text-anchor="middle" fill="#6E727A">${(r.month || r.m).slice(2)}</text>`;
   });
-  return s + `</svg><div class="sm mut row"><span><i style="display:inline-block;width:10px;height:10px;background:#E7E5E4"></i> total paid (scale 1)</span><span><i style="display:inline-block;width:10px;height:10px;background:#B91C1C"></i> flagged paid (own scale ${money(mb)})</span></div>`;
+  return s + `</svg><div class="sm mut row"><span><i style="display:inline-block;width:10px;height:10px;background:#DDE0EA"></i> total paid (scale 1)</span><span><i style="display:inline-block;width:10px;height:10px;background:#B4423C"></i> flagged paid (own scale ${money(mb)})</span></div>`;
 }
 function funnel(rows) {
   const mx = Math.log10(rows[0].value + 1);
-  return rows.map((r, i) => `<div style="margin:8px 0"><div class="row sm"><span>${esc(r.label)}</span><span class="sp"></span><b>${num(r.value)}</b></div><div class="bar" style="height:12px"><i style="width:${Math.max(3, 100 * Math.log10(r.value + 1) / mx)}%;background:${["#18181B","#44403C","#78716C","#A8A29E","#B45309","#B91C1C"][i] || "#78716C"}"></i></div></div>`).join("") + `<div class="sm mut">Bar length is log-scaled.</div>`;
+  return rows.map((r, i) => `<div style="margin:8px 0"><div class="row sm"><span>${esc(r.label)}</span><span class="sp"></span><b>${num(r.value)}</b></div><div class="bar" style="height:12px"><i style="width:${Math.max(3, 100 * Math.log10(r.value + 1) / mx)}%;background:${["#1E2024","#3E4566","#6E727A","#A0A4AB","#55595F","#B4423C"][i] || "#6E727A"}"></i></div></div>`).join("") + `<div class="sm mut">Bar length is log-scaled.</div>`;
 }
 function reliability(cal) {
   const W = 260, H = 220, p = 30;
-  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%"><rect x="${p}" y="10" width="${W - p - 10}" height="${H - p - 10}" fill="#fff" stroke="#E7E5E4"/><line x1="${p}" y1="${H - p}" x2="${W - 10}" y2="10" stroke="#A8A29E" stroke-dasharray="4"/>`;
-  cal.forEach(c => { const x = p + (W - p - 10) * c.predicted, y = H - p - (H - p - 10) * c.observed; s += `<circle cx="${x}" cy="${y}" r="${4 + Math.min(8, c.n / 40)}" fill="#18181B" opacity=".75"><title>n=${c.n} predicted ${pc(c.predicted)} observed ${pc(c.observed)}</title></circle>`; });
-  return s + `<text x="${W / 2}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#78716C">predicted probability</text><text transform="translate(10 ${H / 2}) rotate(-90)" text-anchor="middle" font-size="10" fill="#78716C">observed rate</text></svg>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%"><rect x="${p}" y="10" width="${W - p - 10}" height="${H - p - 10}" fill="#fff" stroke="#DDE0EA"/><line x1="${p}" y1="${H - p}" x2="${W - 10}" y2="10" stroke="#A0A4AB" stroke-dasharray="4"/>`;
+  cal.forEach(c => { const x = p + (W - p - 10) * c.predicted, y = H - p - (H - p - 10) * c.observed; s += `<circle cx="${x}" cy="${y}" r="${4 + Math.min(8, c.n / 40)}" fill="#1E2024" opacity=".75"><title>n=${c.n} predicted ${pc(c.predicted)} observed ${pc(c.observed)}</title></circle>`; });
+  return s + `<text x="${W / 2}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#6E727A">predicted probability</text><text transform="translate(10 ${H / 2}) rotate(-90)" text-anchor="middle" font-size="10" fill="#6E727A">observed rate</text></svg>`;
 }
 
 /* ------------------------------------------------------------ graph */
@@ -75,10 +75,10 @@ const EICON = {
   bank: "M3 9.5 12 4.5l9 5 M5 10.5v7 M9.7 10.5v7 M14.3 10.5v7 M19 10.5v7 M3 20h18",
 };
 const ARROW = new Set(["referral", "ordered_tests", "prescribed", "ordered_equipment", "home_care", "behavioral_referral", "transport"]);
-const EDGE = { ordered_tests: { c: "#3F3F46", l: "Ordered tests at" }, prescribed: { c: "#3F3F46", l: "Prescribed (filled at)" }, ordered_equipment: { c: "#3F3F46", l: "Ordered equipment from" },
-  home_care: { c: "#3F3F46", l: "Referred for home care" }, behavioral_referral: { c: "#3F3F46", l: "Referred for behavioral care" }, transport: { c: "#3F3F46", l: "Requested transport" },
-  primary_care: { c: "#78716C", l: "Primary-care physician of" }, practices_at: { c: "#0F766E", l: "Practises at hospital" }, shared_patients: { c: "#A8A29E", l: "Shares many patients" },
-  billed: { c: "#A8A29E", l: "Billed for patient" }, billed_flag: { c: "#B91C1C", l: "Billed — flagged claims" }, admitted: { c: "#0F766E", l: "Admitted (inpatient stay)" }, referral: { c: "#3F3F46", l: "Referral flow" }, ownership: { c: "#B45309", l: "Shared ownership" }, address: { c: "#4D7C0F", l: "Shared address" }, bank: { c: "#7C2D12", l: "Shared bank account" }, shared_members: { c: "#A8A29E", l: "Shared members" } };
+const EDGE = { ordered_tests: { c: "#4A4E55", l: "Ordered tests at" }, prescribed: { c: "#4A4E55", l: "Prescribed (filled at)" }, ordered_equipment: { c: "#4A4E55", l: "Ordered equipment from" },
+  home_care: { c: "#4A4E55", l: "Referred for home care" }, behavioral_referral: { c: "#4A4E55", l: "Referred for behavioral care" }, transport: { c: "#4A4E55", l: "Requested transport" },
+  primary_care: { c: "#6E727A", l: "Primary-care physician of" }, practices_at: { c: "#0F766E", l: "Practises at hospital" }, shared_patients: { c: "#A0A4AB", l: "Shares many patients" },
+  billed: { c: "#A0A4AB", l: "Billed for patient" }, billed_flag: { c: "#B4423C", l: "Billed — flagged claims" }, admitted: { c: "#0F766E", l: "Admitted (inpatient stay)" }, referral: { c: "#4A4E55", l: "Referral flow" }, ownership: { c: "#55595F", l: "Shared ownership" }, address: { c: "#4D7C0F", l: "Shared address" }, bank: { c: "#7B2323", l: "Shared bank account" }, shared_members: { c: "#A0A4AB", l: "Shared members" } };
 const riskBand = r => r >= 60 ? "Critical" : r >= 40 ? "High" : r >= 25 ? "Elevated" : "Low";
 const GRAPHS = {};
 
@@ -122,14 +122,14 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
   const present = new Set(g.edges.map(e => e.kind === "billed" && e.flagged > 0 ? "billed_flag" : e.kind));
   let s = `<div class="graph net" id="${id}-wrap" style="height:${height}px"><svg id="${id}" viewBox="${bx0} ${by0} ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="height:${height}px">
   <defs>${Object.entries(EDGE).map(([k, v]) => `<marker id="${id}-ar-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1.5 10 5 0 8.5z" fill="${v.c}"/></marker>`).join("")}
-  <filter id="${id}-sh" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#18181B" flood-opacity=".10"/></filter></defs><g class="vp">`;
+  <filter id="${id}-sh" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#1E2024" flood-opacity=".10"/></filter></defs><g class="vp">`;
   if (hulls) {
     const byC = {}; ns.forEach(n => { if (n.community >= 0) (byC[n.community] = byC[n.community] || []).push(pos[n.id]); });
     Object.entries(byC).forEach(([c, m]) => {
       if (m.length < 3 || Math.max(...m.map(p => p.n.risk)) < 40 || (hullSet && !hullSet.has(+c))) return;
       const corners = m.flatMap(p => [[p.x - p.w / 2, p.y - p.h / 2], [p.x + p.w / 2, p.y - p.h / 2], [p.x + p.w / 2, p.y + p.h / 2], [p.x - p.w / 2, p.y + p.h / 2]]);
       const pts = hullPts(corners); const minx = Math.min(...pts.map(p => p[0])), top = Math.min(...pts.map(p => p[1]));
-      s += `<g class="hull"><polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="#B91C1C" fill-opacity=".035" stroke="#B91C1C" stroke-opacity=".22" stroke-width="1.2" stroke-dasharray="5 5" stroke-linejoin="round" transform="translate(0,0)"/><text x="${minx}" y="${top - 10}" class="hull-l">COMMUNITY ${+c + 1}</text></g>`;
+      s += `<g class="hull"><polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="#B4423C" fill-opacity=".035" stroke="#B4423C" stroke-opacity=".22" stroke-width="1.2" stroke-dasharray="5 5" stroke-linejoin="round" transform="translate(0,0)"/><text x="${minx}" y="${top - 10}" class="hull-l">COMMUNITY ${+c + 1}</text></g>`;
     });
   }
   const pairN = {};
@@ -152,28 +152,28 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
     const n = p.n, { w, h } = p;
     if (ent(n)) {
       const c = EDGE[n.kind].c;
-      s += `<g class="node ent" data-id="${n.id}" transform="translate(${p.x},${p.y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="5" fill="#FAFAF9" stroke="${c}" stroke-opacity=".55" stroke-dasharray="3 2"/>${icon(EICON[n.kind], -w / 2 + 13, 0, 13, c)}<text x="${-w / 2 + 25}" y="3.8" class="et">${esc(n.label)}</text></g>`;
+      s += `<g class="node ent" data-id="${n.id}" transform="translate(${p.x},${p.y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="5" fill="#F6F7F8" stroke="${c}" stroke-opacity=".55" stroke-dasharray="3 2"/>${icon(EICON[n.kind], -w / 2 + 13, 0, 13, c)}<text x="${-w / 2 + 25}" y="3.8" class="et">${esc(n.label)}</text></g>`;
       return;
     }
     if (pat(n)) {
-      const ic = n.risk >= 60 ? "#B45309" : n.risk >= 30 ? "#CA8A04" : "#A8A29E";
+      const ic = n.risk >= 60 ? "#55595F" : n.risk >= 30 ? "#C28A1B" : "#A0A4AB";
       const PI = "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0";
-      s += `<g class="node prov patient" data-id="${n.id}" data-act="${onNode}" transform="translate(${p.x},${p.y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="#fff" stroke="${n.primary ? "#18181B" : "#D6D3D1"}" stroke-width="${n.primary ? 1.4 : 1}" filter="url(#${id}-sh)"/>${icon(PI, -w / 2 + h / 2, 0, h * .5, "#44403C")}<text x="${-w / 2 + h - 2}" y="${n.primary ? -2 : 4}" class="${n.primary ? "cn" : "pt"}">${esc(n.label.replace("Patient ", ""))}</text>${n.primary ? `<text x="${-w / 2 + h - 2}" y="12" class="cs">Patient</text>` : ""}<rect x="${w / 2 - (n.primary ? 36 : 30)}" y="${n.primary ? -10 : -8}" width="${n.primary ? 28 : 22}" height="${n.primary ? 20 : 16}" rx="${n.primary ? 5 : 8}" fill="${ic}"/><text x="${w / 2 - (n.primary ? 22 : 19)}" y="${n.primary ? 4 : 3.5}" text-anchor="middle" class="rk" style="font-size:${n.primary ? 11 : 9.5}px">${Math.round(n.risk)}</text></g>`;
+      s += `<g class="node prov patient" data-id="${n.id}" data-act="${onNode}" transform="translate(${p.x},${p.y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="#fff" stroke="${n.primary ? "#1E2024" : "#C8CBD0"}" stroke-width="${n.primary ? 1.4 : 1}" filter="url(#${id}-sh)"/>${icon(PI, -w / 2 + h / 2, 0, h * .5, "#3E4566")}<text x="${-w / 2 + h - 2}" y="${n.primary ? -2 : 4}" class="${n.primary ? "cn" : "pt"}">${esc(n.label.replace("Patient ", ""))}</text>${n.primary ? `<text x="${-w / 2 + h - 2}" y="12" class="cs">Patient</text>` : ""}<rect x="${w / 2 - (n.primary ? 36 : 30)}" y="${n.primary ? -10 : -8}" width="${n.primary ? 28 : 22}" height="${n.primary ? 20 : 16}" rx="${n.primary ? 5 : 8}" fill="${ic}"/><text x="${w / 2 - (n.primary ? 22 : 19)}" y="${n.primary ? 4 : 3.5}" text-anchor="middle" class="rk" style="font-size:${n.primary ? 11 : 9.5}px">${Math.round(n.risk)}</text></g>`;
       return;
     }
-    const col = riskColor(n.risk), tint = n.risk >= 60 ? "#FEF2F2" : n.risk >= 40 ? "#FFF7ED" : n.risk >= 25 ? "#FEFCE8" : "#F5F5F4";
+    const col = riskColor(n.risk), tint = n.risk >= 60 ? "#FCE6E6" : n.risk >= 40 ? "#FCEBD9" : n.risk >= 25 ? "#FBF0CF" : "#EEF0F3";
     const isCase = n.primary || n.case_id;
     if (!isCard(n)) {
-      s += `<g class="node prov tile" data-id="${n.id}" data-act="${onNode}" transform="translate(${p.x},${p.y})"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="#fff" stroke="#D6D3D1" filter="url(#${id}-sh)"/>${icon(FICON[n.family] || FICON.PRO, 0, -1.5, 17, "#57534E")}<rect x="-10" y="12.5" width="20" height="2.5" rx="1.25" fill="${col}"/></g>`;
+      s += `<g class="node prov tile" data-id="${n.id}" data-act="${onNode}" transform="translate(${p.x},${p.y})"><rect x="-17" y="-17" width="34" height="34" rx="8" fill="#fff" stroke="#C8CBD0" filter="url(#${id}-sh)"/>${icon(FICON[n.family] || FICON.PRO, 0, -1.5, 17, "#5A5E66")}<rect x="-10" y="12.5" width="20" height="2.5" rx="1.25" fill="${col}"/></g>`;
       return;
     }
     const name = n.label.length > 17 ? n.label.slice(0, 16).trimEnd() + "…" : n.label;
     const sub = `${FAM[n.family]}${n.case_id ? " · " + n.case_id : ""}`;
     s += `<g class="node prov card" data-id="${n.id}" data-act="${onNode}" transform="translate(${p.x},${p.y})">
-      <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="8" fill="#fff" stroke="${isCase ? "#18181B" : "#D6D3D1"}" stroke-width="${isCase ? 1.4 : 1}" filter="url(#${id}-sh)"/>
+      <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="8" fill="#fff" stroke="${isCase ? "#1E2024" : "#C8CBD0"}" stroke-width="${isCase ? 1.4 : 1}" filter="url(#${id}-sh)"/>
       <path d="M${-w / 2 + 8},${-h / 2} h32 v${h} h-32 a8 8 0 0 1 -8 -8 v${-(h - 16)} a8 8 0 0 1 8 -8z" fill="${tint}"/>
-      <line x1="${-w / 2 + 40}" y1="${-h / 2}" x2="${-w / 2 + 40}" y2="${h / 2}" stroke="#EEECEA"/>
-      ${icon(FICON[n.family] || FICON.PRO, -w / 2 + 20, 0, 19, n.risk >= 25 ? col : "#3F3F46")}
+      <line x1="${-w / 2 + 40}" y1="${-h / 2}" x2="${-w / 2 + 40}" y2="${h / 2}" stroke="#E9EBF3"/>
+      ${icon(FICON[n.family] || FICON.PRO, -w / 2 + 20, 0, 19, n.risk >= 25 ? col : "#4A4E55")}
       <text x="${-w / 2 + 49}" y="-3" class="cn"><title>${esc(n.label)}</title>${esc(name)}</text>
       <text x="${-w / 2 + 49}" y="12" class="cs">${esc(sub)}</text>
       <rect x="${w / 2 - 36}" y="-10" width="28" height="20" rx="5" fill="${col}"/>
@@ -188,15 +188,15 @@ function graphHTML(g, { height = 460, onNode = "openProv", id = "g", labelMin = 
 }
 
 function graphLegend(present) {
-  return `<div class="gleg"><div class="row" style="gap:14px;flex-wrap:wrap">${Object.entries(FAM).map(([k, l]) => `<span class="row" style="gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="${FICON[k]}" fill="none" stroke="#3F3F46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${l}</span>`).join("")}</div>
-  <div class="row" style="gap:14px;margin-top:6px;flex-wrap:wrap"><span class="row" style="gap:5px">${[["#B91C1C", "60+"], ["#EA580C", "40–59"], ["#CA8A04", "25–39"], ["#A8A29E", "<25"]].map(([c, l]) => `<span class="rkl" style="background:${c}">${l}</span>`).join("")} risk score</span><span class="row" style="gap:5px"><span class="casel"></span>case provider</span><span class="row" style="gap:5px"><span class="tilel"></span>low-risk provider</span>${Object.entries(EDGE).filter(([k]) => present.has(k)).map(([k, v]) => `<span class="row" style="gap:5px"><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${v.c}" stroke-width="2" ${k === "shared_members" || k === "shared_patients" ? 'stroke-dasharray="1.5 3.5" stroke-linecap="round"' : ARROW.has(k) || k === "billed" || k === "billed_flag" || k === "admitted" ? "" : k === "primary_care" ? 'stroke-dasharray="2 3"' : k === "practices_at" ? 'stroke-dasharray="8 3 2 3"' : 'stroke-dasharray="5 3"'}/></svg>${v.l}</span>`).join("")}</div></div>`;
+  return `<div class="gleg"><div class="row" style="gap:14px;flex-wrap:wrap">${Object.entries(FAM).map(([k, l]) => `<span class="row" style="gap:5px"><svg width="14" height="14" viewBox="0 0 24 24"><path d="${FICON[k]}" fill="none" stroke="#4A4E55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${l}</span>`).join("")}</div>
+  <div class="row" style="gap:14px;margin-top:6px;flex-wrap:wrap"><span class="row" style="gap:5px">${[["#B4423C", "60+"], ["#D9772B", "40–59"], ["#C28A1B", "25–39"], ["#A0A4AB", "<25"]].map(([c, l]) => `<span class="rkl" style="background:${c}">${l}</span>`).join("")} risk score</span><span class="row" style="gap:5px"><span class="casel"></span>case provider</span><span class="row" style="gap:5px"><span class="tilel"></span>low-risk provider</span>${Object.entries(EDGE).filter(([k]) => present.has(k)).map(([k, v]) => `<span class="row" style="gap:5px"><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="${v.c}" stroke-width="2" ${k === "shared_members" || k === "shared_patients" ? 'stroke-dasharray="1.5 3.5" stroke-linecap="round"' : ARROW.has(k) || k === "billed" || k === "billed_flag" || k === "admitted" ? "" : k === "primary_care" ? 'stroke-dasharray="2 3"' : k === "practices_at" ? 'stroke-dasharray="8 3 2 3"' : 'stroke-dasharray="5 3"'}/></svg>${v.l}</span>`).join("")}</div></div>`;
 }
 
 // card + click behaviour shared by the 2D (SVG) and 3D (three.js) views
 function nodeCard(n, G) {
   return n.kind && n.kind !== "provider" && n.kind !== "patient"
     ? `<div class="b">${esc(n.label)}</div><div class="sm mut">${EDGE[n.kind].l} shared by ${(G.adj[n.id] || []).length} providers</div>`
-    : `<div class="row" style="gap:10px;align-items:flex-start"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none;margin-top:2px"><path d="${FICON[n.family] || FICON.PRO}" fill="none" stroke="#18181B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="b">${esc(n.label)}</div><div class="sm mut">${FAM[n.family] || (n.kind === "patient" ? "Patient" : "")}${n.city ? " · " + esc(n.city) : ""}</div></div></div>
+    : `<div class="row" style="gap:10px;align-items:flex-start"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none;margin-top:2px"><path d="${FICON[n.family] || FICON.PRO}" fill="none" stroke="#1E2024" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="b">${esc(n.label)}</div><div class="sm mut">${FAM[n.family] || (n.kind === "patient" ? "Patient" : "")}${n.city ? " · " + esc(n.city) : ""}</div></div></div>
        <div class="gstats"><div><span>Risk</span><b style="color:${riskColor(n.risk)}">${Math.round(n.risk)}</b><em>${riskBand(n.risk)}</em></div>${n.brain != null ? `<div><span>Brain</span><b>${Math.round(n.brain * 100)}</b></div>` : ""}${n.lines != null ? `<div><span>Lines 180d</span><b>${num(n.lines)}</b></div>` : ""}<div><span>Links</span><b>${(G.adj[n.id] || []).length}</b></div></div>
        ${n.rule != null ? `<div class="sm mut">Rules ${Math.round(n.rule * 100)} · Anomaly ${pc(n.anomaly)}</div>` : ""}${n.case_id ? `<div class="sm" style="margin-top:4px">In case <b>${n.case_id}</b></div>` : ""}`;
 }
@@ -277,16 +277,87 @@ function wireGraph(id) {
 }
 
 /* ------------------------------------------------------------ shell */
-const NAV = [["#Work"], ["my", "My work", "◎"], ["queue", "SIU queue", "☰"], ["prepay", "Claim check", "✓"], ["tips", "Tips", "✉"],
-  ["#Intelligence"], ["overview", "Overview", "◧"], ["brain", "Nexus Brain", "◉"], ["network", "Link analysis", "◎"], ["explorer", "Providers & claims", "⌕"], ["knowledge", "Knowledge", "▣"],
-  ["#Operations"], ["outcomes", "Outcomes & reports", "$"], ["rules", "Rule studio", "ƒ"], ["data", "Data & pipeline", "▤"], ["governance", "Governance", "⛨"]];
-function shell(inner) {
-  const st = S.status, run = st?.run;
-  return `<aside><div class="logo"><div class="mk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FAFAF9" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/><circle cx="11" cy="11" r="1.6" fill="#F59E0B" stroke="none"/></svg></div><div><b>SpotZ<sup>i</sup></b><small>FWA intelligence · SIU</small></div></div>
-  ${NAV.map(([k, l, i]) => k.startsWith("#") ? `<div class="navsec">${k.slice(1)}</div>` : `<button class="nav ${S.view === k || (S.view === "case" && k === "queue") || (S.view === "provider" && k === "explorer") ? "on" : ""}" data-nav="${k}"><span class="ic">${i}</span><span>${l}</span>${k === "queue" && S.queue ? `<span class="n">${S.queue.queue.filter(r => r.status !== "Closed").length}</span>` : ""}${k === "my" && S.unread ? `<span class="n" style="color:var(--accent);font-weight:600">${S.unread}</span>` : ""}</button>`).join("")}
-  <div class="side-foot"><div><span class="dot ${st?.state === "running" ? "run" : ""}"></span><b>${st?.state === "running" ? "Analysing…" : "Analysis current"}</b></div>${run ? `<div>${run.run_id}</div><div>As of ${run.as_of}</div><div>${run.ruleset} · ${run.model}</div>` : ""}<div style="margin-top:6px">SYNTHETIC DATA ONLY</div>${S.user ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"><b>${esc(S.user.name)}</b><div>${esc(S.user.role)}</div><div class="row" style="margin-top:6px;gap:6px"><a class="btn sm" href="#/settings">Settings</a>${S.user.role === "admin" ? '<a class="btn sm" href="#/users">Users</a>' : ""}<button class="btn sm" id="logout">Sign out</button></div></div>` : ""}</div></aside><main>${inner}</main>`;
+const NAV = [["#Work"], ["my", "My work"], ["queue", "SIU queue"], ["prepay", "Claim check"], ["tips", "Tips"],
+  ["#Intelligence"], ["overview", "Overview"], ["brain", "Nexus Brain"], ["network", "Link analysis"], ["explorer", "Providers & claims"], ["knowledge", "Knowledge"],
+  ["#Operations"], ["outcomes", "Outcomes & reports"], ["rules", "Rule studio"], ["data", "Data & pipeline"], ["governance", "Governance"]];
+const NAVIC = {
+  my: '<circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.7 3.6-5.6 7-5.6s6.2 1.9 7 5.6"/>',
+  queue: '<path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M14 3.5V8h4M9.5 13h5M9.5 16.5h5"/>',
+  prepay: '<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.3 2.4 2.4 4.6-5"/>',
+  tips: '<rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="m4.5 7.5 7.5 5.5 7.5-5.5"/>',
+  overview: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/>',
+  brain: '<path d="M12 3.5v17M12 7.5c-2.5-2-6-1-6 2 0 1 .4 1.7 1 2.2-1 .7-1.5 1.6-1.5 2.6 0 2 2 3.2 3.7 2.7M12 7.5c2.5-2 6-1 6 2 0 1-.4 1.7-1 2.2 1 .7 1.5 1.6 1.5 2.6 0 2-2 3.2-3.7 2.7"/>',
+  network: '<circle cx="6" cy="7" r="2.3"/><circle cx="18" cy="6" r="2.3"/><circle cx="12" cy="18" r="2.3"/><path d="m8 8 2.8 7.6M16.2 7.7 13.4 15.7M8.3 6.8l7.4-.6"/>',
+  explorer: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  knowledge: '<path d="M4 5.5c2.7-1 5.3-.8 8 1 2.7-1.8 5.3-2 8-1v13c-2.7-1-5.3-.8-8 1-2.7-1.8-5.3-2-8-1z"/><path d="M12 6.5v13"/>',
+  outcomes: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+  rules: '<path d="M5 8h9M18 8h1M5 16h1M10 16h9"/><circle cx="16" cy="8" r="2"/><circle cx="8" cy="16" r="2"/>',
+  data: '<ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/>',
+  governance: '<path d="M12 3.5 5 6v5.5c0 4.2 2.8 7.4 7 9 4.2-1.6 7-4.8 7-9V6z"/><path d="m9 12 2.2 2.2L15.2 10"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/>',
+  users: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.7-3.3 2.9-5 5.5-5s4.8 1.7 5.5 5M16 5.5a3 3 0 0 1 0 6M17.5 14.8c1.7.5 2.8 2 3.2 4.7"/>',
+  out: '<path d="M14 4.5h4a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-4M10 8l-4 4 4 4M6 12h9"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  bell: '<path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 2h-14z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  chevl: '<path d="m14.5 6-6 6 6 6"/>', chevr: '<path d="m9.5 6 6 6-6 6"/>', back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  panel: '<rect x="4" y="4.5" width="16" height="15" rx="2.5"/><path d="M14.5 4.5v15M10 10l-2 2 2 2"/>',
+  panelr: '<rect x="4" y="4.5" width="16" height="15" rx="2.5"/><path d="M14.5 4.5v15M8 10l2 2-2 2"/>',
+  shield: '<path d="M12 3.5 5 6v5.5c0 4.2 2.8 7.4 7 9 4.2-1.6 7-4.8 7-9V6z"/><path d="m9 12 2.2 2.2L15.2 10"/>',
+  file: '<path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M14 3.5V8h4M9.5 13h5M9.5 16.5h5"/>',
+  alert: '<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4M12 17.3v.1"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  checkc: '<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.3 2.4 2.4 4.6-5"/>',
+  clip: '<rect x="5.5" y="4.5" width="13" height="16" rx="2"/><path d="M9 4.5h6v2.5H9zM9 13l2 2 4-4"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  trend: '<path d="m3.5 16.5 6-6 4 4 7-7"/><path d="M15 7.5h5.5V13"/>',
+  trenddn: '<path d="m3.5 7.5 6 6 4-4 7 7"/><path d="M15 16.5h5.5V11"/>',
+  help: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6M12 17.2v.1"/>',
+  filter: '<path d="M4 5h16l-6 7.5V19l-4-2v-4.5z"/>',
+  cal: '<rect x="4" y="5.5" width="16" height="14" rx="2.5"/><path d="M8 3.5v4M16 3.5v4M4 10h16"/>',
+  note: '<rect x="4.5" y="4.5" width="15" height="15" rx="2.5"/><path d="M8 9h8M8 12.5h8M8 16h5"/>',
+  x: '<path d="m6 6 12 12M18 6 6 18"/>',
+  users2: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.7-3.3 2.9-5 5.5-5s4.8 1.7 5.5 5M16 5.5a3 3 0 0 1 0 6M17.5 14.8c1.7.5 2.8 2 3.2 4.7"/>'
+};
+const ico = (k, s = 18) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAVIC[k] || ""}</svg>`;
+const navKey = () => S.view === "case" ? "queue" : S.view === "provider" ? "explorer" : S.view;
+function navSection(k) { let sec = "Workspace"; for (const [a] of NAV) { if (a.startsWith("#")) sec = a.slice(1); else if (a === k) return sec; } return "Workspace"; }
+function crumbs() {
+  const k = navKey(), hit = NAV.find(n => n[0] === k), out = [];
+  if (S.view === "settings") out.push("Workspace", "Settings"); else if (S.view === "users") out.push("Workspace", "Users");
+  else { out.push(navSection(k)); if (hit) out.push(hit[1]); if ((S.view === "case" || S.view === "provider") && S.arg) out.push(decodeURIComponent(S.arg)); }
+  return out;
 }
-function hdr(title, sub, extra = "") { return `<div class="top"><div><h1>${title}</h1><p>${sub}</p></div><div class="sp"></div>${extra}</div>`; }
+const initials = n => (n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map(x => x[0].toUpperCase()).join("");
+const UI = { sb: localStorage.getItem("spotzi.sb") === "1", ctx: JSON.parse(localStorage.getItem("spotzi.ctx") || "{}"), sel: null, qf: { lane: "", sev: "", asg: "", q: "" } };
+const CTX_DEFAULT = ["overview", "queue", "my"];
+const ctxOpen = () => UI.ctx[S.view] ?? CTX_DEFAULT.includes(S.view);
+const riskLvl = r => r >= 60 ? ["high", "t-crit"] : r >= 40 ? ["elevated", "t-high"] : r >= 25 ? ["medium", "t-med"] : ["low", "t-ok"];
+const riskPill = r => { const [l, c] = riskLvl(r); return `<span class="tag ${c}">${Math.round(r)} · ${l}</span>`; };
+const riskNum = r => `<span class="rnum ${riskLvl(r)[1]}">${Math.round(r)}</span>`;
+const kpiI = (l, v, s2, ic) => `<div class="card kpi"><div class="kh"><div class="l">${l}</div>${ic ? `<span class="ki">${ico(ic, 17)}</span>` : ""}</div><div class="v">${v}</div><div class="s">${s2 || ""}</div></div>`;
+const STATUS_IC = { New: "file", "In investigation": "clock", "Awaiting information": "file", Monitoring: "clock", "Pending supervisor approval": "clip", Closed: "checkc", "Referral approved": "checkc" };
+const STATUS_C = { New: "t-gray", "In investigation": "t-blue", "Awaiting information": "t-med", Monitoring: "t-blue", "Pending supervisor approval": "t-vio", Closed: "t-ok", "Referral approved": "t-ok" };
+const statusTag = st => `<span class="tag ${STATUS_C[st] || "t-blue"}">${ico(STATUS_IC[st] || "clock", 13)}${esc(st)}</span>`;
+function shell(inner) {
+  const st = S.status, run = st?.run, k = navKey(), cr = crumbs(), busy = st?.state === "running", co = ctxOpen();
+  const navBtn = (key, label, extra = "") => `<button class="nav ${S.view === key || k === key ? "on" : ""}" data-nav="${key}" title="${label}"><span class="ic">${ico(key)}</span><span>${label}</span>${extra}</button>`;
+  document.getElementById("app")?.classList.toggle("sb-min", UI.sb);
+  document.getElementById("app")?.classList.toggle("ctx-on", co);
+  return `<aside class="side"><div class="logo"><div class="mk">${ico("shield", 20)}</div><div><b>SpotZ<sup>i</sup></b><small>ClaimShield Nexus</small></div><button class="sbtog" id="sbtog" title="${UI.sb ? "Expand" : "Collapse"} sidebar" aria-label="Toggle sidebar">${ico(UI.sb ? "chevr" : "chevl", 15)}</button></div>
+  ${NAV.map(([key, l]) => key.startsWith("#") ? `<div class="navsec">${key.slice(1)}</div>` : navBtn(key, l, `${key === "queue" && S.queue ? `<span class="n">${S.queue.queue.filter(r => r.status !== "Closed").length}</span>` : ""}${key === "my" && S.unread ? `<span class="n" style="color:var(--accent-ink);font-weight:600">${S.unread}</span>` : ""}`)).join("")}
+  <div class="side-foot"><div class="side-stat"><div><span class="dot ${busy ? "run" : ""}"></span><b>${busy ? "Analysing…" : "Analysis current"}</b></div>${run ? `<span class="mono" title="${esc(run.ruleset)} · ${esc(run.model)}">${run.run_id} · as of ${run.as_of}</span>` : ""}<span class="mono" style="margin-top:3px;letter-spacing:.08em">SYNTHETIC DATA ONLY</span></div>
+  ${S.user ? `<div class="side-links">${navBtn("settings", "Settings")}${S.user.role === "admin" ? navBtn("users", "Users") : ""}</div>
+  <div class="usercard"><div class="av">${esc(initials(S.user.name))}</div><div><b>${esc(S.user.name)}</b><span>${esc(ROLE_L[S.user.role] || S.user.role)}</span></div><button class="out" id="logout" title="Sign out" aria-label="Sign out">${ico("out")}</button></div>` : ""}</div></aside>
+  <section class="stage"><header class="topbar"><nav class="crumbs"><span>SpotZ<sup style="color:var(--accent)">i</sup></span>${cr.slice(-2).map((c, i, a) => `<i>›</i>${i === a.length - 1 ? `<b>${esc(c)}</b>` : `<span>${esc(c)}</span>`}`).join("")}</nav>
+  <div class="gsearch"><span class="gi">${ico("search", 17)}</span><input type="text" id="gq" placeholder="Search cases, providers, members…" autocomplete="off" value="${esc(UI.gq || "")}"><div id="gres"></div></div>
+  <button class="iconbtn" data-nav="my" title="Notifications" aria-label="Notifications">${ico("bell", 18)}${S.unread ? `<i class="bdot"></i>` : ""}</button>
+  <button class="btn pri" id="newcase" title="Log a new lead for triage">${ico("plus", 16)}New lead</button></header><main>${inner}</main></section>
+  ${co ? `<aside class="ctx" id="ctx"><div class="ctxh"><div><span class="eyebrow">Context</span><div class="ctxt">${S.view === "queue" ? "Case focus" : S.view === "case" ? "Case focus" : "Today’s focus"}</div></div><button class="iconbtn sm" data-ctx="0" title="Hide context panel" aria-label="Hide context panel">${ico("panelr", 17)}</button></div><div id="ctxb"><div class="loading" style="padding:30px"><span class="spin"></span></div></div></aside>`
+    : `<button class="iconbtn ctxopen" data-ctx="1" title="Show context panel" aria-label="Show context panel">${ico("panel", 17)}</button>`}`;
+}
+const ROLE_L = { investigator: "SIU investigator", supervisor: "SIU supervisor", analyst: "Data analyst", admin: "Administrator" };
+function hdr(title, sub, extra = "") { const ey = ["settings", "users"].includes(S.view) ? "Workspace" : navSection(navKey()); return `<div class="top"><div><span class="eyebrow">${ey}</span><h1>${title}</h1><p>${sub}</p></div><div class="sp"></div>${extra}</div>`; }
 const loading = m => `<div class="loading"><span class="spin"></span>${m || "Loading…"}</div>`;
 
 /* ------------------------------------------------------------ router */
@@ -320,51 +391,80 @@ async function loadQueue() {
 }
 
 /* ------------------------------------------------------------ overview */
+const greet = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; };
+const today = () => new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+const firstName = () => (S.user?.name || "").split(" ")[0];
+function trendChart(vals, { w = 420, h = 130 } = {}) {
+  if (vals.length < 2) return "";
+  const mx = Math.max(...vals) * 1.15, mn = Math.min(...vals) * .85, x = i => 6 + i * (w - 12) / (vals.length - 1), y = v => 8 + (h - 16) * (1 - (v - mn) / (mx - mn || 1));
+  const pts = vals.map((v, i) => [x(i), y(v)]);
+  const d = pts.map((p, i) => { if (!i) return `M${p[0]},${p[1]}`; const q = pts[i - 1], cx = (q[0] + p[0]) / 2; return `C${cx},${q[1]} ${cx},${p[1]} ${p[0]},${p[1]}`; }).join(" ");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" class="trend"><defs><linearGradient id="tg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#6E727A" stop-opacity=".32"/><stop offset="1" stop-color="#6E727A" stop-opacity="0"/></linearGradient></defs><path d="${d} L${x(vals.length - 1)},${h} L${x(0)},${h}Z" fill="url(#tg)"/><path d="${d}" fill="none" stroke="#6E727A" stroke-width="2.4" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>`;
+}
+const LANE_IC = { Investigate: "file", "Validate context first": "clock", "Explained by context": "checkc", "Needs more data": "note", "Brain lead": "spark" };
+function focusList(rows) {
+  return `<div class="flist">${rows.map(r => `<button class="frow" data-go="case/${r.case_id}"><span class="fav">${esc(initials(r.title.replace(/\+.*$/, "")))}</span><span class="ft"><b>${esc(r.title)}</b><span>${r.case_id} · ${esc(r.type)}</span></span><span class="fx"><span>Exposure</span><b>${money(r.exposure)}</b></span>${riskPill(r.risk)}<span class="fch">${ico("chevr", 16)}</span></button>`).join("")}</div>`;
+}
+function portfolio(q) {
+  const rows = q.queue, n = rows.length || 1, by = {};
+  rows.forEach(r => { by[r.lane] = (by[r.lane] || 0) + 1; });
+  const mx = Math.max(...Object.values(by), 1);
+  return `<div class="pbal">${Object.entries(by).sort((a, b) => b[1] - a[1]).map(([l, c]) => `<div class="pb"><div class="row"><span class="pic">${ico(LANE_IC[l] || "file", 15)}</span><span>${esc(l)}</span><span class="sp"></span><b>${c}</b></div><div class="bar"><i style="width:${c / mx * 100}%"></i></div></div>`).join("")}</div>
+  <div class="insight">${ico("trend", 17)}<div><b>${rows.filter(r => r.capacity === "within").length} of ${n} cases fit this cycle</b><span>${q.used_hours}h scheduled of a ${q.capacity_hours}h review budget · ${rows.filter(r => r.network).length} network cases span several providers.</span></div></div>`;
+}
 async function vOverview() {
   const [o, q] = await Promise.all([api(`overview?horizon=${S.horizon}&capacity=${capacity()}`), loadQueue()]);
   const k = o.kpis, ev = o.run.evaluation;
-  return hdr("Overview", `Portfolio as of ${o.run.as_of} · ${num(k.lines)} synthetic claim lines → ${k.cases} evidence-backed cases`, `<a class="btn pri" href="#/queue">Open SIU queue →</a>`) +
-    `<div class="journey"><div><b>1 · Load</b><span>9 tables validated</span></div><div><b>2 · Detect</b><span>7 rules + Isolation Forest</span></div><div><b>3 · Connect</b><span>ownership, referral, member graph</span></div><div><b>4 · Forecast</b><span>30/60/90-day repeat risk</span></div><div><b>5 · Rank</b><span>risk × dollars × capacity</span></div><div><b>6 · Investigate</b><span>brief, challenge, human decision</span></div></div>
-    <div class="grid g5"><div class="card kpi"><div class="l">Alerts raised</div><div class="v">${num(k.flagged_lines)}</div><div class="s">flagged claim lines (${pc(k.flagged_lines / k.lines, 1)} of volume)</div></div>
-    <div class="card kpi"><div class="l">Ranked cases</div><div class="v">${k.cases}</div><div class="s">${k.critical} critical · ${k.escalating} escalating</div></div>
-    <div class="card kpi"><div class="l">Potential exposure</div><div class="v">${money(k.exposure)}</div><div class="s">gross flagged dollars, not recovery</div></div>
-    <div class="card kpi"><div class="l">Members touched</div><div class="v">${num(k.members)}</div><div class="s">in flagged case lines</div></div>
-    <div class="card kpi"><div class="l">Inside capacity</div><div class="v">${k.within}<span class="mut" style="font-size:14px"> / ${k.cases}</span></div><div class="s">${k.hours}h of ${capacity()}h budget</div></div></div>
-    <div class="grid g21" style="margin-top:14px"><div class="card"><h3>Top priorities <small>horizon ${S.horizon} days</small></h3>${queueTable(q.queue.slice(0, 5), false)}</div>
-    <div class="card"><h3>From alerts to action</h3>${funnel(o.funnel)}</div></div>
-    <div class="grid g3" style="margin-top:14px"><div class="card"><h3>Flagged lines by rule</h3>${barsH(o.by_rule.map(r => ({ label: r.name, value: r.lines })))}<div class="sm mut">Rules overlap; one line can trigger several.</div></div>
-    <div class="card"><h3>Flagged dollars by family</h3>${barsH(o.by_family.map(r => ({ label: FAM[r.family], value: r.paid })).sort((a, b) => b.value - a.value), { fmt: money, color: "#B91C1C" })}</div>
-    <div class="card"><h3>Monthly paid vs flagged</h3>${monthChart(o.monthly.map(m => ({ month: m.m, paid: m.paid, flagged: m.flagged })))}</div></div>
-    ${ev?.total_lines ? `<div class="banner blue" style="margin-top:14px"><b>Synthetic self-check.</b> Against hidden scenario labels the queue's top 5 cases are ${pc(ev.precision_at_5)} true-pattern, case recall of seeded bad actors is ${pc(ev.provider_recall)}, and line-level precision is ${pc(ev.line_precision)}. Not evidence of real-world performance — see Governance. ${ev.decoys_in_cases?.length ? `Decoys that look suspicious but are benign (e.g. oncology, dialysis) are deliberately included so the system must express uncertainty.` : ""}</div>` : ""}`;
+  const share = o.monthly.slice(-8).map(m => m.paid ? m.flagged / m.paid : 0);
+  const delta = share.length > 1 ? (share[share.length - 1] - share[0]) / (share[0] || 1) : 0;
+  const crit = q.queue.filter(r => r.severity_label === "Critical" && r.lane === "Investigate");
+  const mon = m => new Date(m + "-01T00:00").toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+  return `<div class="top"><div><span class="eyebrow">${today()}</span><h1>${greet()}, ${esc(firstName())}</h1><p>A calm, current view of the cases that need your attention · analysis as of ${o.run.as_of}.</p></div></div>
+    <div class="card hero"><div class="hl"><span class="pill">${ico("spark", 14)}Investigation pulse</span><h2>${crit.length} critical case${crit.length === 1 ? "" : "s"} need${crit.length === 1 ? "s" : ""} a decision this cycle</h2><p>${num(k.flagged_lines)} flagged claim lines were condensed into ${k.cases} evidence-backed cases. ${k.within} fit the current review capacity${k.escalating ? `, and ${k.escalating} are escalating` : ""}.</p><a class="btn pri" href="#/queue">Open SIU queue ${ico("chevr", 15)}</a></div>
+    <div class="hc"><div class="row"><span class="mut">Flagged-dollar share trend</span><span class="sp"></span><span class="tdelta ${delta <= 0 ? "dn" : "up"}">${ico(delta <= 0 ? "trenddn" : "trend", 26)}${Math.abs(delta * 100).toFixed(0)}%</span></div>${trendChart(share)}<div class="row mono mut"><span>${mon(o.monthly.slice(-8)[0].m)}</span><span class="sp"></span><span>${mon(o.monthly[o.monthly.length - 1].m)}</span></div></div></div>
+    <div class="grid g4" style="margin-top:16px">${kpiI("Active exposure", money(k.exposure), `${k.cases} ranked cases · not recovery`, "file")}${kpiI("Critical cases", k.critical, `${k.escalating} escalating`, "alert")}${kpiI("Alerts raised", num(k.flagged_lines), `${pc(k.flagged_lines / k.lines, 1)} of ${num(k.lines)} lines`, "note")}${kpiI("Inside capacity", `${k.within}<span class="mut" style="font-size:15px"> / ${k.cases}</span>`, `${k.hours}h of ${capacity()}h budget`, "clip")}</div>
+    <div class="card flush" style="margin-top:16px"><div class="ch"><div><h3>Investigator focus<small>Priority cases · ${S.horizon}-day horizon</small></h3></div><a class="btn" href="#/queue">View full queue</a></div>${focusList(q.queue.slice(0, 5))}</div>
+    <div class="card flush" style="margin-top:16px"><div class="ch"><h3>Current portfolio<small>Workflow balance</small></h3></div><div style="padding:16px 22px 20px">${portfolio(q)}</div></div>
+    <div class="sech">Pipeline &amp; analytics</div>
+    <div class="journey"><div><b>1 · Load</b><span>9 tables validated</span></div><div><b>2 · Detect</b><span>rules + Isolation Forest</span></div><div><b>3 · Connect</b><span>ownership, referral, member graph</span></div><div><b>4 · Forecast</b><span>30/60/90-day repeat risk</span></div><div><b>5 · Rank</b><span>risk × dollars × capacity</span></div><div><b>6 · Investigate</b><span>brief, challenge, human decision</span></div></div>
+    <div class="grid g2"><div class="card"><h3>From alerts to action</h3>${funnel(o.funnel)}</div><div class="card"><h3>Monthly paid vs flagged</h3>${monthChart(o.monthly.map(m => ({ month: m.m, paid: m.paid, flagged: m.flagged })))}</div></div>
+    <div class="grid g2" style="margin-top:16px"><div class="card"><h3>Flagged lines by rule</h3>${barsH(o.by_rule.map(r => ({ label: r.name, value: r.lines })))}<div class="sm mut">Rules overlap; one line can trigger several.</div></div>
+    <div class="card"><h3>Flagged dollars by family</h3>${barsH(o.by_family.map(r => ({ label: FAM[r.family], value: r.paid })).sort((a, b) => b.value - a.value), { fmt: money, color: "#B4423C" })}</div></div>
+    ${ev?.total_lines ? `<div class="banner blue" style="margin-top:16px"><b>Synthetic self-check.</b> Against hidden scenario labels the queue's top 5 cases are ${pc(ev.precision_at_5)} true-pattern, case recall of seeded bad actors is ${pc(ev.provider_recall)}, and line-level precision is ${pc(ev.line_precision)}. Not evidence of real-world performance — see Governance. ${ev.decoys_in_cases?.length ? `Decoys that look suspicious but are benign (e.g. oncology, dialysis) are deliberately included so the system must express uncertainty.` : ""}</div>` : ""}`;
 }
 
 /* ------------------------------------------------------------ queue */
 function stackBar(r) { return `<div class="stack" title="${Object.entries(r.contributions).map(([k, v]) => COMP_L[k] + " " + v).join(" · ")}">${Object.entries(r.contributions).map(([k, v]) => `<i style="width:${v / 100 * 100 * 1.0}%;background:${COMP[k]}"></i>`).join("")}</div>`; }
-function queueTable(rows, cut = true) {
-  let out = `<div style="overflow:auto"><table><tr><th>#</th><th>Case</th><th>Priority</th><th class="num">Risk</th><th class="num">Brain</th><th class="num">${S.horizon}d fcst</th><th class="num">Exposure</th><th class="num">Members</th><th>Severity</th><th class="num">Evidence</th><th class="num">Hours</th><th>Lane / status</th></tr>`;
-  let cutDone = false;
-  rows.forEach((r, i) => {
-    out += `<tr class="click" data-go="case/${r.case_id}"><td class="b">${r.rank}</td><td style="min-width:260px"><div class="b">${esc(r.title)}</div><div class="sm mut">${r.case_id} · ${esc(r.type)} ${r.network ? `<span class="tag t-vio">network · ${r.n_providers}</span>` : ""} ${r.escalating ? `<span class="tag t-high">escalating</span>` : ""}</div></td>
-    <td style="min-width:150px"><div class="row"><b style="width:36px">${r.priority}</b>${stackBar(r)}</div></td><td class="num">${Math.round(r.risk)}</td><td class="num">${r.brain == null ? "–" : Math.round(r.brain * 100)}</td><td class="num">${r.forecast == null ? "–" : r.forecast + "%"}</td><td class="num">${money(r.exposure)}</td><td class="num">${r.members}${r.vulnerable ? `<span class="mut sm"> (${r.vulnerable}↑)</span>` : ""}</td><td>${sevTag(r.severity_label)}</td>
-    <td class="num">${Math.round(r.evidence)}</td><td class="num">${r.effort_hours}</td><td>${r.assignee ? `<span class="tag t-med">${esc(r.assignee)}</span> ` : ""}${laneTag(r.lane)} ${r.status !== "New" ? `<span class="tag t-vio">${r.status}</span>` : ""} ${r.capacity === "within" ? `<span class="tag t-ok">✓ scheduled</span>` : r.capacity === "closed" ? "" : `<span class="tag t-gray">${r.lane === "Needs more data" ? "not scheduled" : "over capacity"}</span>`}</td></tr>`;
-  });
-  return out + `</table></div>`;
+function queueTable(rows) {
+  const sel = UI.sel || rows[0]?.case_id;
+  return `<div class="qwrap"><table class="qt"><thead><tr><th class="stk">Case / provider</th><th>Priority</th><th>Risk</th><th class="num">${S.horizon}d fcst</th><th class="num">Exposure</th><th class="num">Members</th><th class="num">Evidence</th><th class="num">Hours</th><th>Lane</th><th>Status</th><th>Assignee</th></tr></thead><tbody>${rows.map(r => `<tr class="click ${ctxOpen() && r.case_id === sel ? "sel" : ""}" data-sel="${r.case_id}"><td class="stk"><div class="row" style="gap:12px"><span class="rk">${r.rank}</span><div><a class="b qa" href="#/case/${r.case_id}">${esc(r.title)}</a><div class="sm mut">${r.case_id} · ${esc(r.type)}</div><div class="pill-row" style="margin-top:4px">${r.network ? `<span class="tag t-vio">network · ${r.n_providers}</span>` : ""}${r.escalating ? `<span class="tag t-high">escalating</span>` : ""}${r.capacity === "within" ? `<span class="tag t-ok">✓ scheduled</span>` : r.capacity === "closed" ? "" : `<span class="tag t-gray">${r.lane === "Needs more data" ? "not scheduled" : "over capacity"}</span>`}</div></div></div></td>
+    <td style="min-width:150px"><div class="row"><b class="mono" style="width:34px">${Math.round(r.priority)}</b>${stackBar(r)}</div></td><td>${riskPill(r.risk)}</td><td class="num">${r.forecast == null ? "–" : r.forecast + "%"}</td><td class="num">${money(r.exposure)}</td><td class="num">${r.members}${r.vulnerable ? `<span class="mut sm"> (${r.vulnerable}↑)</span>` : ""}</td>
+    <td class="num">${Math.round(r.evidence)}</td><td class="num">${r.effort_hours}</td><td>${laneTag(r.lane)}</td><td>${statusTag(r.status)}</td><td>${r.assignee ? `<span class="who"><span class="av2">${esc(initials(r.assignee))}</span>${esc(r.assignee)}</span>` : '<span class="mut sm">Unassigned</span>'}</td></tr>`).join("")}</tbody></table></div>`;
+}
+function qFiltered(q) {
+  const f = UI.qf, t = f.q.trim().toLowerCase();
+  return q.queue.filter(r => (!f.lane || r.lane === f.lane) && (!f.sev || r.severity_label === f.sev) && (!f.asg || (f.asg === "-" ? !r.assignee : r.assignee === f.asg)) && (!t || `${r.case_id} ${r.title} ${r.type}`.toLowerCase().includes(t)));
 }
 async function vQueue() {
   const q = await loadQueue();
-  const w = S.weights;
-  return hdr("SIU queue", "Cases ranked by risk, forecast, potential dollars, member impact, severity and evidence — packed into the review capacity you set.",
-    `<div class="seg" id="hz">${[30, 60, 90].map(h => `<button data-hz="${h}" class="${S.horizon === h ? "on" : ""}">${h}-day</button>`).join("")}</div><a class="btn" href="/api/queue.csv?horizon=${S.horizon}&capacity=${capacity()}">Export CSV</a>`) +
-    `<div class="grid g2"><div class="card"><h3>Review capacity</h3><div class="grid g3"><div><label class="f">Investigators</label><input type="number" min="1" max="40" value="${S.inv}" data-cap="inv"></div><div><label class="f">Hours / week</label><input type="number" min="1" max="60" value="${S.hrs}" data-cap="hrs"></div><div><label class="f">Weeks</label><input type="number" min="1" max="26" value="${S.weeks}" data-cap="weeks"></div></div>
-    <div class="sm mut" style="margin-top:8px">Budget <b>${capacity()}h</b> · scheduled <b>${q.used_hours}h</b> · ${q.queue.filter(r => r.capacity === "within").length} cases fit. Effort = 8h + 7h per primary provider + √flagged lines + member-sample time.</div>
-    </div><div class="card"><h3>Priority weights <button class="btn sm" id="wreset" style="float:right">Reset</button></h3>
-    ${Object.keys(w).map(k => `<div class="row sm"><span style="width:120px"><i style="display:inline-block;width:9px;height:9px;background:${COMP[k]};border-radius:2px"></i> ${COMP_L[k] === "Dollars" ? "Potential dollars" : COMP_L[k]}</span><input type="range" min="0" max="40" value="${Math.round(w[k] * 100)}" data-w="${k}"><b style="width:30px;text-align:right">${Math.round(w[k] * 100)}</b></div>`).join("")}
-    <div class="sm mut" style="margin-top:6px">Priority is a transparent weighted sum. Weak-evidence cases are down-weighted (×0.65) and never scheduled; they surface as "Needs more data".</div></div>
-    </div></div><div class="card" style="margin-top:14px"><h3>Ranked cases <small>${q.queue.length} total · click a row for the investigation brief</small></h3>${queueTable(q.queue)}</div>`;
+  const w = S.weights, rows = qFiltered(q), uniq = k => [...new Set(q.queue.map(r => r[k]).filter(Boolean))];
+  const open = q.queue.filter(r => r.status !== "Closed");
+  const sel = (id, label, opts, v) => `<label class="fsel"><span>${label}</span><select data-qf="${id}"><option value="">All</option>${opts.map(o => `<option value="${esc(o[0])}" ${v === o[0] ? "selected" : ""}>${esc(o[1])}</option>`).join("")}</select></label>`;
+  return `<div class="top"><div><span class="eyebrow">Investigations</span><h1>SIU queue</h1><p>Triage, review and advance investigations from one focused queue — ranked by risk, forecast, dollars, member impact, severity and evidence, packed into your review capacity.</p></div><div class="sp"></div>
+    <div class="hstat"><div><b>${open.length}</b><span>Active</span></div><div><b>${money(open.reduce((a, r) => a + r.exposure, 0))}</b><span>Exposure</span></div></div></div>
+    <div class="grid g2"><div class="card"><h3>Review capacity<small>Budget ${capacity()}h · scheduled ${q.used_hours}h · ${q.queue.filter(r => r.capacity === "within").length} cases fit</small></h3><div class="grid g3"><div><label class="f">Investigators</label><input type="number" min="1" max="40" value="${S.inv}" data-cap="inv"></div><div><label class="f">Hours / week</label><input type="number" min="1" max="60" value="${S.hrs}" data-cap="hrs"></div><div><label class="f">Weeks</label><input type="number" min="1" max="26" value="${S.weeks}" data-cap="weeks"></div></div>
+    <div class="row" style="margin-top:14px"><span class="sm mut">Forecast horizon</span><div class="seg" id="hz">${[30, 60, 90].map(h => `<button data-hz="${h}" class="${S.horizon === h ? "on" : ""}">${h}-day</button>`).join("")}</div></div>
+    <div class="sm mut" style="margin-top:10px">Effort = 8h + 7h per primary provider + √flagged lines + member-sample time.</div>
+    </div><div class="card"><h3>Priority weights <button class="btn sm" id="wreset" style="float:right">Reset</button><small>Transparent weighted sum — drag to re-rank</small></h3>
+    ${Object.keys(w).map(k => `<div class="row sm"><span style="width:130px"><i style="display:inline-block;width:9px;height:9px;background:${COMP[k]};border-radius:3px"></i> ${COMP_L[k] === "Dollars" ? "Potential dollars" : COMP_L[k]}</span><input type="range" min="0" max="40" value="${Math.round(w[k] * 100)}" data-w="${k}"><b class="mono" style="width:30px;text-align:right">${Math.round(w[k] * 100)}</b></div>`).join("")}
+    <div class="sm mut" style="margin-top:6px">Weak-evidence cases are down-weighted (×0.65) and never scheduled; they surface as “Needs more data”.</div></div></div>
+    <div class="card flush qcard" style="margin-top:16px"><div class="fbar"><span class="fi">${ico("filter", 17)}</span>${sel("lane", "Lane", uniq("lane").map(x => [x, x]), UI.qf.lane)}${sel("sev", "Severity", ["Critical", "High", "Medium"].map(x => [x, x]), UI.qf.sev)}${sel("asg", "Assignee", [["-", "Unassigned"], ...uniq("assignee").map(x => [x, x])], UI.qf.asg)}<div class="fsearch">${ico("search", 15)}<input type="text" id="qfq" placeholder="Filter cases…" value="${esc(UI.qf.q)}"></div><span class="sp"></span><a class="btn sm" href="/api/queue.csv?horizon=${S.horizon}&capacity=${capacity()}">Export CSV</a></div>
+    ${rows.length ? queueTable(rows) : `<div class="loading" style="padding:40px">No cases match these filters.</div>`}
+    <div class="qfoot"><span>Showing <b>${rows.length}</b> of ${q.queue.length} cases</span><span class="sp"></span><span>${ctxOpen() ? "Click a row to focus it · open with the title or the panel" : "Click a row to open the investigation brief"}</span></div></div>`;
 }
 
 /* ------------------------------------------------------------ case */
-const TABS = [["brief", "Brief"], ["plan", "Action plan"], ["chain", "Decision chain"], ["evidence", "Evidence"], ["charts", "Chart review"], ["network", "Network"], ["timeline", "Timeline"], ["forecast", "Forecast"], ["lab", "Challenge lab"], ["precedents", "Precedents"], ["copilot", "AI copilot"], ["claims", "Claims"], ["decision", "Decision"]];
+const TABS = [["brief", "Brief"], ["plan", "Action plan"], ["chain", "Decision chain"], ["evidence", "Evidence"], ["charts", "Chart review"], ["network", "Network"], ["timeline", "Timeline"], ["forecast", "Forecast"], ["lab", "Challenge lab"], ["precedents", "Precedents"], ["copilot", "AI copilot"], ["claims", "Claims"], ["activity", "Activity"], ["decision", "Decision"]];
 async function vCase() {
   const cid = S.arg, tab = S.tab || "brief";
   const d = await api(`cases/${cid}?horizon=${S.horizon}`);
@@ -372,7 +472,7 @@ async function vCase() {
   const conf = d.confidence;
   let body = "";
   if (tab === "brief") {
-    body = `${readinessCard(d)}${contextCard(d)}${d.lane === "Needs more data" ? `<div class="banner">⚠ <b>The system abstains.</b> Evidence strength is ${Math.round(m.evidence)}/100 — below the threshold for opening an investigation. Request more information instead; referral is blocked.</div>` : d.lane === "Validate context first" ? `<div class="banner">⚠ Benign context exists for this provider (${esc(d.providers.find(p => p.context)?.context || "")}). Validate it before investing review time.</div>` : ""}
+    body = `${briefTop(d)}${readinessCard(d)}${contextCard(d)}${d.lane === "Needs more data" ? `<div class="banner">⚠ <b>The system abstains.</b> Evidence strength is ${Math.round(m.evidence)}/100 — below the threshold for opening an investigation. Request more information instead; referral is blocked.</div>` : d.lane === "Validate context first" ? `<div class="banner">⚠ Benign context exists for this provider (${esc(d.providers.find(p => p.context)?.context || "")}). Validate it before investing review time.</div>` : ""}
     ${d.tips?.length ? `<div class="banner" style="border-left:3px solid var(--accent)"><b>${d.tips.length} linked tip(s).</b> ${d.tips.map(t => `#${t.id} ${esc(t.channel)} · ${t.ts.slice(0, 10)}: “${esc(t.allegation.slice(0, 140))}”`).join(" · ")}</div>` : ""}
     <div class="grid g21"><div class="card"><h3>Summary</h3><p style="margin-top:0">${esc(d.summary)}</p><h3>Recommended human-review action</h3><p style="margin-top:0">${esc(d.action)}</p>
     <h3>Why the system believes this <small>confidence: ${conf.label}</small></h3><ul style="margin:0;padding-left:18px">${conf.rationale.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
@@ -382,7 +482,7 @@ async function vCase() {
   } else if (tab === "evidence") {
     body = d.evidence.map(e => `<div class="ev"><h4><span class="mono mut">${e.id}</span> ${esc(e.label)} <span class="tag ${e.strength === "Strong" ? "t-crit" : e.strength === "Moderate" ? "t-high" : "t-gray"}">${e.strength}</span>${e.kind === "rule" ? `<span class="sp"></span><span class="sm mut">${num(e.n_lines)} lines · ${money(e.paid)} · ${e.members} members</span>` : ""}</h4>
       ${e.kind === "rule" ? `<div class="sm">${esc(e.rule_desc)}</div>${e.examples.map(x => `<div class="ex"><span class="mono">${x.line_id}</span> ${x.date} · ${x.code} · ${money(x.paid)} · member ${x.member_id}<br>${esc(x.reason)}</div>`).join("")}<a class="sm" href="#/explorer/claims?rule=${e.rule}&provider=${e.providers[0]}">Open all ${e.n_lines} lines →</a>`
-        : e.kind === "brain" ? `<div class="sm">${esc(e.detail)}</div><div style="margin-top:8px">${barsH(e.parts.map(([l, v]) => ({ label: l, value: v, color: l.startsWith("Rules") ? "#78716C" : "#B45309" })), { fmt: v => v.toFixed(2) })}</div><div class="sm mut">Contribution = learned weight × how far the detector sits above its normal range. Quiet detectors add nothing; silence is not exoneration.</div>`
+        : e.kind === "brain" ? `<div class="sm">${esc(e.detail)}</div><div style="margin-top:8px">${barsH(e.parts.map(([l, v]) => ({ label: l, value: v, color: l.startsWith("Rules") ? "#6E727A" : "#55595F" })), { fmt: v => v.toFixed(2) })}</div><div class="sm mut">Contribution = learned weight × how far the detector sits above its normal range. Quiet detectors add nothing; silence is not exoneration.</div>`
         : e.kind === "drift" ? `<div class="sm">${esc(e.detail)}</div><table style="margin-top:6px"><tr><th>Measure</th><th class="num">Before</th><th class="num">After</th><th class="num">Shift (σ)</th></tr>${e.changes.map(c => `<tr><td class="sm">${esc(c.metric)}</td><td class="num">${esc(c.before)}</td><td class="num"><b>${esc(c.after)}</b></td><td class="num">${c.z.toFixed(1)}</td></tr>`).join("")}</table>`
         : e.kind === "sentinel" ? `<div class="sm">${esc(e.detail)}</div>${(e.transitions || []).map(t => `<div class="ex"><span class="mono">${esc(t.example)}</span> · ${esc(t.text)} <span class="mut">· backed by ${num(t.support)} comparable transitions</span></div>`).join("")}`
         : e.kind === "anomaly" ? `<div class="sm">Provider ${e.provider} sits at the <b>${pc(e.pct)}</b> percentile of an Isolation Forest within its peer family. Main peer-relative drivers: ${e.drivers.map(x => `${esc(x.feature)} (${x.peer_z > 0 ? "+" : ""}${x.peer_z.toFixed(1)}σ)`).join(", ") || "n/a"}.</div>` : `<div class="sm">${esc(e.detail)}</div>`}
@@ -394,7 +494,7 @@ async function vCase() {
     body = `<div class="grid g21"><div class="card"><h3>Paid vs flagged by month <small>case providers, all history</small></h3>${monthChart(d.timeline.monthly, { h: 230 })}</div><div class="card"><h3>Key events</h3><div class="tl">${d.timeline.events.map(e => `<div class="${e.kind === "history" ? "h" : ""}"><b>${e.date}</b><br><span class="sm">${esc(e.label)}</span></div>`).join("") || "<span class='mut'>No events.</span>"}</div></div></div>`;
   } else if (tab === "forecast") {
     if (d.forecast[30].p == null) body = `<div class="banner">Forecasts are unavailable for this dataset: there are no confirmed-outcome labels to learn from yet. SpotZⁱ never fills a probability field with a guess. Forecasts switch on once investigator outcomes accumulate.</div>`; else
-    body = `<div class="banner blue">Forecast = chance the case providers bill ≥3 further simulated-confirmed FWA lines in the next N days. It is a model estimate on synthetic outcomes, not a prediction about any person.</div><div class="grid g3">${[30, 60, 90].map(h => { const f = d.forecast[h], me = f.metrics; return `<div class="card"><h3>${h}-day horizon</h3><div style="font-size:34px;font-weight:700;color:${f.p > .7 ? "#B91C1C" : f.p > .4 ? "#CA8A04" : "#15803D"}">${pc(f.p)}</div><div class="bar"><i style="width:${f.p * 100}%;background:#B45309"></i></div>
+    body = `<div class="banner blue">Forecast = chance the case providers bill ≥3 further simulated-confirmed FWA lines in the next N days. It is a model estimate on synthetic outcomes, not a prediction about any person.</div><div class="grid g3">${[30, 60, 90].map(h => { const f = d.forecast[h], me = f.metrics; return `<div class="card"><h3>${h}-day horizon</h3><div style="font-size:34px;font-weight:700;color:${f.p > .7 ? "#B4423C" : f.p > .4 ? "#C28A1B" : "#15803D"}">${pc(f.p)}</div><div class="bar"><i style="width:${f.p * 100}%;background:#55595F"></i></div>
       <div class="sm" style="margin-top:8px"><b>Why (logistic baseline contributions)</b></div>${f.why.length ? f.why.map(w => `<div class="sm">▲ ${esc(w.feature)} <span class="mut">(value ${w.value.toFixed(2)})</span></div>`).join("") : '<div class="sm mut">No dominant driver.</div>'}
       <div class="sm mut" style="margin-top:8px">Held-out test (later snapshots): AUC ${me.auc.toFixed(2)} · AP ${me.ap.toFixed(2)} · Brier ${me.brier.toFixed(3)} · base rate ${pc(me.base_rate)}. Probabilities are capped at 97% to avoid false certainty.</div></div>`; }).join("")}</div>`;
   } else if (tab === "plan") {
@@ -414,15 +514,46 @@ async function vCase() {
     body = `<div class="card"><h3>Highest-anomaly flagged lines <small>${d.sample_lines.length} sample across case providers; full list in Providers &amp; claims</small></h3>${linesTable(d.sample_lines.map(l => ({ ...l, date: l.date, provider_id: l.provider, member_id: l.member, reasons: [l.reason] })))}</div>`;
   } else if (tab === "decision") {
     body = decisionPanel(d);
+  } else if (tab === "activity") {
+    body = await activityPanel(d);
   }
-  return `<div class="noprint"><a href="#/queue">← SIU queue</a></div>` + hdr(`${esc(d.title)}`, `${d.case_id} · ${esc(d.type)} · ${laneTag(d.lane)} ${d.status !== "New" ? `<span class="tag t-vio">${d.status}</span>` : ""}`,
-    `${["supervisor", "admin"].includes(S.user.role) ? `<select id="asgsel" style="width:170px"><option value="">Assign to…</option>${(S.users || []).filter(u => ["investigator", "supervisor"].includes(u.role)).map(u => `<option value="${u.username}">${esc(u.name)}</option>`).join("")}</select>` : ""}<a class="btn" href="/api/cases/${cid}/brief.md">Export brief (.md)</a><button class="btn" id="printbtn">Print</button>`) +
-    `<div class="grid g5"><div class="card kpi"><div class="l">Risk</div><div class="v" style="color:${riskColor(m.risk)}">${Math.round(m.risk)}</div><div class="s">rules + anomaly + graph</div></div><div class="card kpi"><div class="l">Gross exposure</div><div class="v">${money(m.exposure)}</div><div class="s">${num(m.flagged_lines)} lines · not a recovery</div></div>
-    <div class="card kpi"><div class="l">Members</div><div class="v">${m.members}</div><div class="s">${m.vulnerable} older / Medicaid</div></div><div class="card kpi"><div class="l">Evidence strength</div><div class="v">${Math.round(m.evidence)}</div><div class="s">confidence <b>${conf.label}</b></div></div>
-    <div class="card kpi"><div class="l">${S.horizon}-day repeat risk</div><div class="v">${d.forecast[S.horizon].p == null ? "n/a" : pc(d.forecast[S.horizon].p)}</div><div class="s">est. review ${m.effort_hours}h</div></div></div>
-    <div class="tabs">${TABS.map(([k, l]) => `<button class="${tab === k ? "on" : ""}" data-go="case/${cid}/${k}">${l}</button>`).join("")}</div>` + body;
+  const rd = d.readiness, fc = d.forecast[S.horizon].p, prim = d.providers.filter(p => p.role === "primary");
+  const canAsg = ["supervisor", "admin"].includes(S.user.role);
+  return `<div class="chead"><button class="iconbtn noprint" data-go="queue" title="Back to SIU queue" aria-label="Back to SIU queue">${ico("back", 18)}</button><div class="cht"><span class="eyebrow">${d.case_id}</span><h1>${esc(d.title)}</h1><p>${esc(d.type)} · ${prim.length} primary provider${prim.length === 1 ? "" : "s"}${d.providers.length > prim.length ? ` + ${d.providers.length - prim.length} linked` : ""}</p></div></div>
+    <div class="cbar"><div class="cmeta"><div class="cexp"><span>Exposure</span><b>${money(m.exposure)}</b></div><div class="cdiv"></div>${riskPill(m.risk)}${laneTag(d.lane)}${statusTag(d.status)}</div><span class="sp"></span><div class="cact noprint">${canAsg ? `<select id="asgsel"><option value="">Assign to…</option>${(S.users || []).filter(u => ["investigator", "supervisor"].includes(u.role)).map(u => `<option value="${u.username}">${esc(u.name)}</option>`).join("")}</select>` : ""}<a class="btn sm" href="/api/cases/${cid}/brief.md">Export brief (.md)</a><button class="btn sm" id="printbtn">Print</button></div></div>
+    <div class="tabs">${TABS.map(([k, l]) => `<button class="${tab === k ? "on" : ""}" data-go="case/${cid}/${k}">${l}${k === "evidence" ? ` <span class="tcount">${d.evidence.length}</span>` : ""}</button>`).join("")}</div>
+    <div class="grid g4" style="margin-bottom:16px"><div class="card kpi"><div class="l">Fraud risk</div><div class="v">${Math.round(m.risk)}</div><div class="s">${riskPill(m.risk)}</div></div>
+    <div class="card kpi"><div class="l">Evidence strength</div><div class="v">${Math.round(m.evidence)}%</div><div class="bar" style="margin-top:10px"><i style="width:${m.evidence}%"></i></div><div class="s">confidence <b>${conf.label}</b></div></div>
+    <div class="card kpi"><div class="l">Investigation readiness</div><div class="v">${rd ? rd.score + "%" : "–"}</div><div class="bar" style="margin-top:10px"><i class="blue" style="width:${rd ? rd.score : 0}%"></i></div><div class="s">${rd ? esc(RLV[rd.level]?.[1] || "") : ""}</div></div>
+    <div class="card kpi"><div class="l">${S.horizon}-day repeat risk</div><div class="v">${fc == null ? "n/a" : pc(fc)}</div><div class="s">${num(m.flagged_lines)} lines · ${m.members} members · est. ${m.effort_hours}h</div></div></div>` + body;
 }
-const RLV = { ready: ["#15803D", "Ready for a referral decision"], almost: ["#CA8A04", "Nearly ready"], not_ready: ["#B91C1C", "Investigation not yet sufficiently supported"], stop: ["#57534E", "Documentation supports the billing"] };
+function briefTop(d) {
+  const m = d.metrics, prim = d.providers.find(p => p.role === "primary") || d.providers[0];
+  const strong = d.evidence.find(e => e.strength === "Strong" && e.kind === "rule") || d.evidence.find(e => e.strength === "Strong") || d.evidence[0];
+  const unc = [...d.hypotheses].filter(h => h.kind !== "Suspicious").sort((a, b) => b.support - a.support)[0];
+  const nx = d.readiness?.plan?.next;
+  return `<div class="grid bgrid"><div class="card"><h3>Case brief<small>Why this case was flagged</small></h3><p class="lead">${esc(d.summary)}</p>
+    <div class="grid g2">${strong ? `<button class="etile" data-go="case/${d.case_id}/evidence"><span class="eic ok">${ico("checkc", 18)}</span><span><span class="eyebrow2">Strongest evidence</span><b>${esc(strong.label)}</b><span>${strong.kind === "rule" ? `${num(strong.n_lines)} lines · ${money(strong.paid)} · ${strong.members} members` : esc((strong.detail || strong.source || "").slice(0, 110))}</span></span><span class="ech">${ico("chevr", 16)}</span></button>` : ""}
+    ${unc ? `<button class="etile" data-go="case/${d.case_id}/lab"><span class="eic warn">${ico("alert", 18)}</span><span><span class="eyebrow2">Biggest uncertainty</span><b>${esc(unc.title)} · ${unc.support}%</b><span>${esc(unc.summary)}</span></span><span class="ech">${ico("chevr", 16)}</span></button>` : ""}</div>
+    ${nx ? `<div class="nextact"><span class="n1">1</span><div><span class="eyebrow2">Recommended next action</span><b>${esc(nx.title)}</b><span>${esc(nx.how)}</span></div><button class="btn pri" data-go="case/${d.case_id}/${nx.action === "chart_review" ? "charts" : "plan"}">${ico("file", 15)}${nx.action === "chart_review" ? "Request records" : "Open action plan"}</button></div>` : ""}</div>
+    <div class="card flush snap"><div class="ch"><h3>Primary provider<small>Case snapshot</small></h3></div><dl>
+    <div><dt>Case</dt><dd class="mono">${d.case_id}</dd></div><div><dt>Provider</dt><dd>${prim ? `<a href="#/provider/${prim.provider_id}">${esc(prim.name)}</a>` : "–"}</dd></div><div><dt>Family</dt><dd>${prim ? esc(FAM[prim.family] || prim.family) : "–"}</dd></div><div><dt>Specialty</dt><dd>${prim ? esc(prim.specialty) : "–"}</dd></div>
+    <div><dt>Flagged lines</dt><dd class="mono">${num(m.flagged_lines)}</dd></div><div><dt>Gross exposure</dt><dd class="mono">${money(m.exposure)}</dd></div><div><dt>Members</dt><dd class="mono">${m.members}${m.vulnerable ? ` <span class="mut">(${m.vulnerable} older/Medicaid)</span>` : ""}</dd></div><div><dt>Providers linked</dt><dd class="mono">${d.providers.length}</dd></div></dl>
+    <div style="padding:0 20px 20px"><button class="btn" style="width:100%;justify-content:center" data-go="case/${d.case_id}/network">${ico("network", 16)}View linked providers</button></div></div></div>`;
+}
+const ACT_L = { case_assigned: "Case assigned", export_brief: "Brief exported", plan_step_done: "Plan step completed", plan_step_skipped: "Plan step marked not applicable", plan_step_todo: "Plan step reopened", chart_review: "Chart review run", document_uploaded: "Document uploaded", document_downloaded: "Document downloaded", recovery_updated: "Recovery updated", case_merged: "Case merged", case_split: "Case split", tip_linked: "Tip linked" };
+const fmtTs = t => { const d = new Date(String(t).replace(" ", "T")); return isNaN(d) ? esc(t) : d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " · " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); };
+async function activityPanel(d) {
+  const [a, n] = await Promise.all([api(`audit?target=${encodeURIComponent(d.case_id)}&limit=200`), api(`cases/${d.case_id}/notes`)]);
+  const ev = [
+    ...d.decisions.map(x => ({ ts: x.ts, kind: "dec", title: `Decision: ${x.outcome}`, text: x.reason, who: `${x.reviewer} · ${x.role}` })),
+    ...n.notes.map(x => ({ ts: x.ts, kind: "note", title: "Note added", text: x.text, who: `${x.author} · ${x.role}` })),
+    ...a.audit.filter(x => x.action !== "note_added" && !x.action.startsWith("decision:")).map(x => ({ ts: x.ts, kind: "sys", title: ACT_L[x.action] || (x.action.charAt(0).toUpperCase() + x.action.slice(1)).replace(/[_:]/g, " "), text: x.detail && !x.detail.startsWith("{") ? x.detail : "", who: `${x.actor}${x.role ? " · " + x.role : ""}` }))
+  ].sort((x, y) => String(y.ts).localeCompare(String(x.ts)));
+  return `<div class="grid g21"><div class="card flush"><div class="ch"><h3>Immutable case history<small>Activity log · ${ev.length} entr${ev.length === 1 ? "y" : "ies"}</small></h3></div><div class="alog">${ev.map(x => `<div class="ai ${x.kind}"><span class="adot"></span><div><span class="mono mut">${fmtTs(x.ts)}</span><b>${esc(x.title)}</b>${x.text ? `<p>${esc(x.text)}</p>` : ""}<span class="mut sm">${esc(x.who)}</span></div></div>`).join("") || '<div class="mut sm" style="padding:8px 0">No activity recorded on this case yet.</div>'}</div></div>
+    <div><div class="card flush"><div class="ch"><h3>Session note<small>Add an update</small></h3></div><div style="padding:16px 20px 20px">${n.assignment ? `<div class="sm" style="margin-bottom:10px">Assigned to <b>${esc(n.assignment.assignee_name)}</b> · due ${n.assignment.due}</div>` : ""}${S.perms.includes("investigate") ? `<label class="f" style="margin-top:0">Investigation note</label><textarea id="actnote" placeholder="Document a finding, call, or next step…"></textarea><button class="btn pri" id="actadd" style="margin-top:12px">${ico("note", 15)}Add note</button>` : '<div class="sm mut">Your role can read but not add notes.</div>'}<div class="sm mut" style="margin-top:12px">Notes are saved to the case and written to the audit log. Avoid member IDs unless necessary.</div></div></div></div></div>`;
+}
+const RLV = { ready: ["#15803D", "Ready for a referral decision"], almost: ["#C28A1B", "Nearly ready"], not_ready: ["#B4423C", "Investigation not yet sufficiently supported"], stop: ["#5A5E66", "Documentation supports the billing"] };
 function readinessCard(d) {
   const r = d.readiness; if (!r) return "";
   const [col, lbl] = RLV[r.level];
@@ -432,14 +563,14 @@ function readinessCard(d) {
     <div class="bar" style="height:10px"><i style="width:${r.score}%;background:${col}"></i></div>
     <div style="margin-top:10px"><b>Recommendation:</b> ${esc(r.recommendation)}</div>
     ${r.plan.next ? `<div class="sm" style="margin-top:6px">Next step: <b>${esc(r.plan.next.title)}</b> · ${esc(r.plan.next.owner)} · ~${r.plan.next.minutes} min · <a href="#/case/${d.case_id}/plan">open action plan →</a></div>` : ""}</div>
-    <div>${r.items.map(i => `<div class="sm" style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--line2)"><span style="color:${i.done ? "#15803D" : "#B91C1C"};font-size:15px;line-height:1">${i.done ? "☑" : "☐"}</span><div><b>${esc(i.label)}</b><div class="mut">${esc(i.detail)}</div></div></div>`).join("")}
+    <div>${r.items.map(i => `<div class="sm" style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--line2)"><span style="color:${i.done ? "#15803D" : "#B4423C"};font-size:15px;line-height:1">${i.done ? "☑" : "☐"}</span><div><b>${esc(i.label)}</b><div class="mut">${esc(i.detail)}</div></div></div>`).join("")}
     <div class="sm mut" style="margin-top:6px">Readiness is a checklist of the evidence an SIU needs for this type of case, not a probability of fraud.</div></div></div></div>`;
 }
 function contextCard(d) {
   const cx = d.context || {}; const ps = Object.entries(cx); if (!ps.length) return "";
-  return `<div class="card" style="margin-bottom:12px;border-left:4px solid #57534E"><h3 style="margin-top:0">Business context on file <small>enrolment, credentialing, contracts, ownership</small></h3>${ps.map(([p, a]) => `<div class="sm" style="margin-bottom:8px"><b>${esc(p)}</b> · ${a.status === "full" ? '<span class="tag t-ok">explains every signal</span>' : a.status === "partial" ? '<span class="tag t-high">explains some signals</span>' : '<span class="tag t-gray">does not explain the signals</span>'}
+  return `<div class="card" style="margin-bottom:12px;border-left:4px solid #5A5E66"><h3 style="margin-top:0">Business context on file <small>enrolment, credentialing, contracts, ownership</small></h3>${ps.map(([p, a]) => `<div class="sm" style="margin-bottom:8px"><b>${esc(p)}</b> · ${a.status === "full" ? '<span class="tag t-ok">explains every signal</span>' : a.status === "partial" ? '<span class="tag t-high">explains some signals</span>' : '<span class="tag t-gray">does not explain the signals</span>'}
     ${a.events.map(e => `<div>• ${e.date} — ${esc(e.detail)} <span class="mut">(${esc(e.type.replace("_", " "))}, ${esc(e.source)})</span></div>`).join("")}
-    ${(a.why || []).map(w => `<div class="mut">→ ${esc(w.reason)}: explains ${w.explains.join(", ")}</div>`).join("")}${a.unexplained?.length ? `<div style="color:#B91C1C">Not explained: ${a.unexplained.join(", ")}${a.blocking?.length ? " — billing-integrity findings are never excused by business context" : ""}</div>` : ""}</div>`).join("")}
+    ${(a.why || []).map(w => `<div class="mut">→ ${esc(w.reason)}: explains ${w.explains.join(", ")}</div>`).join("")}${a.unexplained?.length ? `<div style="color:#B4423C">Not explained: ${a.unexplained.join(", ")}${a.blocking?.length ? " — billing-integrity findings are never excused by business context" : ""}</div>` : ""}</div>`).join("")}
     <div class="sm mut">Context can explain growth, panel and mix changes that start after the event. It never explains duplicates, services after death, impossible timing, unbundling or exclusions. SpotZⁱ never closes a case because of context — a human decides.</div></div>`;
 }
 function planPanel(d) {
@@ -466,7 +597,7 @@ function chartPanel(d) {
       <td>${x.supports_billed ? '<span class="tag t-ok">yes</span>' : '<span class="tag t-crit">no</span>'} <span class="sm mut">${esc(x.basis)}</span></td><td class="sm">“${esc(x.quote)}”<div class="mut">${esc(x.rationale)}</div><details><summary class="sm mut">full note</summary><div class="sm">${esc(x.note)}</div></details></td><td class="sm">${x.engine === "llm" ? "LLM" : esc(x.engine)}${x.engine === "llm" && !x.agree_with_second_opinion ? ` <span class="tag t-high">${esc(r.second_opinion)} disagrees</span>` : ""}</td></tr>`).join("")}</table>
     <div class="sm mut" style="margin-top:8px">A sample, not the population. Extrapolating an overpayment needs a statistically valid sampling plan and a human decision.</div></div>`;
 }
-const STC = { unsupported: "#B91C1C", legitimate: "#15803D", data_gap: "#A8A29E" };
+const STC = { unsupported: "#B4423C", legitimate: "#15803D", data_gap: "#A0A4AB" };
 function stateBars(states, key) {
   return states.map(x => `<div style="margin:8px 0"><div class="row sm"><b>${esc(x.label)}</b><span class="sp"></span><span class="mut">prior ${pc(x.prior)}</span><b style="width:50px;text-align:right">${pc(x[key])}</b></div><div class="bar" style="height:11px"><i style="width:${x[key] * 100}%;background:${STC[x.key]}"></i></div></div>`).join("");
 }
@@ -517,6 +648,10 @@ function showUpdate(force) {
   document.body.appendChild(b);
 }
 window.addEventListener("online", offlineBanner); window.addEventListener("offline", offlineBanner);
+// every data table sits in its own scroll box, so wide columns scroll instead of spilling out of the card (covers late async cards too);
+// short values (ids, dates, money) stay on one line and only long prose cells wrap
+function wrapTables() { $$("#app table:not(.wbfacts)").forEach(t => { const p = t.parentElement; if (p.classList.contains("tw") || p.classList.contains("qwrap")) return; const w = document.createElement("div"); w.className = "tw"; p.insertBefore(w, t); w.appendChild(t); }); $$("#app td:not([data-w])").forEach(td => { td.dataset.w = ""; if (td.textContent.trim().length > 34) td.classList.add("wrap"); }); }
+new MutationObserver(wrapTables).observe($("#app"), { childList: true, subtree: true });
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js").then(reg => {
     if (reg.waiting) showUpdate();
@@ -580,22 +715,36 @@ async function scopeCard(cid) {
 }
 /* ------------------------------------------------------------ auth + my work */
 function renderLogin(msg) {
-  $("#app").style.display = "block";
-  $("#app").innerHTML = `<div style="min-height:100vh;display:grid;place-items:center;background:var(--bg)"><div class="card" style="width:360px;padding:28px"><div class="logo" style="padding:0 0 18px"><div class="mk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FAFAF9" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/><circle cx="11" cy="11" r="1.6" fill="#F59E0B" stroke="none"/></svg></div><div><b>SpotZ<sup>i</sup></b><small>FWA intelligence</small></div></div>
-  <h2 style="margin:0 0 4px;font-size:18px">Sign in</h2><div class="sm mut" style="margin-bottom:12px">Synthetic environment · access is logged</div>${msg ? `<div class="banner red">${esc(msg)}</div>` : ""}
-  <form id="loginf"><label class="f">Username</label><input type="text" id="lu" autocomplete="username" autofocus><label class="f">Password</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 10px"><button class="btn pri" style="width:100%;justify-content:center;margin-top:14px" type="submit">Sign in</button></form>
-  <div id="ssobox"></div><div class="sm mut" style="margin-top:12px">Demo accounts are in <span class="mono">spotzi/data/seed_users.json</span> on the server.</div></div></div>`;
-  fetch("/api/sso/config").then(r => r.json()).then(c => { if (c.enabled) $("#ssobox").innerHTML = `<div class="row" style="margin:12px 0 0"><span class="sp" style="border-top:1px solid var(--line)"></span><span class="sm mut">or</span><span class="sp" style="border-top:1px solid var(--line)"></span></div><a class="btn" style="width:100%;justify-content:center;margin-top:10px;text-decoration:none" href="/api/sso/login">${esc(c.label)}</a>`; });
+  document.body.classList.add("landing"); $("#app").classList.add("bare"); $("#app").style.display = "block";
+  const F = [["spark", "Multi-signal detection", "Combines rules, peer anomaly detection, change-points, learned case-mix models and network analysis to surface patterns that individual rules miss."],
+    ["queue", "Risk-aware case prioritization", "Ranks cases by risk, forecast, evidence strength, potential exposure, member impact and the review capacity your team actually has."],
+    ["explorer", "Explainable investigations", "Connects every recommendation to claim-level findings, provider relationships, timelines and the reasoning behind suggested actions."],
+    ["shield", "Human-controlled outcomes", "Supports investigation and review without declaring fraud or making referral decisions. Referrals need a second person to approve."],
+    ["knowledge", "Learning from approved decisions", "Uses governed, human-approved knowledge and recorded outcomes to inform similar future investigations."]];
+  $("#app").innerHTML = `<div class="lp"><div class="lpnav"><span class="mk">${ico("shield", 19)}</span><div><b>SpotZ<sup>i</sup></b><small>ClaimShield Nexus · FWA intelligence</small></div></div>
+  <div class="lphero"><div><h1>Fewer alerts. Ranked, explained cases.</h1><p>Evidence-first healthcare claims intelligence for Special Investigations Units. SpotZⁱ turns thousands of claim alerts into a short queue of cases an investigator can defend.</p><div class="lpbtns"><a class="lpb w" href="#signin" id="lpsign">${ico("chevr", 16)}Sign in</a><a class="lpb" href="#lpwork" id="lpwk">${ico("file", 16)}Explore the workflow</a></div></div>
+  <div class="lpcard" id="signin"><h2>Sign in</h2><div class="sub">Synthetic environment · access is logged</div>${msg ? `<div class="err">${esc(msg)}</div>` : ""}
+  <form id="loginf"><label for="lu">Username</label><input type="text" id="lu" autocomplete="username" autofocus><label for="lp">Password</label><input type="password" id="lp" autocomplete="current-password"><button class="lpb w" type="submit">Sign in</button></form>
+  <div id="ssobox"></div><div class="foot">Demo accounts are in <span class="mono">spotzi/data/seed_users.json</span> on the server.</div></div></div>
+  <div class="lpsec"><h2>Built to make complex investigations more manageable.</h2><div class="lpstats">
+   <div><div class="big">8</div><b>Detection methods</b><p>Rules, peer anomaly detection, change-points, learned case-mix models, network analysis and other complementary signals.</p></div>
+   <div><div class="big">Ranked</div><b>Prioritized cases</b><p>Thousands of flagged claim lines condensed into a short queue that fits your team's review capacity.</p></div>
+   <div><div class="big">Traceable</div><b>Evidence and reasoning</b><p>Findings link to supporting claims, explanations and decision records.</p></div>
+   <div><div class="big">Human-led</div><b>Final decisions</b><p>Investigators review the evidence and retain decision-making authority.</p></div></div>
+   <div class="lpdisc">Demonstration figures are based on synthetic data and internal evaluation, not validated real-world healthcare outcomes. <a class="lpchip" href="https://github.com/Ajith-Praveen/spotzi" target="_blank" rel="noopener noreferrer">${ico("network", 13)}GitHub</a></div></div>
+  <div class="lpsec lpfeat" id="lpwork">${F.map(([i, t, d]) => `<div>${ico(i, 22)}<div><b>${t}</b><p>${d}</p></div></div>`).join("")}</div>
+  <div class="lpcta">${ico("shield", 26)}<h2>Better investigations start with better evidence.</h2><p>Move beyond isolated claim alerts. Bring patterns, context and evidence together to make healthcare claims investigations more structured, transparent and accountable.</p><div class="lpbtns"><a class="lpb" href="#signin" id="lpsign2">${ico("chevr", 15)}Explore SpotZⁱ</a><a class="lpb" href="#lpwork" id="lpwk2">${ico("file", 15)}Explore the workflow</a></div></div></div>`;
+  fetch("/api/sso/config").then(r => r.json()).then(c => { if (c.enabled) $("#ssobox").innerHTML = `<a class="lpb" style="width:100%;justify-content:center;margin-top:10px" href="/api/sso/login">${esc(c.label)}</a>`; });
   const q = new URLSearchParams(location.hash.split("?")[1] || ""); if (q.get("sso_error") && !msg) renderLogin(q.get("sso_error"));
 }
 function renderMfa(ticket, msg) {
-  $("#app").style.display = "block";
-  $("#app").innerHTML = `<div style="min-height:100vh;display:grid;place-items:center"><div class="card" style="width:360px;padding:28px"><h2 style="margin:0 0 4px;font-size:18px">Two-factor check</h2><div class="sm mut" style="margin-bottom:12px">Enter the 6-digit code from your authenticator app, or a recovery code.</div>${msg ? `<div class="banner red">${esc(msg)}</div>` : ""}<form id="mfaf" data-ticket="${esc(ticket)}"><input type="text" id="mfac" inputmode="numeric" autocomplete="one-time-code" autofocus placeholder="123 456"><button class="btn pri" style="width:100%;justify-content:center;margin-top:12px" type="submit">Verify</button></form></div></div>`;
+  document.body.classList.remove("landing"); $("#app").style.display = "block"; $("#app").classList.add("bare");
+  $("#app").innerHTML = `<div style="min-height:calc(100vh - 30px);display:grid;place-items:center"><div class="card" style="width:360px;padding:28px"><h2 style="margin:0 0 4px;font-size:18px">Two-factor check</h2><div class="sm mut" style="margin-bottom:12px">Enter the 6-digit code from your authenticator app, or a recovery code.</div>${msg ? `<div class="banner red">${esc(msg)}</div>` : ""}<form id="mfaf" data-ticket="${esc(ticket)}"><input type="text" id="mfac" inputmode="numeric" autocomplete="one-time-code" autofocus placeholder="123 456"><button class="btn pri" style="width:100%;justify-content:center;margin-top:12px" type="submit">Verify</button></form></div></div>`;
 }
 async function renderEnrol(step) {
-  $("#app").style.display = "block";
+  document.body.classList.remove("landing"); $("#app").style.display = "block"; $("#app").classList.add("bare");
   if (!step) { const r = await fetch("/api/mfa/begin", { method: "POST", headers: { "X-SpotZi-Contract": CONTRACT } }); step = await r.json(); }
-  $("#app").innerHTML = `<div style="min-height:100vh;display:grid;place-items:center"><div class="card" style="width:460px;padding:28px"><h2 style="margin:0 0 4px;font-size:18px">Set up two-factor sign-in</h2><div class="sm mut" style="margin-bottom:12px">Your organisation requires it for your role. Add this key to any authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…), then enter the current code.</div>
+  $("#app").innerHTML = `<div style="min-height:calc(100vh - 30px);display:grid;place-items:center"><div class="card" style="width:460px;padding:28px"><h2 style="margin:0 0 4px;font-size:18px">Set up two-factor sign-in</h2><div class="sm mut" style="margin-bottom:12px">Your organisation requires it for your role. Add this key to any authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…), then enter the current code.</div>
   <label class="f">Setup key</label><div class="mono" style="padding:8px 10px;background:var(--sunk);border:1px solid var(--line);border-radius:6px;word-break:break-all">${esc(step.secret.replace(/(.{4})/g, "$1 ").trim())}</div><details style="margin-top:6px"><summary>Setup link (otpauth)</summary><div class="mono sm" style="word-break:break-all">${esc(step.uri)}</div></details>
   <form id="enrolf"><label class="f">Code from the app</label><input type="text" id="enc" inputmode="numeric" autocomplete="one-time-code"><button class="btn pri" style="width:100%;justify-content:center;margin-top:12px" type="submit">Turn on two-factor</button></form><div id="encodes"></div></div></div>`;
 }
@@ -643,7 +792,7 @@ function copilotPanel(d) {
   const h = AI.chat[d.case_id] || (AI.chat[d.case_id] = []);
   const sugg = ["What is the strongest evidence and what is the weakest?", "What legitimate explanations could produce this pattern?", "Which single check would change your mind the most?", "What data is missing?"];
   return `<div class="banner blue"><b>AI copilot.</b> Ask about this case. Answers use only this case's evidence package, cite evidence IDs, and are verified. It cannot approve, deny, hold payment or refer — those stay with you.</div>
-  <div class="card"><div id="chatlog" style="min-height:120px;max-height:420px;overflow:auto">${h.length ? h.map(m => `<div style="margin:10px 0;${m.role === "user" ? "text-align:right" : ""}"><div style="display:inline-block;max-width:85%;text-align:left;padding:9px 12px;border-radius:12px;background:${m.role === "user" ? "var(--brand)" : "#F5F5F4"};color:${m.role === "user" ? "#fff" : "inherit"}">${m.role === "user" ? esc(m.content) : m.error ? `<span style="color:#991B1B">${esc(m.content)}</span>` : mdLite(m.content)}</div>${m.role === "assistant" && !m.error ? aiBadge(m) : ""}</div>`).join("") : `<div class="mut sm">Try a suggestion:</div><div class="pill-row" style="margin-top:8px">${sugg.map(q => `<button class="btn sm" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`}${AI.busy ? '<div class="mut sm"><span class="spin"></span>Thinking…</div>' : ""}</div>
+  <div class="card"><div id="chatlog" style="min-height:120px;max-height:420px;overflow:auto">${h.length ? h.map(m => `<div style="margin:10px 0;${m.role === "user" ? "text-align:right" : ""}"><div style="display:inline-block;max-width:85%;text-align:left;padding:9px 12px;border-radius:12px;background:${m.role === "user" ? "var(--brand)" : "#EEF0F3"};color:${m.role === "user" ? "#fff" : "inherit"}">${m.role === "user" ? esc(m.content) : m.error ? `<span style="color:#7B2323">${esc(m.content)}</span>` : mdLite(m.content)}</div>${m.role === "assistant" && !m.error ? aiBadge(m) : ""}</div>`).join("") : `<div class="mut sm">Try a suggestion:</div><div class="pill-row" style="margin-top:8px">${sugg.map(q => `<button class="btn sm" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`}${AI.busy ? '<div class="mut sm"><span class="spin"></span>Thinking…</div>' : ""}</div>
   <div class="row noprint" style="margin-top:10px"><input type="text" id="askq" placeholder="Ask about this case…" ${AI.busy ? "disabled" : ""}><button class="btn pri" id="askgo" ${AI.busy ? "disabled" : ""}>Ask</button></div></div>`;
 }
 async function askCopilot(q) {
@@ -677,7 +826,7 @@ const TFAM = { hospital: "FAC", doctor: "PRO", lab: "LAB", pharmacy: "PHARM", am
 const TLAB = { hospital: "Hospital", doctor: "Doctor / practice", lab: "Laboratory", pharmacy: "Pharmacy", ambulance: "Ambulance", behavioral: "Behavioral health", homehealth: "Home health", dme: "Equipment supplier", patient: "Patient", ownership: "Ownership", address: "Address", bank: "Bank account" };
 const TPLU = { hospital: "Hospitals", doctor: "Doctors / practices", lab: "Laboratories", pharmacy: "Pharmacies", ambulance: "Ambulance services", behavioral: "Behavioral health providers", homehealth: "Home health agencies", dme: "Equipment suppliers", patient: "Patients", ownership: "Ownership groups", address: "Addresses", bank: "Bank accounts" };
 const PICON = "M12 11.5a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z M4.5 20.5a7.5 7.5 0 0 1 15 0";
-const typeIcon = (t, sz = 15, col = "#3F3F46") => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" style="flex:none"><path d="${t === "patient" ? PICON : FICON[TFAM[t]] || EICON[t] || FICON.PRO}" fill="none" stroke="${col}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const typeIcon = (t, sz = 15, col = "#4A4E55") => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" style="flex:none"><path d="${t === "patient" ? PICON : FICON[TFAM[t]] || EICON[t] || FICON.PRO}" fill="none" stroke="${col}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const NET = { dim: (() => { try { return localStorage.getItem("spotzi.netdim") || "2d"; } catch (e) { return "2d"; } })(), focus: null, flagged: false, kinds: new Set(["billed", "referred", "admitted", "primary_care", "practices_at", "shared_patients", "ownership", "address", "bank"]), trail: [], pathA: null, view: "investigate", limit: 24 };
 
 function toGraph(d) {   // link-analysis payload -> renderer format
@@ -687,7 +836,7 @@ function toGraph(d) {   // link-analysis payload -> renderer format
   const edges = d.edges.map(e => ({ ...e, kind: e.kind === "referred" ? "referral" : e.kind, n: e.lines }));
   return { nodes, edges };
 }
-const entRow = (e, extra = "") => `<button class="wbrow" data-focus="${e.id}">${typeIcon(e.type)}<span class="wbl">${esc(e.label)}<em>${TLAB[e.type] || ""}${e.case_id ? " · " + e.case_id : ""}${extra}</em></span>${e.score != null ? `<b class="wbs" style="background:${e.type === "patient" ? (e.score >= 60 ? "#B45309" : e.score >= 30 ? "#CA8A04" : "#A8A29E") : riskColor(e.score)}">${Math.round(e.score)}</b>` : ""}</button>`;
+const entRow = (e, extra = "") => `<button class="wbrow" data-focus="${e.id}">${typeIcon(e.type)}<span class="wbl">${esc(e.label)}<em>${TLAB[e.type] || ""}${e.case_id ? " · " + e.case_id : ""}${extra}</em></span>${e.score != null ? `<b class="wbs" style="background:${e.type === "patient" ? (e.score >= 60 ? "#55595F" : e.score >= 30 ? "#C28A1B" : "#A0A4AB") : riskColor(e.score)}">${Math.round(e.score)}</b>` : ""}</button>`;
 
 async function vNetwork() {
   if (NET.view === "map") return vNetworkMap();
@@ -711,7 +860,7 @@ async function vNetwork() {
       <div class="wbsec"><div class="wbh">Most-involved patients <span class="mut" style="font-weight:400">(may be victims)</span></div>${st.patients.slice(0, 6).map(e => entRow(e, ` · ${e.flagged} flagged`)).join("")}</div>
     </aside>
     <section class="wbmain">
-      <div class="wbbar">${typeIcon(focusNode.type, 18, "#18181B")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div></div>
+      <div class="wbbar">${typeIcon(focusNode.type, 18, "#1E2024")}<div><b>${esc(focusNode.label)}</b><div class="sm mut">${TLAB[focusNode.type]} · ${g.nodes.length - 1} connected · ${flaggedEdges} link(s) with flagged claims${g.more.patients ? ` · showing ${types.patient || 0} of ${(types.patient || 0) + g.more.patients} patients (most flagged first) <button class="btn sm" data-more="1" style="margin-left:6px">Show ${Math.min(24, g.more.patients)} more</button>` : ""}${NET.limit > 24 ? ` <button class="btn sm" data-more="0">Show fewer</button>` : ""}</div></div><span class="sp"></span><div class="pill-row">${Object.entries(types).map(([t, c]) => `<span class="tag t-med">${typeIcon(t, 12)}&nbsp;${c} ${(c > 1 ? TPLU[t] : TLAB[t]).toLowerCase()}</span>`).join("")}</div></div>
       <div class="wbgraph">${g.nodes.length > 1 ? (NET.dim === "3d" ? graph3dHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect" }) : graphHTML(toGraph(g), { id: "lg", height: 640, onNode: "inspect", canvas: Math.max(560, Math.min(1250, 170 * Math.sqrt(g.nodes.length))) })) : `<div class="loading">No relationships of the selected types${NET.flagged ? " with flagged claims" : ""}.</div>`}</div>
     </section>
     <aside class="wbinspect" id="wbinsp"><div class="mut sm">Select an entity.</div></aside>
@@ -721,15 +870,15 @@ async function vNetwork() {
 window.wbInspect = async id => {
   const el = $("#wbinsp"); if (!el) return;
   let d; try { d = await api("graph/inspect?id=" + encodeURIComponent(id)); } catch (e) { el.innerHTML = `<div class="banner red">${esc(e.message)}</div>`; return; }
-  const sc = d.score == null ? "" : `<div class="wbscore"><b style="color:${d.kind === "patient" ? (d.score >= 60 ? "#B45309" : "#CA8A04") : riskColor(d.score)}">${Math.round(d.score)}</b><span>${d.score_kind}</span></div>`;
+  const sc = d.score == null ? "" : `<div class="wbscore"><b style="color:${d.kind === "patient" ? (d.score >= 60 ? "#55595F" : "#C28A1B") : riskColor(d.score)}">${Math.round(d.score)}</b><span>${d.score_kind}</span></div>`;
   const fv = (k, v) => v == null ? "–" : typeof v === "number" ? (k.toLowerCase().includes("paid") ? money(v) : k.toLowerCase().includes("share") ? pc(v) : num(v)) : esc(v);
   const isFocus = id === NET.focus;
-  el.innerHTML = `<div class="row" style="gap:10px;align-items:flex-start">${typeIcon(d.type, 26, "#18181B")}<div style="flex:1;min-width:0"><div class="b" style="font-size:15px">${esc(d.title)}</div><div class="sm mut">${esc(d.subtitle || "")}</div></div>${sc}</div>
+  el.innerHTML = `<div class="row" style="gap:10px;align-items:flex-start">${typeIcon(d.type, 26, "#1E2024")}<div style="flex:1;min-width:0"><div class="b" style="font-size:15px">${esc(d.title)}</div><div class="sm mut">${esc(d.subtitle || "")}</div></div>${sc}</div>
     ${d.case_id ? `<a class="btn sm pri" style="margin-top:10px" href="#/case/${d.case_id}">Open case ${d.case_id} →</a>` : ""}
     <table class="wbfacts">${d.facts.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fv(k, v)}</td></tr>`).join("")}</table>
     ${d.relations?.length ? `<div class="wbh">All relationships</div><table class="wbfacts" style="margin-top:0">${d.relations.map(r => `<tr><td>${esc(r.rel)}${r.note ? `<div class="sm mut">${esc(r.note)}</div>` : ""}</td><td class="num"><b>${num(r.count)}</b></td></tr>`).join("")}</table>` : ""}
     ${d.signals?.length ? `<div class="wbh">Rule findings (180d)</div><div class="pill-row">${d.signals.map(x => `<span class="tag t-high">${esc(x.name)} · ${x.lines}</span>`).join("")}</div>` : ""}
-    ${d.models ? `<div class="wbh">Detectors</div><div class="wbmodels">${Object.entries(d.models).filter(([, v]) => v != null).map(([k, v]) => `<div><span>${k}</span><div class="bar"><i style="width:${v * 100}%;background:${v > .8 ? "#B91C1C" : v > .6 ? "#EA580C" : "#A8A29E"}"></i></div><b>${Math.round(v * 100)}</b></div>`).join("")}</div>` : ""}
+    ${d.models ? `<div class="wbh">Detectors</div><div class="wbmodels">${Object.entries(d.models).filter(([, v]) => v != null).map(([k, v]) => `<div><span>${k}</span><div class="bar"><i style="width:${v * 100}%;background:${v > .8 ? "#B4423C" : v > .6 ? "#D9772B" : "#A0A4AB"}"></i></div><b>${Math.round(v * 100)}</b></div>`).join("")}</div>` : ""}
     ${d.explanations ? `<div class="wbh">Possible explanations</div><ul class="wbul">${d.explanations.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
     ${d.note ? `<div class="banner" style="margin-top:10px;font-size:12px">${esc(d.note)}</div>` : ""}
     <div class="wbactions">${isFocus ? "" : `<button class="btn sm pri" data-focus="${d.id}">Pivot here</button>`}${d.kind === "provider" ? `<a class="btn sm" href="#/provider/${d.id}">Provider page</a>` : ""}<button class="btn sm" data-patha="${d.id}">${NET.pathA ? "Connect to " + esc(NET.pathA.label) : "Find connection from here…"}</button></div>
@@ -791,7 +940,7 @@ async function vPrepay() {
    <div>${r ? `<div class="banner ${recCls}" style="font-size:15px"><b>${esc(r.label)}</b> <span class="sm">· score ${r.score} · ${r.latency_ms} ms · expected paid ${money(r.expected_paid)}</span></div>
      <div class="card"><h3>Why</h3>${r.reasons.length ? r.reasons.map(x => `<div class="ex">${sevTag2(x.severity)} <b>${esc(x.name)}</b>${x.line != null ? ` <span class="mut">(line ${x.line + 1})</span>` : ""}<br>${esc(x.text)}</div>`).join("") : '<div class="sm mut">No rule or history check fired.</div>'}
      ${r.context.length ? `<div class="wbh">Provider context</div>${r.context.map(x => `<div class="sm">• ${esc(x)}</div>`).join("")}` : ""}
-     <div class="wbh">Lines</div><table><tr><th>Code</th><th>Description</th><th class="num">Units</th><th class="num">Expected paid</th><th>Flags</th><th class="num">Model risk</th></tr>${r.lines.map(l => `<tr><td class="mono">${esc(l.code)}</td><td class="sm">${esc(l.description)}</td><td class="num">${l.units}</td><td class="num">${money(l.expected_paid)}</td><td>${l.flags.map(f => `<span class="tag t-high">${f}</span>`).join(" ")}</td><td class="num">${l.model_risk == null ? "–" : `<b style="color:${l.model_risk >= .8 ? "#B91C1C" : l.model_risk >= .4 ? "#CA8A04" : "inherit"}">${pc(l.model_risk)}</b>${(l.model_drivers || []).length ? `<div class="sm mut">${l.model_drivers.map(x => esc(x.feature)).join(", ")}</div>` : ""}`}</td></tr>`).join("")}</table>${r.model ? '<div class="sm mut" style="margin-top:6px">Model risk = trained pre-payment line-risk model (see Governance → Task models). Context for the reviewer, never an automatic denial.</div>' : ""}
+     <div class="wbh">Lines</div><table><tr><th>Code</th><th>Description</th><th class="num">Units</th><th class="num">Expected paid</th><th>Flags</th><th class="num">Model risk</th></tr>${r.lines.map(l => `<tr><td class="mono">${esc(l.code)}</td><td class="sm">${esc(l.description)}</td><td class="num">${l.units}</td><td class="num">${money(l.expected_paid)}</td><td>${l.flags.map(f => `<span class="tag t-high">${f}</span>`).join(" ")}</td><td class="num">${l.model_risk == null ? "–" : `<b style="color:${l.model_risk >= .8 ? "#B4423C" : l.model_risk >= .4 ? "#C28A1B" : "inherit"}">${pc(l.model_risk)}</b>${(l.model_drivers || []).length ? `<div class="sm mut">${l.model_drivers.map(x => esc(x.feature)).join(", ")}</div>` : ""}`}</td></tr>`).join("")}</table>${r.model ? '<div class="sm mut" style="margin-top:6px">Model risk = trained pre-payment line-risk model (see Governance → Task models). Context for the reviewer, never an automatic denial.</div>' : ""}
      <div class="sm mut" style="margin-top:8px">${esc(r.note)}</div></div>` : `<div class="card"><div class="mut">Enter a claim or load an example, then “Check claim”. Checks: eligibility & death, inpatient-stay overlap, excluded providers, duplicates, repeat intervals, unbundling, daily unit limits, impossible hours, excessive visits, level-5 patterns, and whether the provider is already under review.</div></div>`}</div></div>
   <div class="card" style="margin-top:14px"><h3>Recent checks <small>pended claims wait for a human</small></h3><table><tr><th>#</th><th>When</th><th>Member · provider</th><th>Recommendation</th><th class="num">Expected paid</th><th>Status</th><th></th></tr>${log.map(p => `<tr><td>${p.id}</td><td class="sm">${p.ts}</td><td class="sm mono">${esc(p.claim.member_id)} · ${esc(p.claim.provider_id)}</td><td><span class="tag ${p.recommendation === "PEND" ? "t-crit" : p.recommendation === "PAY" ? "t-ok" : "t-high"}">${p.recommendation === "PEND" ? "Pend" : p.recommendation === "PAY" ? "Pay" : "Pay + monitor"}</span> <span class="sm mut">${p.reasons.map(x => x.name).slice(0, 2).join(", ")}</span></td><td class="num">${money(p.amount)}</td><td class="sm">${p.status === "pending" ? '<span class="tag t-high">awaiting review</span>' : p.status === "resolved" ? `${esc(p.resolution || "")}${p.avoided ? ` · avoided ${money(p.avoided)}` : ""}` : "paid"}</td><td>${p.status === "pending" && S.perms.includes("investigate") ? `<button class="btn sm" data-ppres="${p.id}" data-r="Released for payment">Release</button> <button class="btn sm" data-ppres="${p.id}" data-r="Adjusted">Adjust</button> <button class="btn sm" data-ppres="${p.id}" data-r="Denied by reviewer">Deny</button>` : ""}</td></tr>`).join("") || '<tr><td colspan="7" class="mut sm">No checks yet.</td></tr>'}</table></div>`;
 }
@@ -947,14 +1096,14 @@ async function vBrain() {
   const b = await api("brain");
   const held = b.held_out || [];
   return hdr("Nexus Brain", "Every detector feeds one memory. It fuses their evidence, learns from your decisions, and tells you what changed — including schemes no rule was written for.") +
-    `<div class="journey"><div><b>8 detectors</b><span>rules · isolation forest · graph · case-mix twin · care pathway · change-point · code mix · patient panel</span></div><div><b>One-sided fusion</b><span>quiet detectors add nothing</span></div><div><b>Learns from you</b><span>${b.decisions_used} decision(s) used so far</span></div><div><b>Feed</b><span>${b.feed.length} insight(s) now</span></div><div><b>Human decides</b><span>never auto-acts</span></div></div>` +
-    (held.length ? `<div class="banner green"><b>Recruitment mill: a scheme no rule targets.</b> We injected a patient-recruitment mill (members from distant regions, one templated visit + lab bundle); the patient-panel detector is designed for this typology. ${held.map(h => `<b>${esc(h.provider)}</b>: rules ${Math.round(h.rules * 100)}/100 → Brain ${Math.round(h.brain * 100)}/100, ranked #${h.brain_rank} of 132${h.case_id ? ` · opened as <a href="#/case/${h.case_id}">${h.case_id}</a>` : ""}`).join("; ")}. Synthetic test only.</div>` : "") +
+    `<div class="journey"><div><b>${b.detectors.length} detectors</b><span>${b.detectors.map(d => esc(d.label.toLowerCase())).join(" · ")}</span></div><div><b>One-sided fusion</b><span>quiet detectors add nothing</span></div><div><b>Learns from you</b><span>${b.decisions_used} decision(s) used so far</span></div><div><b>Feed</b><span>${b.feed.length} insight(s) now</span></div><div><b>Human decides</b><span>never auto-acts</span></div></div>` +
+    (held.length ? `<div class="banner green"><b>Recruitment mill: no rule was written for it.</b> We injected a patient-recruitment mill (members from distant regions, one templated visit + lab bundle); the patient-panel detector is designed for this typology. Rules can still fire incidentally on a co-subject; a provider with rules 0/100 reaches an investigator only through the Brain. ${held.map(h => `<b>${esc(h.provider)}</b>: rules ${Math.round(h.rules * 100)}/100 → Brain ${Math.round(h.brain * 100)}/100, ranked #${h.brain_rank} of 132${h.case_id ? ` · opened as <a href="#/case/${h.case_id}">${h.case_id}</a>` : ""}`).join("; ")}. Synthetic test only.</div>` : "") +
     `<div class="grid g21"><div class="card"><h3>Insight feed <small>ranked by importance</small></h3>${b.feed.map(f => `<div style="padding:10px 0;border-bottom:1px solid var(--line2)"><div class="row"><span class="tag ${FEEDK[f.kind][1]}">${FEEDK[f.kind][0]}</span><b>${esc(f.title)}</b><span class="sp"></span>${f.case_id ? `<a class="sm" href="#/case/${f.case_id}">${f.case_id} →</a>` : f.provider ? `<a class="sm" href="#/provider/${f.provider}">provider →</a>` : ""}</div><div class="sm mut" style="margin-top:3px">${esc(f.text)}</div></div>`).join("") || '<div class="mut">Nothing new.</div>'}</div>
-    <div><div class="card"><h3>Detector weights <small>prior → learned</small></h3>${b.detectors.map(d => `<div style="margin:8px 0"><div class="row sm"><span>${esc(d.label)}</span><span class="sp"></span><span class="mut">${d.prior.toFixed(2)}</span><span>→</span><b>${d.learned.toFixed(2)}</b></div><div class="bar"><i style="width:${Math.min(100, d.learned / 1.5 * 100)}%;background:${Math.abs(d.learned - d.prior) > .05 ? "#B45309" : "#18181B"}"></i></div></div>`).join("")}<div class="sm mut">Weights start from expert priors and move only as investigators substantiate or clear cases (MAP logistic update with a strong prior). Every change is recomputed from the decision log, so it is reproducible and auditable.</div></div>
-    ${b.auc ? `<div class="card" style="margin-top:12px"><h3>Ranking power <small>synthetic labels · AUC</small></h3>${barsH(Object.entries(b.auc).map(([k, v]) => ({ label: k, value: v, color: k.startsWith("Nexus") ? "#18181B" : k.startsWith("Rules") ? "#A8A29E" : "#B45309" })), { fmt: v => v.toFixed(3), max: 1 })}</div>` : ""}</div></div>
+    <div><div class="card"><h3>Detector weights <small>prior → learned</small></h3>${b.detectors.map(d => `<div style="margin:8px 0"><div class="row sm"><span>${esc(d.label)}</span><span class="sp"></span><span class="mut">${d.prior.toFixed(2)}</span><span>→</span><b>${d.learned.toFixed(2)}</b></div><div class="bar"><i style="width:${Math.min(100, d.learned / 1.5 * 100)}%;background:${Math.abs(d.learned - d.prior) > .05 ? "#55595F" : "#1E2024"}"></i></div></div>`).join("")}<div class="sm mut">Weights start from expert priors and move only as investigators substantiate or clear cases (MAP logistic update with a strong prior). Every change is recomputed from the decision log, so it is reproducible and auditable.</div></div>
+    ${b.auc ? `<div class="card" style="margin-top:12px"><h3>Ranking power <small>synthetic labels · AUC</small></h3>${barsH(Object.entries(b.auc).map(([k, v]) => ({ label: k, value: v, color: k.startsWith("Nexus") ? "#1E2024" : k.startsWith("Rules") ? "#A0A4AB" : "#55595F" })), { fmt: v => v.toFixed(3), max: 1 })}</div>` : ""}</div></div>
     <div class="card" style="margin-top:12px"><h3>Highest Brain suspicion</h3><table><tr><th>Provider</th><th class="num">Brain</th><th class="num">Rule-based risk</th><th>What drives it</th><th>Case</th></tr>${b.top.map(t => `<tr class="click" data-go="provider/${t.provider_id}"><td><b>${esc(t.name)}</b><div class="sm mut">${FAM[t.family]}</div></td><td class="num"><b>${Math.round(t.brain * 100)}</b></td><td class="num">${Math.round(t.risk)}</td><td>${stackParts(t.parts)}</td><td>${t.case_id ? `<a href="#/case/${t.case_id}">${t.case_id}</a>` : '<span class="tag t-vio">no case</span>'}</td></tr>`).join("")}</table><div class="sm mut" style="margin-top:6px">${legendParts()}</div></div>`;
 }
-const PARTC = { rules: "#A8A29E", iforest: "#78716C", graph: "#44403C", twin: "#D97706", path: "#B45309", drift: "#B91C1C", mix: "#EA580C" };
+const PARTC = { rules: "#A0A4AB", iforest: "#6E727A", graph: "#3E4566", twin: "#D97706", path: "#55595F", drift: "#B4423C", mix: "#D9772B" };
 const PARTL = { rules: "rules", iforest: "isolation forest", graph: "graph", twin: "case-mix twin", path: "care pathway", drift: "change-point", mix: "code mix" };
 function stackParts(p) { const t = Object.values(p).reduce((a, b) => a + b, 0) || 1; return `<div class="stack" style="min-width:180px">${Object.entries(p).map(([k, v]) => `<i title="${PARTL[k]} ${v.toFixed(2)}" style="width:${v / t * 100}%;background:${PARTC[k]}"></i>`).join("")}</div>`; }
 function legendParts() { return Object.entries(PARTL).map(([k, l]) => `<span style="margin-right:10px"><i style="display:inline-block;width:9px;height:9px;background:${PARTC[k]};border-radius:2px"></i> ${l}</span>`).join(""); }
@@ -1008,17 +1157,83 @@ async function vGovernance() {
     <div class="card" style="margin-top:14px"><h3>Forecast model card <small>discrete-time hazard · P60 = 1-(1-h1)(1-h2) · horizons can never contradict</small></h3><div class="sm" style="margin-bottom:8px">Chosen model (frozen rule: lower training-period log loss): <b>${g.run.model_choice.chosen}</b>.${g.run.model_choice.reason ? ` <span class="tag t-high">${esc(g.run.model_choice.reason)}</span>` : ""} Trained on anchors through ${g.run.model_choice.cut} (${g.run.model_choice.train_anchors} anchors); purged 90 days; tested on ${g.run.model_choice.eval_anchors} later anchors from ${g.run.model_choice.eval_from}. Sigmoid calibration cross-fitted by provider group on the training period only. Production bundle refit on all fully observed history with frozen hyper-parameters.</div><div class="grid g3">${[30, 60, 90].map(h => { const m = fm[h]; return m ? `<div><b>${h}-day</b> <span class="mut sm">(${m.positives} positive / ${m.test_rows} test rows)</span><table><tr><th></th><th class="num">Logistic</th><th class="num">Boosting</th></tr><tr><td>AUC</td><td class="num">${m.logistic.auc.toFixed(3)}</td><td class="num">${m.gboost.auc.toFixed(3)}</td></tr><tr><td>Avg precision</td><td class="num">${m.logistic.ap.toFixed(3)}</td><td class="num">${m.gboost.ap.toFixed(3)}</td></tr><tr><td>Brier</td><td class="num">${m.logistic.brier.toFixed(3)}</td><td class="num">${m.gboost.brier.toFixed(3)}</td></tr><tr><td>Calibration error</td><td class="num">${m.logistic.ece.toFixed(3)}</td><td class="num">${m.gboost.ece.toFixed(3)}</td></tr><tr><td>Flag-rate baseline AUC</td><td class="num" colspan="2">${m.baseline_auc_flag_share.toFixed(3)}</td></tr></table>${reliability(g.forecast.calibration[h] || [])}</div>` : ""; }).join("")}</div>
     <div class="sm mut">Synthetic data is easy; expect far lower real-world performance. Probabilities are capped to 1–97% to avoid false certainty.</div></div>
     <div class="card" style="margin-top:14px"><h3>SpotZ Sentinel <small>in-house learned detectors · no rules, no labels</small></h3><div class="grid g2"><div class="sm"><p style="margin-top:0"><b>Case-mix twin.</b> Gradient-boosted model of what each provider's own patients would normally cost (age, plan, diagnosis profile, utilisation elsewhere, service family). Cross-fitted by provider groups so a provider never shapes its own expectation; small panels shrunk toward "explained". Fit R² ${(g.run.sentinel_fit || {}).r2_paid?.toFixed(2)} (paid), ${(g.run.sentinel_fit || {}).r2_lines?.toFixed(2)} (lines) on ${num((g.run.sentinel_fit || {}).rows)} provider–member pairs.</p><p><b>Care-pathway model.</b> Back-off sequence model of member journeys: next service given previous service, time gap, inside-inpatient-stay and after-coverage-end context. Counts are leave-provider-out, so a ring billing the same odd pattern cannot make it look normal.</p></div>
-    <div><b class="sm">Ranking power per detector (synthetic labels, AUC)</b>${barsH(Object.entries(ev.detector_auc || {}).map(([k, v]) => ({ label: k, value: v, color: k.startsWith("Sentinel") ? "#B45309" : k === "Combined risk" ? "#18181B" : "#A8A29E" })), { fmt: v => v.toFixed(3), max: 1 })}<div class="sm mut">The synthetic scenarios were written with rules in mind, so rules look near-perfect here. Sentinel's value is that it reaches 0.84 without knowing any rule — it is the detector most likely to generalise to schemes nobody wrote a rule for.</div></div></div></div>
+    <div><b class="sm">Ranking power per detector (synthetic labels, AUC)</b>${barsH(Object.entries(ev.detector_auc || {}).map(([k, v]) => ({ label: k, value: v, color: k.startsWith("Sentinel") ? "#55595F" : k === "Combined risk" ? "#1E2024" : "#A0A4AB" })), { fmt: v => v.toFixed(3), max: 1 })}<div class="sm mut">The synthetic scenarios were written with rules in mind, so rules look near-perfect here. Sentinel's value is that it reaches 0.84 without knowing any rule — it is the detector most likely to generalise to schemes nobody wrote a rule for.</div></div></div></div>
     <div class="card" style="margin-top:14px"><h3>Rule catalogue <small>${g.run.ruleset}</small></h3><div style="overflow:auto"><table><tr><th>Rule</th><th>What it detects</th><th>Benign explanations considered</th><th>Check that distinguishes</th></tr>${g.rules.map(r => `<tr><td><b>${r.name}</b><div class="mono mut">${r.key}</div></td><td class="sm">${esc(r.desc)}</td><td class="sm">${r.benign.map(esc).join("<br>")}</td><td class="sm">${esc(r.check)}</td></tr>`).join("")}</table></div></div>
     <div class="grid g2" style="margin-top:14px"><div class="card"><h3>Decision log</h3>${a.decisions.length ? a.decisions.map(x => `<div class="sm" style="padding:5px 0;border-bottom:1px solid #eef1f6"><b>${x.case_id}</b> ${esc(x.outcome)} <span class="mut">· ${esc(x.reviewer)} (${x.role}) · ${x.ts}</span><br>${esc(x.reason)}</div>`).join("") : '<div class="mut">No decisions recorded yet.</div>'}</div>
     <div class="card"><h3>Audit trail</h3><div style="max-height:360px;overflow:auto">${a.audit.map(x => `<div class="sm" style="padding:4px 0;border-bottom:1px solid #eef1f6"><span class="mut">${x.ts}</span> <b>${esc(x.actor)}</b> ${esc(x.action)} ${esc(x.target)}</div>`).join("") || '<div class="mut">Empty.</div>'}</div></div></div>`;
 }
 
+/* ------------------------------------------------------------ context panel, search, quick create */
+async function ctxFill() {
+  const el = $("#ctxb"); if (!el) return;
+  try {
+    const q = S.queue || await loadQueue(); const rows = q.queue;
+    if (S.view === "queue" || S.view === "case") {
+      const cid = S.view === "case" ? S.arg : (UI.sel || rows[0]?.case_id); const r = rows.find(x => x.case_id === cid);
+      if (!r) { el.innerHTML = '<div class="sm mut">Select a case to see its focus.</div>'; return; }
+      const p = await api(`cases/${cid}/plan`).catch(() => null);
+      const steps = (p?.plan?.steps || []).slice(0, 4);
+      el.innerHTML = `<div class="cfh"><span class="fav">${esc(initials(r.title.replace(/\+.*$/, "")))}</span><div><span class="mono mut">${r.case_id}</span><b>${esc(r.title)}</b><span class="mut sm">${esc(r.type)}</span></div></div>
+      <div class="grid g2" style="gap:10px;margin:14px 0"><div class="mini"><span>Exposure</span><b>${money(r.exposure)}</b></div><div class="mini"><span>Risk</span><b>${Math.round(r.risk)}</b></div><div class="mini"><span>Priority</span><b>${Math.round(r.priority)}</b></div><div class="mini"><span>Readiness</span><b>${p ? p.score + "%" : "–"}</b></div></div>
+      <div class="ctxl">Case status</div><div class="pill-row">${laneTag(r.lane)}${statusTag(r.status)}</div>
+      ${steps.length ? `<div class="ctxl" style="margin-top:16px">Next steps</div><div class="nsteps">${steps.map(x => `<div class="${x.status === "done" ? "done" : ""}">${ico(x.status === "done" ? "checkc" : "clock", 15)}<span>${esc(x.title)}</span></div>`).join("")}</div>` : ""}
+      ${S.view === "queue" ? `<button class="btn pri" style="width:100%;justify-content:center;margin-top:16px" data-go="case/${cid}">${ico("chevr", 15)}Open case</button>` : `<button class="btn" style="width:100%;justify-content:center;margin-top:16px" data-go="case/${cid}/plan">Open action plan</button>`}`;
+      return;
+    }
+    const my = await api("my").catch(() => null); S.unread = my ? my.notifications.filter(n => !n.read).length : S.unread;
+    const t0 = new Date().toISOString().slice(0, 10), mine = (my?.mine || []).filter(r => r.status !== "Closed");
+    const due = mine.filter(r => r.due && r.due <= t0), over = mine.filter(r => r.overdue);
+    const top = rows.filter(r => r.status !== "Closed").slice(0, 4);
+    const appr = my?.approvals?.length || 0;
+    el.innerHTML = `<div class="dcard"><span class="dn">${due.length + appr}</span><div><b>${appr ? "Due & approvals" : "Deadlines today"}</b><span>${due.length ? `${due.length} case${due.length === 1 ? "" : "s"} due${over.length ? ` · ${over.length} overdue` : ""}` : "Nothing due today"}${appr ? ` · ${appr} referral approval${appr === 1 ? "" : "s"} waiting` : ""}</span></div></div>
+    <div class="ctxl" style="margin-top:20px">Highest priority</div>${top.map(r => `<button class="hp" data-go="case/${r.case_id}"><div><b>${esc(r.title)}</b><span>${r.case_id} · ${r.capacity === "within" ? "scheduled" : esc(r.lane)}</span></div>${riskNum(r.risk)}</button>`).join("")}
+    <div class="qins"><b>${ico("spark", 14)}Queue insight</b><span>${rows.filter(r => r.escalating).length ? `${rows.filter(r => r.escalating).length} case(s) are escalating. ` : ""}${rows.filter(r => r.lane !== "Investigate").length} case(s) were routed away from investigation because legitimate context or weak evidence was found.</span></div>`;
+  } catch (e) { el.innerHTML = `<div class="sm mut">${esc(e.message)}</div>`; }
+}
+async function gSearch(v) {
+  const box = $("#gres"); if (!box) return; const q = v.trim().toLowerCase(); UI.gq = v;
+  if (!q) { box.innerHTML = ""; return; }
+  const rows = (S.queue || await loadQueue()).queue.filter(r => `${r.case_id} ${r.title} ${r.type}`.toLowerCase().includes(q)).slice(0, 5);
+  let ents = []; try { ents = q.length > 1 ? (await api("graph/search?q=" + encodeURIComponent(v.trim()))).slice(0, 6) : []; } catch { }
+  if ($("#gq")?.value !== v) return;
+  box.innerHTML = `<div class="gdrop">${rows.length ? `<div class="gh">Cases</div>${rows.map(r => `<button class="grow" data-go="case/${r.case_id}"><span class="mono">${r.case_id}</span><span class="gl">${esc(r.title)}</span>${riskNum(r.risk)}</button>`).join("")}` : ""}
+  ${ents.length ? `<div class="gh">Providers, members &amp; entities</div>${ents.map(e => `<button class="grow" data-go="${e.type === "patient" ? `explorer/members?m=${encodeURIComponent(e.id)}` : /^P-\d+$/.test(e.id) ? `provider/${e.id}` : e.case_id ? `case/${e.case_id}` : "network"}">${typeIcon(e.type)}<span class="gl">${esc(e.label)}<em>${TLAB[e.type] || ""}${e.case_id ? " · " + e.case_id : ""}</em></span></button>`).join("")}` : ""}
+  ${!rows.length && !ents.length ? `<div class="sm mut" style="padding:10px 12px">No match. Try a case ID (CS-0107), provider ID (P-0119) or member ID (M-00010).</div>` : ""}</div>`;
+}
+function newCaseModal() {
+  const m = document.createElement("div"); m.className = "modal"; m.id = "ncm";
+  m.innerHTML = `<div class="mbox" role="dialog" aria-modal="true" aria-labelledby="ncmt"><div class="mh"><span class="mk2">${ico("plus", 18)}</span><div><span class="eyebrow">Quick create</span><h2 id="ncmt">Open a new lead</h2><p>Log the essentials now. A supervisor triages it, and the analysis links it to a ranked case when the provider matches.</p></div><button class="iconbtn sm" id="ncx" aria-label="Close">${ico("x", 16)}</button></div>
+  <form id="ncf"><div class="mbody grid g2" style="gap:6px 16px"><div><label class="f">Provider or organization</label><input type="text" id="nc_prov" placeholder="e.g. P-0119 or Northpoint Imaging"></div><div><label class="f">Member (optional)</label><input type="text" id="nc_mem" placeholder="e.g. M-00010"></div>
+  <div style="grid-column:1/-1"><label class="f">Service category</label><input type="text" id="nc_svc" placeholder="e.g. Durable medical equipment"></div>
+  <div><label class="f">Estimated exposure</label><input type="number" id="nc_exp" min="0" placeholder="42000"></div><div><label class="f">Source channel</label><select id="nc_ch">${["Hotline", "Member", "Employee", "Provider", "Law enforcement", "Other"].map(x => `<option>${x}</option>`).join("")}</select></div>
+  <div style="grid-column:1/-1"><label class="f">What was reported</label><textarea id="nc_al" placeholder="What was reported, when, and why it looks wrong (no unnecessary personal details)"></textarea></div></div>
+  <div class="mf"><span class="sm mut">Leads are allegations, not evidence.</span><span class="sp"></span><button type="button" class="btn" id="ncc">Cancel</button><button type="submit" class="btn pri">${ico("plus", 15)}Create lead</button></div></form></div>`;
+  document.body.appendChild(m); setTimeout(() => $("#nc_prov")?.focus(), 30);
+}
+const closeModal = () => $("#ncm")?.remove();
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); const b = $("#gres"); if (b) b.innerHTML = ""; } });
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "ncf") return; e.preventDefault();
+  const prov = $("#nc_prov").value.trim(), mem = $("#nc_mem").value.trim(), svc = $("#nc_svc").value.trim(), ex = $("#nc_exp").value, al = $("#nc_al").value.trim();
+  const isId = /^P-\d+$/i.test(prov);
+  const text = [al, svc && `Service: ${svc}.`, !isId && prov && `Provider named: ${prov}.`, mem && `Member: ${mem}.`, ex && `Estimated exposure: ${money(+ex)}.`].filter(Boolean).join(" ");
+  try { const r = await post("tips", { channel: $("#nc_ch").value, subject_type: isId || !mem ? "provider" : "member", subject_id: isId ? prov.toUpperCase() : mem, allegation: text }); closeModal(); toast(`Lead #${r.id} created · sent to supervisor triage`); if (S.view === "tips") render(); }
+  catch (err) { toast(err.message); }
+});
+
 /* ------------------------------------------------------------ events */
 document.addEventListener("click", async e => {
   const t = e.target;
+  const lpa = t.closest("#lpsign,#lpsign2,#lpwk,#lpwk2"); if (lpa) { e.preventDefault(); const tg = lpa.id.startsWith("lpsign") ? "#signin" : "#lpwork"; $(tg)?.scrollIntoView({ behavior: "smooth", block: "center" }); if (tg === "#signin") setTimeout(() => $("#lu")?.focus(), 350); return; }
+  if (!t.closest(".gsearch")) { const b = $("#gres"); if (b) b.innerHTML = ""; }
+  if (t.closest("#sbtog")) { UI.sb = !UI.sb; localStorage.setItem("spotzi.sb", UI.sb ? "1" : "0"); $("#app").classList.toggle("sb-min", UI.sb); $("#sbtog").innerHTML = ico(UI.sb ? "chevr" : "chevl", 15); return; }
+  const cx = t.closest("[data-ctx]"); if (cx) { UI.ctx[S.view] = cx.dataset.ctx === "1"; localStorage.setItem("spotzi.ctx", JSON.stringify(UI.ctx)); return render(); }
+  if (t.closest("#newcase")) return newCaseModal();
+  if (t.closest("#ncx") || t.closest("#ncc") || t.id === "ncm") return closeModal();
+  const sr = t.closest("[data-sel]"); if (sr && !t.closest("a")) { if (!ctxOpen()) return go("/case/" + sr.dataset.sel); UI.sel = sr.dataset.sel; $$("tr[data-sel]").forEach(x => x.classList.toggle("sel", x === sr)); return ctxFill(); }
+  if (t.closest("#actadd")) { const txt = $("#actnote").value; try { await post(`cases/${S.arg}/notes`, { text: txt }); toast("Note added"); } catch (err) { if (err.message.includes("member IDs") && confirm(err.message + " Save anyway?")) { await post(`cases/${S.arg}/notes`, { text: txt, confirm_member_ids: true }); } else return toast(err.message); } return render(); }
   const nav = t.closest("[data-nav]"); if (nav) return go("/" + nav.dataset.nav);
-  const g = t.closest("[data-go]"); if (g) return go("/" + g.dataset.go);
+  const g = t.closest("[data-go]"); if (g) { if (g.closest("#gres")) UI.gq = ""; return go("/" + g.dataset.go); }
   const hz = t.closest("[data-hz]"); if (hz) { S.horizon = +hz.dataset.hz; return render(); }
   const ck = t.closest("[data-check]"); if (ck) { const c = S.cd.case_id, arr = S.checks[c] || (S.checks[c] = []), r = ck.dataset.check; const i = arr.indexOf(r); i >= 0 ? arr.splice(i, 1) : arr.push(r); return render(); }
   if (t.id === "genNarr") { const cid = S.cd.case_id; AI.busy = true; render(); try { AI.narr[cid] = await post(`cases/${cid}/narrative`, {}); } catch (err) { AI.narr[cid] = { error: err.message }; } AI.busy = false; return render(); }
@@ -1031,7 +1246,7 @@ document.addEventListener("click", async e => {
   const ab = t.closest("[data-addbp]"); if (ab) { try { await post(`blueprint/${ab.dataset.addbp}/items`, { text: $("#bpnew").value }); } catch (err) { toast(err.message); } return render(); }
   const wk = t.closest("[data-wiki]"); if (wk) { const rv = $("#wrv").value.trim(); if (rv) { S.reviewer = rv; localStorage.setItem("cs_reviewer", rv); } try { await post(`wiki/proposals/${wk.dataset.id}/review`, { action: wk.dataset.wiki, reviewer: rv, note: $("#wnote").value }); toast(wk.dataset.wiki === "approve" ? "Approved into knowledge" : "Rejected"); go("/knowledge"); } catch (err) { toast(err.message); } return; }
   if (t.id === "wclean") { try { const r = await post("wiki/proposals/approve-clean", { reviewer: S.reviewer }); toast(`Approved ${r.approved} page(s)`); } catch (err) { toast(err.message); } return render(); }
-  if (t.id === "logout") { navigator.serviceWorker?.controller?.postMessage("clearCaches"); await post("logout", {}); S.user = null; location.hash = ""; return renderLogin(); }
+  if (t.closest("#logout")) { navigator.serviceWorker?.controller?.postMessage("clearCaches"); await post("logout", {}); S.user = null; location.hash = ""; return renderLogin(); }
   if (t.id === "noteadd") { try { await post(`cases/${S.arg}/notes`, { text: $("#notetxt").value }); } catch (err) { if (err.message.includes("member IDs") && confirm(err.message + " Save anyway?")) await post(`cases/${S.arg}/notes`, { text: $("#notetxt").value, confirm_member_ids: true }); else toast(err.message); } return loadNotes(S.arg); }
   const pq = t.closest("[data-pq]"); if (pq) { const why = prompt(`Reason to ${pq.dataset.pq} ${pq.dataset.id} as a precedent (10+ characters):`); if (!why) return; try { await post(`precedents/${pq.dataset.id}/quality`, { action: pq.dataset.pq, reason: why }); toast("Recorded"); } catch (err) { toast(err.message); } return render(); }
   const ua = t.closest("[data-uact]"); if (ua) { try { await api("users/" + ua.dataset.uact, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: ua.dataset.on === "1" }) }); } catch (err) { toast(err.message); } return render(); }
@@ -1116,8 +1331,11 @@ document.addEventListener("click", async e => {
   if (t.id === "mgo") go(`/explorer/members?m=${$("#mq").value}`);
   if (t.id === "rerun") { await post("run", { seed: +$("#seed").value, members: +$("#mem").value }); toast("Pipeline started; the current analysis stays live until it finishes"); poll(); }
 });
+document.addEventListener("dblclick", e => { const sr = e.target.closest("[data-sel]"); if (sr) go("/case/" + sr.dataset.sel); });
 document.addEventListener("input", e => {
   const t = e.target;
+  if (t.id === "gq") { clearTimeout(UI.gt); UI.gt = setTimeout(() => gSearch(t.value), 180); }
+  if (t.id === "qfq") { UI.qf.q = t.value; clearTimeout(UI.qt); UI.qt = setTimeout(async () => { await render(); const n = $("#qfq"); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 300); }
   if (t.dataset.w) { S.weights[t.dataset.w] = t.value / 100; t.nextElementSibling.textContent = t.value; clearTimeout(S.wt); S.wt = setTimeout(render, 350); }
   if (t.dataset.cap) { S[t.dataset.cap] = Math.max(1, +t.value || 1); clearTimeout(S.ct); S.ct = setTimeout(render, 500); }
   if (t.id === "pq") { S.expl.prov.q = t.value; clearTimeout(S.pt); S.pt = setTimeout(async () => { const p = $("#pq"); const pos = p.selectionStart; await render(); const n = $("#pq"); n.focus(); n.setSelectionRange(pos, pos); }, 300); }
@@ -1126,7 +1344,7 @@ document.addEventListener("input", e => {
   if (t.id === "netq") { S.netQ = t.value; clearTimeout(S.nt); S.nt = setTimeout(async () => { await render(); const n = $("#netq"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 400); }
   if (t.id === "netmin") { S.netMin = +t.value; $("#netminv").textContent = t.value; clearTimeout(S.nt); S.nt = setTimeout(render, 300); }
 });
-document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "askq") askCopilot(e.target.value); });
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "askq") askCopilot(e.target.value); if (e.key === "Enter" && e.target.id === "gq") { const f = $("#gres .grow"); if (f) { UI.gq = ""; f.click(); } } if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || "")) { const g = $("#gq"); if (g) { e.preventDefault(); g.focus(); } } });
 document.addEventListener("submit", async e => {
   if (e.target.id !== "loginf") return; e.preventDefault();
   const r = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: $("#lu").value, password: $("#lp").value }) });
@@ -1135,7 +1353,7 @@ document.addEventListener("submit", async e => {
   await afterLogin();
 });
 async function afterLogin() {
-  $("#app").style.display = ""; if (!(await loadMe())) return renderLogin();
+  document.body.classList.remove("landing"); $("#app").style.display = ""; $("#app").classList.remove("bare"); if (!(await loadMe())) return renderLogin();
   if (S.user.mfa_required && !S.user.mfa_enabled) return renderEnrol();
   S.status = await api("status"); if (!location.hash || location.hash === "#" || location.hash.startsWith("#/login")) location.hash = "#/my"; route();
 }
@@ -1145,12 +1363,13 @@ document.addEventListener("submit", async e => {
 });
 document.addEventListener("change", async e => {
   if (e.target.id === "rate") { S.rate = +e.target.value || 65; return render(); }
+  if (e.target.dataset?.qf) { UI.qf[e.target.dataset.qf] = e.target.value; return render(); }
   if (e.target.dataset && e.target.dataset.kind) { e.target.checked ? NET.kinds.add(e.target.dataset.kind) : NET.kinds.delete(e.target.dataset.kind); return render(); }
   if (e.target.id === "wbflag") { NET.flagged = e.target.checked; return render(); }
   if (e.target.id === "asgsel" && e.target.value) { try { const r = await post(`cases/${S.arg}/assign`, { assignee: e.target.value, days: 10 }); toast("Assigned · due " + r.due); } catch (err) { toast(err.message); } return render(); }
   if (e.target.dataset && e.target.dataset.urole) { try { await api("users/" + e.target.dataset.urole, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role: e.target.value }) }); toast("Role updated"); } catch (err) { toast(err.message); } return; }
  if (e.target.id === "pf") { S.expl.prov.fam = e.target.value; render(); } });
-function afterRender() { Object.keys(GRAPHS).forEach(id => { if (!GRAPHS[id]?.three && document.getElementById(id)) wireGraph(id); }); mount3d(); if (S.view === "case" && S.tab === "decision") { loadNotes(S.arg); scopeCard(S.arg); recCard(S.arg); docCard(S.arg); } offlineBanner(); }
+function afterRender() { ctxFill(); Object.keys(GRAPHS).forEach(id => { if (!GRAPHS[id]?.three && document.getElementById(id)) wireGraph(id); }); mount3d(); if (S.view === "case" && S.tab === "decision") { loadNotes(S.arg); scopeCard(S.arg); recCard(S.arg); docCard(S.arg); } offlineBanner(); }
 
 async function poll() {
   S.status = await api("status");

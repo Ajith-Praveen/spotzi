@@ -53,7 +53,7 @@ def base_url():
 def enqueue(c, user_row, text, link):
     """Called for every in-app notification; queues external copies only where the user opted in and the channel exists."""
     ch = channels(); now = time.strftime("%Y-%m-%d %H:%M:%S"); n = 0
-    url = f"{base_url()}/#/{link}" if link else base_url()
+    url = f"{base_url()}/app#/{link}" if link else f"{base_url()}/app"
     body = f"{text}\nOpen in SpotZⁱ (sign-in required): {url}"
     if ch["email"] and user_row["notify_email"] and user_row["email"]:
         c.execute("INSERT INTO outbox(channel,recipient,subject,body,status,next_try,created) VALUES(?,?,?,?,?,?,?)",

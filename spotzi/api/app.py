@@ -47,8 +47,8 @@ from fastapi.responses import Response
 PUBLIC_API = {"/api/login", "/api/login/mfa", "/api/logout", "/api/me", "/api/sso/config", "/api/sso/login", "/api/sso/callback"}
 MFA_OPEN = {"/api/me", "/api/mfa/begin", "/api/mfa/confirm", "/api/logout", "/api/status"}
 CONTRACT = "4"
-CSP = ("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; "
-       "font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
+CSP = ("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; connect-src 'self'; "
+       "font-src 'self' https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'")
 
 
 @app.middleware("http")
@@ -500,9 +500,15 @@ async def decide(cid: str, req: Request):
 
 
 @app.get("/api/audit")
-def audit_log(limit: int = 100):
-    c = db(); rows = [dict(r) for r in c.execute("SELECT * FROM audit ORDER BY id DESC LIMIT ?", (limit,)).fetchall()]
-    dec = [dict(r) for r in c.execute("SELECT * FROM decisions ORDER BY id DESC LIMIT 200").fetchall()]; c.close()
+def audit_log(limit: int = 100, target: str = ""):
+    c = db()
+    if target:
+        rows = [dict(r) for r in c.execute("SELECT * FROM audit WHERE target=? ORDER BY id DESC LIMIT ?", (target, limit)).fetchall()]
+        dec = [dict(r) for r in c.execute("SELECT * FROM decisions WHERE case_id=? ORDER BY id DESC LIMIT 200", (target,)).fetchall()]
+    else:
+        rows = [dict(r) for r in c.execute("SELECT * FROM audit ORDER BY id DESC LIMIT ?", (limit,)).fetchall()]
+        dec = [dict(r) for r in c.execute("SELECT * FROM decisions ORDER BY id DESC LIMIT 200").fetchall()]
+    c.close()
     return J(dict(audit=rows, decisions=dec))
 
 
@@ -1184,17 +1190,17 @@ def sso_callback(code: str = "", state: str = "", error: str = ""):
     from fastapi.responses import RedirectResponse
     cfg = AU.oidc_config()
     if not cfg: raise HTTPException(404, "SSO is not configured")
-    if error: return RedirectResponse("/#/login?sso_error=" + error[:80], status_code=302)
+    if error: return RedirectResponse("/app#/login?sso_error=" + error[:80], status_code=302)
     c = db()
     try:
         u_row, claims = AU.oidc_finish(c, cfg, code, state)
     except Exception as e:
         c.commit(); c.close(); audit("sso", "-", "sso_failed", "", str(e)[:200])
         from urllib.parse import quote
-        return RedirectResponse("/#/login?sso_error=" + quote(str(e)[:160]), status_code=302)
+        return RedirectResponse("/app#/login?sso_error=" + quote(str(e)[:160]), status_code=302)
     tok = AU.new_session(c, u_row["id"]); c.commit(); c.close()
     audit(u_row["name"], u_row["role"], "login", "", "sso:" + cfg["issuer"])
-    r = RedirectResponse("/#/my", status_code=302)
+    r = RedirectResponse("/app#/my", status_code=302)
     r.set_cookie(AU.COOKIE, tok, httponly=True, samesite="lax", max_age=AU.SESSION_HOURS * 3600)
     return r
 
@@ -1835,6 +1841,11 @@ def service_worker():
 
 
 @app.get("/")
+def landing():
+    return FileResponse(ROOT / "static" / "landing.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/app")
 def index():
     return FileResponse(ROOT / "static" / "index.html", headers={"Cache-Control": "no-cache"})
 

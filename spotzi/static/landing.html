@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000102">
+  <meta name="description" content="Spotzi — turn suspicious healthcare claims into evidence-backed cases. Multi-signal detection, network intelligence and explainable investigations, built around the investigator.">
+  <link rel="icon" href="/spotzi-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/spotzi-icon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Spotzi — Turn Suspicious Claims Into Evidence-Backed Cases</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --abyss: #000102;
+      --slate: #354248;
+      --steel: #6E7A82;
+      --mist: #B5C4C9;
+      --bone: #F7F8F9;
+
+      /* light slides (#E5E6EC paper) */
+      --paper: #E5E6EC;
+      --paper-2: #edeef2;
+      --card: #FFFFFF;
+      --ink: #10131A;
+      --ink-2: #3b414c;
+      --muted: #727885;
+      --line: #d6d8e0;
+
+      --red: #E5484D;
+      --orange: #F76B15;
+      --gold: #E0A500;
+      --greyb: #e5e7eb;
+
+      --panel: #0c0e13;   /* dark panels on light slides */
+      --ease: cubic-bezier(.2, .7, .2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      background: var(--abyss);
+      color: var(--bone);
+      overflow-x: hidden;
+    }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    body {
+      font-family: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px, 5vw, 56px); }
+
+    /* ── Brand mark (over the hero) ────────────────────────── */
+    .brandbar {
+      position: absolute;
+      inset: 0 0 auto 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: clamp(20px, 3vw, 32px) clamp(20px, 5vw, 56px);
+      pointer-events: none;
+    }
+    .brandbar > * { pointer-events: auto; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 21px; letter-spacing: -0.02em; color: var(--bone);
+    }
+    .brand .mk {
+      width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
+      background: radial-gradient(120% 120% at 30% 20%, #e5484d, #7a2b2e);
+      box-shadow: 0 0 22px -4px rgba(229, 72, 77, .7);
+    }
+    .brand-links { display: flex; align-items: center; gap: 28px; }
+    .brand-links a { color: var(--mist); font-size: 14.5px; font-weight: 400; transition: color .2s; }
+    .brand-links a:hover { color: var(--bone); }
+    @media (max-width: 760px) { .brand-links a:not(.btn) { display: none; } }
+
+    /* ── Hero (slide 1) ───────────────────────────────────── */
+    .hero {
+      position: relative; height: 100vh; height: 100svh; min-height: 580px;
+      overflow: hidden; isolation: isolate; background: var(--abyss);
+    }
+    .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: -1; }
+
+    .hero-copy {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 64px 20px max(36px, env(safe-area-inset-bottom));
+      background: linear-gradient(to top, var(--abyss) 55%, rgba(0, 1, 2, 0));
+    }
+    @media (min-width: 900px) and (min-aspect-ratio: 23/20) {
+      .hero-copy {
+        top: 0; bottom: 0; right: auto; width: min(50vw, 700px);
+        padding: 124px 0 44px clamp(40px, 7vw, 128px);
+        display: flex; flex-direction: column; justify-content: center; background: none;
+      }
+    }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 9px; margin: 0 0 22px;
+      font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    }
+    .hero .eyebrow { color: var(--mist); }
+    .eyebrow::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red); box-shadow: 0 0 10px 1px rgba(229, 72, 77, .9);
+    }
+
+    .hero h1 {
+      margin: 0 0 0.5em; max-width: 17ch; font-weight: 300;
+      font-size: clamp(2.1rem, 1rem + 3.6vw, 4.3rem); line-height: 1.04;
+      letter-spacing: -0.04em; text-wrap: balance;
+    }
+    .hero h1 b { font-weight: 600; }
+    .hero p {
+      margin: 0 0 2rem; max-width: 44ch;
+      font-size: clamp(1rem, 0.95rem + 0.25vw, 1.15rem); line-height: 1.55; color: var(--mist);
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px; height: 50px; padding: 0 24px;
+      border-radius: 11px; font-family: inherit; font-weight: 500; font-size: 0.9375rem; line-height: 1;
+      transition: background-color .2s, box-shadow .2s, color .2s, transform .15s; cursor: pointer; border: 0;
+    }
+    .btn svg { width: 16px; height: 16px; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--bone); color: var(--abyss); }
+    .btn-primary:hover { background: #fff; }
+    .btn-quiet { color: var(--bone); box-shadow: inset 0 0 0 1px rgba(181, 196, 201, .3); }
+    .btn-quiet:hover { box-shadow: inset 0 0 0 1px rgba(181, 196, 201, .65); }
+    .btn:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+
+    .scrollcue {
+      position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 3;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel);
+      opacity: 0; transition: opacity .9s var(--ease);
+    }
+    .hero.is-settled .scrollcue { opacity: 1; }
+    .scrollcue .line { width: 1px; height: 30px; background: linear-gradient(var(--steel), transparent); }
+    @media (max-width: 900px) { .scrollcue { display: none; } }
+
+    .hero-copy > * { opacity: 0; transform: translateY(14px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+    .hero.is-settled .hero-copy > * { opacity: 1; transform: none; }
+    .hero.is-settled .hero-copy > :nth-child(2) { transition-delay: .1s; }
+    .hero.is-settled .hero-copy > :nth-child(3) { transition-delay: .2s; }
+    .hero.is-settled .hero-copy > :nth-child(4) { transition-delay: .3s; }
+    @media (prefers-reduced-motion: reduce) { .hero-copy > * { transform: none; transition: opacity .4s linear; } }
+
+    /* ════════ LIGHT SLIDES (2+) ═══════════════════════════ */
+    .slide { background: var(--paper); color: var(--ink); position: relative; }
+    .slide .eyebrow { color: var(--ink); }
+    .slide .eyebrow::before { background: var(--ink); box-shadow: none; }
+    .slide-pad { padding-block: clamp(80px, 11vh, 150px); }
+
+    .s-head { max-width: 62ch; }
+    .s-head.center { margin-inline: auto; text-align: center; }
+    .s-head h2 {
+      margin: 16px 0 0; font-weight: 500; letter-spacing: -0.03em; line-height: 1.06;
+      font-size: clamp(1.9rem, 1.1rem + 2.6vw, 3.2rem); color: var(--ink); text-wrap: balance;
+    }
+    .s-head p.lead { margin: 20px 0 0; font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem); color: var(--ink-2); line-height: 1.5; max-width: 60ch; }
+    .s-head.center p.lead { margin-inline: auto; }
+
+    /* reveal */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1 !important; transform: none !important; } }
+
+    /* ── Slide 2: network / social proof (marquee of entity cards) ── */
+    .net .s-head { text-align: center; margin-inline: auto; }
+    .marquees { margin-top: 52px; display: flex; flex-direction: column; gap: 18px;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+              mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+    .marquee { overflow: hidden; }
+    .mrow { display: flex; gap: 16px; width: max-content; will-change: transform; }
+    .mrow.a { animation: marq 46s linear infinite; }
+    .mrow.b { animation: marq 58s linear infinite reverse; }
+    .marquees:hover .mrow { animation-play-state: paused; }
+    @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) { .mrow { animation: none !important; } .marquees { mask-image: none; -webkit-mask-image: none; flex-wrap: wrap; } .mrow { flex-wrap: wrap; width: 100%; } }
+
+    .ecard {
+      display: flex; align-items: center; gap: 13px; flex: 0 0 auto;
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+      padding: 13px 16px 13px 13px; min-width: 268px;
+      box-shadow: 0 10px 24px -18px rgba(16, 19, 26, .4);
+      transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .ecard:hover { transform: translateY(-3px); box-shadow: 0 18px 34px -20px rgba(16, 19, 26, .45); }
+    .eicon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+    .eicon svg { width: 22px; height: 22px; }
+    .einfo { min-width: 0; margin-right: 6px; }
+    .ename { font-weight: 600; font-size: 15px; color: var(--ink); white-space: nowrap; }
+    .etype { font-size: 12.5px; color: var(--muted); white-space: nowrap; margin-top: 1px; }
+    .ebadge { margin-left: auto; flex: none; min-width: 32px; height: 28px; padding: 0 9px; border-radius: 8px;
+      display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff; }
+    .r-red    { background: var(--red); }
+    .r-orange { background: var(--orange); }
+    .r-gold   { background: var(--gold); }
+    .r-grey   { background: var(--greyb); color: #4b5563; }
+    /* entity-card icons are neutral grey; risk is shown by the badge colour */
+    .t-red, .t-orange, .t-gold, .t-grey { background: #eef0f3; color: #6b7280; }
+
+    /* ── Slide 3: problem ── */
+    .pgrid { margin-top: 56px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .pcard { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 32px;
+      box-shadow: 0 14px 34px -26px rgba(16, 19, 26, .4); transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+    .pcard:hover { transform: translateY(-5px); box-shadow: 0 26px 46px -28px rgba(16, 19, 26, .4); }
+    .pcard .pi { width: 48px; height: 48px; border-radius: 13px; background: #eef0f3; color: #6b7280;
+      display: grid; place-items: center; margin-bottom: 20px; }
+    .pcard .pi svg { width: 24px; height: 24px; }
+    .pcard .pn { font-family: inherit; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #9aa0aa; }
+    .pcard h3 { margin: 10px 0 10px; font-size: 1.3rem; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+    .pcard p { margin: 0; color: var(--ink-2); font-size: 15.5px; line-height: 1.55; }
+    @media (max-width: 760px) { .pgrid { grid-template-columns: 1fr; } }
+
+    /* ── Slide 4: solution ── */
+    .stat-panel { margin-top: 56px; background: var(--panel); color: #fff; border-radius: 24px;
+      padding: clamp(32px, 4vw, 52px); box-shadow: 0 40px 80px -44px rgba(12, 14, 19, .7); position: relative; overflow: hidden; }
+    .stat-panel::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(700px 300px at 85% -10%, rgba(229, 72, 77, .16), transparent 60%); }
+    .stat-panel h3 { position: relative; margin: 0 0 8px; font-size: clamp(1.4rem, 1rem + 1.4vw, 2rem); font-weight: 500; letter-spacing: -0.02em; }
+    .stat-grid { position: relative; margin-top: 34px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 36px 48px; }
+    .stat .big { font-size: clamp(2.4rem, 1.6rem + 2vw, 3.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+    .stat .word { font-size: clamp(1.7rem, 1.2rem + 1.4vw, 2.3rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1; }
+    .stat .st { margin: 16px 0 6px; font-size: 1.05rem; font-weight: 600; color: #fff; }
+    .stat .sd { margin: 0; font-size: 14.5px; color: #9aa2ad; line-height: 1.5; max-width: 38ch; }
+    .stat-foot { position: relative; margin-top: 38px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      font-size: 13px; color: #868e99; }
+    .stat-foot .gh { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,.08);
+      padding: 6px 12px; border-radius: 999px; color: #cfd4da; font-weight: 500; }
+    .stat-foot .gh svg { width: 15px; height: 15px; }
+    @media (max-width: 680px) { .stat-grid { grid-template-columns: 1fr; gap: 28px; } }
+
+    .fgrid { margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .fcard { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px;
+      box-shadow: 0 14px 34px -28px rgba(16, 19, 26, .4); transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+    .fcard:hover { transform: translateY(-5px); box-shadow: 0 24px 44px -28px rgba(16, 19, 26, .4); }
+    .fcard .fi { width: 44px; height: 44px; border-radius: 12px; background: #eef0f6; color: #2b3240;
+      display: grid; place-items: center; margin-bottom: 18px; }
+    .fcard .fi svg { width: 23px; height: 23px; }
+    .fcard h3 { margin: 0 0 8px; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+    .fcard p { margin: 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.55; }
+    @media (max-width: 920px) { .fgrid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 620px) { .fgrid { grid-template-columns: 1fr; } }
+
+    /* ── Final CTA + footer ── */
+    .cta { background: var(--abyss); color: var(--bone); text-align: center; position: relative; overflow: hidden; }
+    .cta::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(760px 340px at 50% -20%, rgba(229, 72, 77, .22), transparent 60%); }
+    .cta .container { position: relative; }
+    .cta h2 { margin: 0; font-weight: 300; letter-spacing: -0.035em; line-height: 1.05;
+      font-size: clamp(2rem, 1.2rem + 3vw, 3.6rem); }
+    .cta h2 b { font-weight: 600; }
+    .cta p { margin: 20px auto 0; max-width: 52ch; color: var(--mist); font-size: 1.1rem; line-height: 1.55; }
+    .cta .actions { justify-content: center; margin-top: 34px; }
+
+    footer.ft { background: #060708; color: #8b93a0; padding-block: 44px 34px; }
+    .ft-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .ft .brand { color: #fff; font-size: 19px; }
+    .ft-links { display: flex; gap: 26px; flex-wrap: wrap; }
+    .ft-links a { font-size: 14px; color: #8b93a0; }
+    .ft-links a:hover { color: #fff; }
+    .ft-note { margin-top: 26px; font-size: 12.5px; color: #596170; max-width: 70ch; }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ SLIDE 1 · HERO ══════════ -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <canvas class="hero-canvas" aria-hidden="true"></canvas>
+
+    <header class="brandbar">
+      <a class="brand" href="#top" aria-label="Spotzi home">
+        <span class="mk" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 6.3L21 9l-5 4.4L17.6 21 12 17.3 6.4 21 8 13.4 3 9l6.6-.7z" fill="#fff"/></svg>
+        </span>
+        <span>Spotzi</span>
+      </a>
+      <nav class="brand-links">
+        <a href="#network">Network</a>
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a class="btn btn-quiet" style="height:40px;padding:0 18px;" href="/app">Open the app</a>
+      </nav>
+    </header>
+
+    <div class="hero-copy">
+      <span class="eyebrow">Healthcare FWA Intelligence</span>
+      <h1 id="hero-title">Turn Suspicious Claims Into <b>Evidence-Backed Cases.</b></h1>
+      <p>Spotzi maps labs, pharmacies and practices into one living graph — so every flagged claim comes with the connections, evidence and reasoning behind it.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/app">
+          <span>Explore Spotzi</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-quiet" href="#network">Explore a sample network</a>
+      </div>
+    </div>
+
+    <div class="scrollcue" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="line"></span>
+    </div>
+  </section>
+
+  <!-- ══════════ SLIDE 2 · NETWORK / SOCIAL PROOF ══════════ -->
+  <section class="slide net" id="network">
+    <div class="container slide-pad">
+      <div class="s-head center reveal">
+        <span class="eyebrow">Provider Network Intelligence</span>
+        <h2>Every provider, pharmacy and lab — scored and connected.</h2>
+        <p class="lead">Spotzi maps the entities behind your claims into one graph, scores each by risk, and surfaces the relationships that single-claim rules can't see.</p>
+      </div>
+
+      <div class="marquees reveal" aria-label="Sample scored entities in a provider network">
+        <div class="marquee">
+          <div class="mrow a">
+            <!-- set A (duplicated for a seamless loop) -->
+            <div class="ecard"><span class="eicon t-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Harbor Family Care</div><div class="etype">Professional · CS-0001</div></div><span class="ebadge r-red">61</span></div>
+            <div class="ecard"><span class="eicon t-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6M10 3v5.5L5.5 17a2 2 0 001.8 3h9.4a2 2 0 001.8-3L14 8.5V3"/><path d="M7.5 14h9"/></svg></span><div class="einfo"><div class="ename">Northstar Diagnostics</div><div class="etype">Laboratory · CS-0001</div></div><span class="ebadge r-red">94</span></div>
+            <div class="ecard"><span class="eicon t-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Clearview Internal</div><div class="etype">Professional · CS-0004</div></div><span class="ebadge r-orange">56</span></div>
+            <div class="ecard"><span class="eicon t-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Oncology &amp; Hematology</div><div class="etype">Professional · CS-0007</div></div><span class="ebadge r-orange">44</span></div>
+            <div class="ecard"><span class="eicon t-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Regional Multispecialty</div><div class="etype">Professional · CS-0093</div></div><span class="ebadge r-gold">28</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="9" width="12" height="6" rx="3" transform="rotate(-45 10 12)"/><path d="M8.5 8.5l5 5"/></svg></span><div class="einfo"><div class="ename">CityChain Pharmacy</div><div class="etype">Pharmacy</div></div><span class="ebadge r-grey">10</span></div>
+            <!-- duplicate -->
+            <div class="ecard"><span class="eicon t-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Harbor Family Care</div><div class="etype">Professional · CS-0001</div></div><span class="ebadge r-red">61</span></div>
+            <div class="ecard"><span class="eicon t-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6M10 3v5.5L5.5 17a2 2 0 001.8 3h9.4a2 2 0 001.8-3L14 8.5V3"/><path d="M7.5 14h9"/></svg></span><div class="einfo"><div class="ename">Northstar Diagnostics</div><div class="etype">Laboratory · CS-0001</div></div><span class="ebadge r-red">94</span></div>
+            <div class="ecard"><span class="eicon t-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Clearview Internal</div><div class="etype">Professional · CS-0004</div></div><span class="ebadge r-orange">56</span></div>
+            <div class="ecard"><span class="eicon t-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Oncology &amp; Hematology</div><div class="etype">Professional · CS-0007</div></div><span class="ebadge r-orange">44</span></div>
+            <div class="ecard"><span class="eicon t-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Regional Multispecialty</div><div class="etype">Professional · CS-0093</div></div><span class="ebadge r-gold">28</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="9" width="12" height="6" rx="3" transform="rotate(-45 10 12)"/><path d="M8.5 8.5l5 5"/></svg></span><div class="einfo"><div class="ename">CityChain Pharmacy</div><div class="etype">Pharmacy</div></div><span class="ebadge r-grey">10</span></div>
+          </div>
+        </div>
+
+        <div class="marquee">
+          <div class="mrow b">
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Clear Primary Care</div><div class="etype">Professional</div></div><span class="ebadge r-grey">16</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6M10 3v5.5L5.5 17a2 2 0 001.8 3h9.4a2 2 0 001.8-3L14 8.5V3"/><path d="M7.5 14h9"/></svg></span><div class="einfo"><div class="ename">Coastal Laboratory</div><div class="etype">Laboratory</div></div><span class="ebadge r-grey">1</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="9" width="12" height="6" rx="3" transform="rotate(-45 10 12)"/><path d="M8.5 8.5l5 5"/></svg></span><div class="einfo"><div class="ename">CityChain Pharmacy</div><div class="etype">Pharmacy</div></div><span class="ebadge r-grey">4</span></div>
+            <div class="ecard"><span class="eicon t-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Lakeside Primary</div><div class="etype">Professional · CS-0001</div></div><span class="ebadge r-gold">26</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Heron Primary Care</div><div class="etype">Professional</div></div><span class="ebadge r-grey">3</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Silver Health Assoc.</div><div class="etype">Professional</div></div><span class="ebadge r-grey">1</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Prairie Physicians</div><div class="etype">Professional</div></div><span class="ebadge r-grey">0</span></div>
+            <!-- duplicate -->
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Clear Primary Care</div><div class="etype">Professional</div></div><span class="ebadge r-grey">16</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6M10 3v5.5L5.5 17a2 2 0 001.8 3h9.4a2 2 0 001.8-3L14 8.5V3"/><path d="M7.5 14h9"/></svg></span><div class="einfo"><div class="ename">Coastal Laboratory</div><div class="etype">Laboratory</div></div><span class="ebadge r-grey">1</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="9" width="12" height="6" rx="3" transform="rotate(-45 10 12)"/><path d="M8.5 8.5l5 5"/></svg></span><div class="einfo"><div class="ename">CityChain Pharmacy</div><div class="etype">Pharmacy</div></div><span class="ebadge r-grey">4</span></div>
+            <div class="ecard"><span class="eicon t-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Lakeside Primary</div><div class="etype">Professional · CS-0001</div></div><span class="ebadge r-gold">26</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Heron Primary Care</div><div class="etype">Professional</div></div><span class="ebadge r-grey">3</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Silver Health Assoc.</div><div class="etype">Professional</div></div><span class="ebadge r-grey">1</span></div>
+            <div class="ecard"><span class="eicon t-grey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v6a6 6 0 0012 0V3M9 3v3M15 3v3M12 15v3a4 4 0 004 4h0a4 4 0 004-4v-2"/><circle cx="20" cy="12" r="2"/></svg></span><div class="einfo"><div class="ename">Prairie Physicians</div><div class="etype">Professional</div></div><span class="ebadge r-grey">0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SLIDE 3 · PROBLEM ══════════ -->
+  <section class="slide problem" id="problem">
+    <div class="container slide-pad">
+      <div class="s-head reveal">
+        <span class="eyebrow">Problem Statement</span>
+        <h2>Detecting suspicious claims is only the beginning. Connecting the evidence is the real challenge.</h2>
+        <p class="lead">Key challenges in healthcare claims investigation.</p>
+      </div>
+
+      <div class="pgrid">
+        <div class="pcard reveal">
+          <div class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div>
+          <span class="pn">01</span>
+          <h3>Alert Overload</h3>
+          <p>High volumes of flagged claims make it difficult to identify and prioritize cases that require immediate attention.</p>
+        </div>
+        <div class="pcard reveal">
+          <div class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="2.4"/><circle cx="19" cy="7" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7 7l4 9M17 9l-4 7" stroke-dasharray="2 2.6"/></svg></div>
+          <span class="pn">02</span>
+          <h3>Disconnected Signals</h3>
+          <p>Unusual billing patterns, shifts in provider behaviour and hidden relationships often remain fragmented, making broader suspicious patterns harder to uncover.</p>
+        </div>
+        <div class="pcard reveal">
+          <div class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v3M12 17h0"/></svg></div>
+          <span class="pn">03</span>
+          <h3>Lack of Explainable Evidence</h3>
+          <p>Risk scores alone cannot explain why a claim was flagged, what evidence supports the concern or what steps investigators should take next.</p>
+        </div>
+        <div class="pcard reveal">
+          <div class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M5 7h14M7 7l-3 6a3 3 0 006 0zM17 7l-3 6a3 3 0 006 0z"/></svg></div>
+          <span class="pn">04</span>
+          <h3>Risk of False Positives</h3>
+          <p>Legitimate claims may appear suspicious. Without examining context and alternative explanations, investigators risk treating unusual activity as evidence of fraud.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SLIDE 4 · SOLUTION ══════════ -->
+  <section class="slide solution" id="solution">
+    <div class="container slide-pad">
+      <div class="s-head reveal">
+        <span class="eyebrow">The Solution</span>
+        <h2>One investigation workflow. Multiple signals. Evidence at every step.</h2>
+      </div>
+
+      <!-- dark stats panel -->
+      <div class="stat-panel reveal">
+        <h3>Built to make complex investigations more manageable.</h3>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="big" data-count="9">9</div>
+            <p class="st">Detection methods</p>
+            <p class="sd">Rules, anomaly detection, network analysis and other complementary signals.</p>
+          </div>
+          <div class="stat">
+            <div class="big" data-count="13">13</div>
+            <p class="st">Prioritized cases</p>
+            <p class="sd">Cases surfaced from 5,577 flagged claim lines in the documented synthetic demonstration.</p>
+          </div>
+          <div class="stat">
+            <div class="word">Traceable</div>
+            <p class="st">Evidence and reasoning</p>
+            <p class="sd">Findings link to supporting claims, explanations and decision records.</p>
+          </div>
+          <div class="stat">
+            <div class="word">Human-led</div>
+            <p class="st">Final decisions</p>
+            <p class="sd">Investigators review the evidence and retain decision-making authority.</p>
+          </div>
+        </div>
+        <div class="stat-foot">
+          <span>Demonstration figures are based on synthetic data and internal evaluation, not validated real-world healthcare outcomes.</span>
+        </div>
+      </div>
+
+      <!-- feature cards -->
+      <div class="fgrid">
+        <div class="fcard reveal">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5a3 3 0 00-3 3 3 3 0 00-2 5 3 3 0 002 5 3 3 0 006 0 3 3 0 002-5 3 3 0 00-2-5 3 3 0 00-3-3z"/><path d="M12 5v14M9 8h6M7 13h10"/></svg></div>
+          <h3>Multi-signal detection</h3>
+          <p>Combines complementary detection methods to surface suspicious behaviour, including patterns that individual rules may miss.</p>
+        </div>
+        <div class="fcard reveal">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+          <h3>Risk-aware case prioritization</h3>
+          <p>Organizes cases using factors such as risk, evidence strength, potential financial exposure, member impact and investigation capacity.</p>
+        </div>
+        <div class="fcard reveal">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><circle cx="11" cy="13" r="2.2"/><path d="M13 15l2 2"/></svg></div>
+          <h3>Explainable investigations</h3>
+          <p>Connects recommendations to claim-level findings, relationships, timelines and the reasoning behind suggested actions.</p>
+        </div>
+        <div class="fcard reveal">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>Human-controlled outcomes</h3>
+          <p>Supports investigation and review without automatically declaring fraud or making final referral decisions.</p>
+        </div>
+        <div class="fcard reveal">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5a2 2 0 012-2h5v16H5a2 2 0 00-2 2zM21 5a2 2 0 00-2-2h-5v16h5a2 2 0 012 2z"/></svg></div>
+          <h3>Learning from approved decisions</h3>
+          <p>Uses governed, human-approved knowledge and recorded outcomes to inform similar future investigations.</p>
+        </div>
+        <div class="fcard reveal" style="display:flex;flex-direction:column;justify-content:center;background:linear-gradient(165deg,#161a22,#0c0e13);border-color:#1c222c;">
+          <h3 style="color:#fff;">See it on a live case.</h3>
+          <p style="color:#aab1bd;margin-bottom:18px;">Open the app and walk a prioritized case from alert to evidence-backed decision.</p>
+          <a class="btn btn-primary" style="align-self:flex-start;" href="/app"><span>Open the app</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ CLOSING CTA ══════════ -->
+  <section class="cta slide-pad" id="cta">
+    <div class="container">
+      <h2>Turn suspicious claims into <b>evidence-backed cases.</b></h2>
+      <p>Detect across many signals, connect the network, and keep a named human on every decision.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/app"><span>Explore Spotzi</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-quiet" href="#network">See the network</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer class="ft">
+    <div class="container">
+      <div class="ft-row">
+        <a class="brand" href="#top">
+          <span class="mk" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 6.3L21 9l-5 4.4L17.6 21 12 17.3 6.4 21 8 13.4 3 9l6.6-.7z" fill="#fff"/></svg></span>
+          <span>Spotzi</span>
+        </a>
+        <nav class="ft-links">
+          <a href="#network">Network</a>
+          <a href="#problem">Problem</a>
+          <a href="#solution">Solution</a>
+          <a href="/app">Open the app</a>
+        </nav>
+      </div>
+      <p class="ft-note">© 2026 Spotzi. Demonstration figures are based on synthetic data and internal evaluation, not validated real-world healthcare outcomes.</p>
+    </div>
+  </footer>
+
+  <script src="/static/brain-network.js"></script>
+  <script src="/static/landing.js" defer></script>
+</body>
+</html>

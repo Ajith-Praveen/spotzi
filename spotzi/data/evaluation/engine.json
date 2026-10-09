@@ -1002,7 +1002,7 @@
   "dq_dropped": true,
   "legit_risk_inflated": 0
  },
- "generated": "2026-10-09 02:09:18",
+ "generated": "2026-10-09 06:25:11",
  "gap": {
   "reference_providers": 738,
   "datasets": {
@@ -2198,86 +2198,86 @@
    },
    "held-out world 201": {
     "base": {
-     "brain_auc": 0.994,
-     "brain_ap": 0.963,
-     "cases": 12,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.99,
+     "brain_ap": 0.943,
+     "cases": 13,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     },
     "+temporal": {
-     "brain_auc": 0.995,
-     "brain_ap": 0.965,
-     "cases": 12,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.991,
+     "brain_ap": 0.945,
+     "cases": 13,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     },
     "+peer": {
-     "brain_auc": 0.99,
-     "brain_ap": 0.944,
-     "cases": 12,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.987,
+     "brain_ap": 0.929,
+     "cases": 13,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     },
     "+temporal+peer": {
-     "brain_auc": 0.991,
-     "brain_ap": 0.945,
-     "cases": 13,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.988,
+     "brain_ap": 0.929,
+     "cases": 14,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     }
    },
    "held-out world 202": {
     "base": {
-     "brain_auc": 0.997,
-     "brain_ap": 0.976,
-     "cases": 12,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.992,
+     "brain_ap": 0.955,
+     "cases": 13,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     },
     "+temporal": {
-     "brain_auc": 0.997,
-     "brain_ap": 0.97,
-     "cases": 12,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.992,
+     "brain_ap": 0.951,
+     "cases": 13,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     },
     "+peer": {
-     "brain_auc": 0.995,
-     "brain_ap": 0.959,
-     "cases": 12,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.989,
+     "brain_ap": 0.936,
+     "cases": 13,
+     "caught": 16,
+     "of": 16,
      "false_leads": 0,
      "legit_escalated": 0
     },
     "+temporal+peer": {
-     "brain_auc": 0.995,
-     "brain_ap": 0.956,
-     "cases": 13,
-     "caught": 15,
-     "of": 15,
+     "brain_auc": 0.989,
+     "brain_ap": 0.934,
+     "cases": 14,
+     "caught": 16,
+     "of": 16,
      "false_leads": 1,
      "legit_escalated": 1
     }
    }
   },
   "mean_brain_ap": {
-   "base": 0.966,
-   "+temporal": 0.966,
-   "+peer": 0.95,
-   "+temporal+peer": 0.951
+   "base": 0.952,
+   "+temporal": 0.953,
+   "+peer": 0.937,
+   "+temporal+peer": 0.938
   },
   "total_false_leads": {
    "base": 0,
@@ -2286,10 +2286,10 @@
    "+temporal+peer": 1
   },
   "total_caught": {
-   "base": 46,
-   "+temporal": 46,
-   "+peer": 46,
-   "+temporal+peer": 46
+   "base": 48,
+   "+temporal": 48,
+   "+peer": 48,
+   "+temporal+peer": 48
   },
   "chosen": "+temporal",
   "rule": "Choose the variant with the most fraud caught minus false leads across datasets; ties \u2192 higher mean AP; full ties \u2192 keep the current configuration."

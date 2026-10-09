@@ -89,14 +89,14 @@ The last row is a sensitivity curve, not a pass/fail test: at 10% intensity, a s
 
 **Ablation of optional fusion detectors:** temporal is adopted.
 
-| Variant | Caught | False leads |
-|---|---|---|
-| base | 46 | 0 |
-| **+temporal** | 46 | 0 |
-| +peer | 46 | 0 |
-| +temporal+peer | 46 | 1 |
+| Variant | Caught (of 48, three worlds) | False leads | Mean AP |
+|---|---|---|---|
+| base | 48 | 0 | 0.952 |
+| **+temporal** | 48 | 0 | **0.953** |
+| +peer | 48 | 0 | 0.937 |
+| +temporal+peer | 48 | 1 | 0.938 |
 
-Mean AP is 0.966 for base and +temporal; base and +temporal tie, and the tie keeps the current configuration (+temporal). Peer baselines feed consensus and confidence only, not the fusion.
+Every variant catches all 48 fraudulent providers; +temporal has no false leads and the highest mean AP, so it is adopted. Peer baselines feed consensus and confidence only, not the fusion.
 
 **Data-quality robustness:** missing diagnoses, invalid codes and impossible dates were injected into 10 providers. In every case data quality dropped, confidence was never High, and innocent risk was never inflated. Invalid lines never raise fraud flags.
 

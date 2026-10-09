@@ -1,6 +1,6 @@
-const CACHE = "spotzi-shell-v7";
+const CACHE = "spotzi-shell-v13";
 // Application shell only. Case data, evidence, decisions and tokens are never cached (idea/23).
-const SHELL = ["/", "/static/styles.css", "/static/app.js", "/manifest.webmanifest", "/spotzi-icon.svg"];
+const SHELL = ["/app", "/static/styles.css", "/static/app.js", "/manifest.webmanifest", "/spotzi-icon.svg"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
@@ -24,7 +24,7 @@ self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return; // API: network only
   if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request).catch(() => caches.match("/")));
+    event.respondWith(fetch(event.request).catch(() => caches.match(url.pathname === "/" ? "/" : "/app")));
     return;
   }
   event.respondWith(fetch(event.request).then(response => {
