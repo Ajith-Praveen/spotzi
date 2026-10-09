@@ -733,7 +733,7 @@ function renderLogin(msg) {
   <form id="loginf"><label for="lu">Username</label><input type="text" id="lu" autocomplete="username" autofocus><label for="lp">Password</label><input type="password" id="lp" autocomplete="current-password"><button class="lpb w" type="submit">Sign in</button></form>
   <div id="ssobox"></div><div class="foot">Demo accounts are in <span class="mono">spotzi/data/seed_users.json</span> on the server.</div></div></div>
   <div class="lpsec"><h2>Built to make complex investigations more manageable.</h2><div class="lpstats">
-   <div><div class="big">8</div><b>Detection methods</b><p>Rules, peer anomaly detection, change-points, learned case-mix models, network analysis and other complementary signals.</p></div>
+   <div><div class="big">9</div><b>Detection methods</b><p>Rules, peer anomaly detection, change-points, learned case-mix models, network analysis and other complementary signals.</p></div>
    <div><div class="big">Ranked</div><b>Prioritized cases</b><p>Thousands of flagged claim lines condensed into a short queue that fits your team's review capacity.</p></div>
    <div><div class="big">Traceable</div><b>Evidence and reasoning</b><p>Findings link to supporting claims, explanations and decision records.</p></div>
    <div><div class="big">Human-led</div><b>Final decisions</b><p>Investigators review the evidence and retain decision-making authority.</p></div></div>
@@ -1139,7 +1139,21 @@ function validationCard(v) {
     ${v.delay ? `<div class="sm" style="margin-top:8px">Detection delay (rolling as-of replays): median <b>${v.delay.median_days_to_case ?? "–"} days</b> from scheme start to case; early-warning stage after <b>${v.delay.median_days_to_early_warning ?? "–"} days</b>.</div>` : ""}
     ${v.quality ? `<div class="sm" style="margin-top:6px">Corrupted-data test: confidence never High: <b>${v.quality.confidence_never_high ? "yes" : "no"}</b>; data quality dropped: <b>${v.quality.dq_dropped ? "yes" : "no"}</b>; innocent risk inflated: <b>${v.quality.legit_risk_inflated}</b>.</div>` : ""}</div>
     <div>${cf ? `<b class="sm">Counterfactual tests (score moves the expected way) · ${pc(v.counterfactual.pass_rate)}</b><table>${cf}</table>` : ""}${adv ? `<b class="sm" style="display:block;margin-top:8px">Adversarial evasion</b><table>${adv}</table>` : ""}${ab ? `<b class="sm" style="display:block;margin-top:8px">Detector ablation (all datasets)</b><table>${ab}</table>` : ""}</div></div>
+    ${byTypeTable(v.truth || [])}
     <div class="sm mut" style="margin-top:8px">Run <span class="mono">python3 -m evaluation.engine</span>. Details in EVALUATION.md.</div></div>`;
+}
+function byTypeTable(truth) {
+  const fams = {};
+  truth.forEach(d => Object.entries(d.by_provider_type || {}).forEach(([f, x]) => {
+    const a = fams[f] || (fams[f] = { providers: 0, fraud: 0, caught: 0, legit: 0, fp: 0, auc: [] });
+    a.providers += x.providers; a.fraud += x.fraudulent; a.caught += x.caught; a.legit += x.legitimate; a.fp += x.false_positives; if (x.auc != null) a.auc.push(x.auc);
+  }));
+  const rows = Object.entries(fams);
+  if (!rows.length) return "";
+  return `<b class="sm" style="display:block;margin-top:12px">Performance by provider type (all ${truth.length} test worlds)</b>
+    <table><tr><th>Type</th><th class="num">Providers</th><th class="num">Fraud caught</th><th class="num">False positives</th><th class="num">p_fraud AUC (min–max)</th></tr>
+    ${rows.map(([f, a]) => `<tr><td class="sm b">${esc(FAM[f] || f)}</td><td class="num sm">${a.providers}</td><td class="num sm">${a.caught} / ${a.fraud}</td><td class="num sm">${a.fp} / ${a.legit}</td><td class="num sm"${a.auc.length && Math.min(...a.auc) < 0.9 ? ' style="color:var(--amber)"' : ""}>${a.auc.length ? Math.min(...a.auc).toFixed(2) + "–" + Math.max(...a.auc).toFixed(2) : "–"}</td></tr>`).join("")}</table>
+    <div class="sm mut">Fraudulent providers per type are few (1–4 per world), so per-type figures are noisy; the weakest ranking is highlighted.</div>`;
 }
 function modelsCard(mdl) {
   const fmt = v => typeof v === "number" ? (Math.abs(v) <= 1 && !Number.isInteger(v) ? v.toFixed(3) : num(v)) : esc(String(v));
@@ -1151,8 +1165,31 @@ function modelsCard(mdl) {
       <table>${Object.entries(m.held_out || {}).map(([k, v]) => typeof v === "object" ? `<tr><td colspan="2" class="sm b" style="padding-top:6px">${esc(k)}</td></tr>${Object.entries(v).map(([k2, v2]) => `<tr><td class="sm">${esc(k2.replace(/_/g, " "))}</td><td class="num sm">${fmt(v2)}</td></tr>`).join("")}` : `<tr><td class="sm">${esc(k.replace(/_/g, " "))}</td><td class="num sm">${fmt(v)}</td></tr>`).join("")}</table>
       <div class="sm" style="margin-top:6px">${esc(m.use)}</div><ul class="sm mut" style="margin:4px 0 0;padding-left:16px">${(m.limitations || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>` : '<div class="mut sm">No task models trained yet. Run <span class="mono">python3 -m ai.models.train_all</span>.</div>'}</div>`;
 }
+function forecastVsBaseline(fm) {
+  const H = [30, 60, 90].filter(h => fm[h] && fm[h].baseline);
+  if (!H.length) return "";
+  const f = v => v == null ? "–" : v.toFixed(3), ci = c => c ? `<span class="mut">[${c[0].toFixed(2)}–${c[1].toFixed(2)}]</span>` : "";
+  const d = fm[H[0]].ci95?.delta_ap || [0, 0], sig = d[0] > 0, no = fm[H[0]].new_onset || {};
+  const verdict = sig ? `The forecast adds statistically significant value over the baseline (PR-AUC gain ${d[0].toFixed(2)}–${d[1].toFixed(2)}).`
+    : `The forecast scores above the baseline, but the 95% interval of the gain includes zero (PR-AUC ${d[0].toFixed(2)} to +${d[1].toFixed(2)}), so the edge is not proven. For previously unflagged providers the signal is weak (${no.positives} new-onset positives in ${no.rows}). The forecast is therefore a secondary priority signal; detection evidence carries each case.`;
+  return `<div class="card" style="margin-top:14px"><h3>Forecast vs recent-flag baseline <small>temporal holdout · trained before the cutoff, tested on a later untouched window · ${fm[H[0]].bootstrap?.resamples || ""} provider-cluster bootstrap resamples</small></h3>
+    <div class="banner ${sig ? "green" : "blue"}" style="margin-bottom:10px">${verdict}</div>
+    <table><tr><th>Horizon</th><th class="num">Model ROC-AUC</th><th class="num">Baseline ROC-AUC</th><th class="num">Model PR-AUC</th><th class="num">Baseline PR-AUC</th><th class="num">Precision @ ${fm[H[0]].capacity_k} (model / baseline)</th><th class="num">Brier · ECE</th><th class="num">New-onset ROC / PR-AUC</th></tr>
+    ${H.map(h => { const m = fm[h], b = m.baseline, n = m.new_onset || {}; return `<tr><td><b>${h} days</b></td><td class="num">${f(m.auc)} ${ci(m.ci95?.auc)}</td><td class="num">${f(b.auc)}</td><td class="num">${f(m.ap)} ${ci(m.ci95?.ap)}</td><td class="num">${f(b.ap)}</td><td class="num">${f(m.p_at_k)} / ${f(b.p_at_k)}</td><td class="num">${f(m.brier)} · ${f(m.ece)}</td><td class="num">${f(n.auc)} / ${f(n.ap)} <span class="mut">(${n.positives}/${n.rows})</span></td></tr>`; }).join("")}</table>
+    <div class="sm mut" style="margin-top:8px">Baseline = recent-flag persistence: the share of a provider's last-90-day lines flagged by rules at the forecast date. New-onset = providers with no rule flags in that window.</div></div>`;
+}
+function chainCard(ch) {
+  if (!ch) return "";
+  const ok = ch.ok;
+  return `<div class="card" style="margin-top:14px"><h3>Tamper-evident audit chain <small>SHA-256 hash chain over every audit entry · hashed policy</small></h3>
+    <div class="row wrap" style="gap:14px"><span class="tag ${ok ? "t-ok" : "t-crit"}" style="font-size:14px">${ok ? "✓ Chain verified" : "Tampering detected"}</span>
+    <span class="sm"><b>${num(ch.entries)}</b> sealed entries</span>${ok ? `<span class="sm mono">head ${esc((ch.head || "").slice(0, 16))}…</span>` : `<span class="sm" style="color:var(--red)">entry #${ch.first_bad.audit_id}: ${esc(ch.first_bad.reason)}</span>`}
+    <span class="sm">policy <b class="mono">${esc(ch.policy.version)}</b></span><span class="sp"></span><button class="btn sm" id="verifychain">Verify now</button></div>
+    <div class="sm mut" style="margin-top:8px">Each entry's hash covers the previous hash, the row and the policy version, so editing, deleting or re-ordering any past entry is detected and named. Refused actions (e.g. an analyst attempting a decision) are logged too.</div></div>`;
+}
+
 async function vGovernance() {
-  const [g, a, mdl, vl] = await Promise.all([api("governance"), api("audit"), api("models"), api("validation")]);
+  const [g, a, mdl, vl, ch] = await Promise.all([api("governance"), api("audit"), api("models"), api("validation"), api("audit/verify")]);
   const ev = g.run.evaluation || {}, fm = g.forecast.metrics || {};
   if (!ev.total_lines) ev.note = "This dataset has no evaluation labels, so accuracy cannot be measured here.";
   return hdr("Governance & responsible AI", "How the system keeps humans in control, shows uncertainty, and fails safely.") +
@@ -1162,6 +1199,7 @@ async function vGovernance() {
     ${modelsCard(mdl)}${validationCard(vl)}
     <div class="card" style="margin-top:14px"><h3>Forecast model card <small>discrete-time hazard · P60 = 1-(1-h1)(1-h2) · horizons can never contradict</small></h3><div class="sm" style="margin-bottom:8px">Chosen model (frozen rule: lower training-period log loss): <b>${g.run.model_choice.chosen}</b>.${g.run.model_choice.reason ? ` <span class="tag t-high">${esc(g.run.model_choice.reason)}</span>` : ""} Trained on anchors through ${g.run.model_choice.cut} (${g.run.model_choice.train_anchors} anchors); purged 90 days; tested on ${g.run.model_choice.eval_anchors} later anchors from ${g.run.model_choice.eval_from}. Sigmoid calibration cross-fitted by provider group on the training period only. Production bundle refit on all fully observed history with frozen hyper-parameters.</div><div class="grid g3">${[30, 60, 90].map(h => { const m = fm[h]; return m ? `<div><b>${h}-day</b> <span class="mut sm">(${m.positives} positive / ${m.test_rows} test rows)</span><table><tr><th></th><th class="num">Logistic</th><th class="num">Boosting</th></tr><tr><td>AUC</td><td class="num">${m.logistic.auc.toFixed(3)}</td><td class="num">${m.gboost.auc.toFixed(3)}</td></tr><tr><td>Avg precision</td><td class="num">${m.logistic.ap.toFixed(3)}</td><td class="num">${m.gboost.ap.toFixed(3)}</td></tr><tr><td>Brier</td><td class="num">${m.logistic.brier.toFixed(3)}</td><td class="num">${m.gboost.brier.toFixed(3)}</td></tr><tr><td>Calibration error</td><td class="num">${m.logistic.ece.toFixed(3)}</td><td class="num">${m.gboost.ece.toFixed(3)}</td></tr><tr><td>Flag-rate baseline AUC</td><td class="num" colspan="2">${m.baseline_auc_flag_share.toFixed(3)}</td></tr></table>${reliability(g.forecast.calibration[h] || [])}</div>` : ""; }).join("")}</div>
     <div class="sm mut">Synthetic data is easy; expect far lower real-world performance. Probabilities are capped to 1–97% to avoid false certainty.</div></div>
+    ${forecastVsBaseline(fm)}${chainCard(ch)}
     <div class="card" style="margin-top:14px"><h3>SpotZ Sentinel <small>in-house learned detectors · no rules, no labels</small></h3><div class="grid g2"><div class="sm"><p style="margin-top:0"><b>Case-mix twin.</b> Gradient-boosted model of what each provider's own patients would normally cost (age, plan, diagnosis profile, utilisation elsewhere, service family). Cross-fitted by provider groups so a provider never shapes its own expectation; small panels shrunk toward "explained". Fit R² ${(g.run.sentinel_fit || {}).r2_paid?.toFixed(2)} (paid), ${(g.run.sentinel_fit || {}).r2_lines?.toFixed(2)} (lines) on ${num((g.run.sentinel_fit || {}).rows)} provider–member pairs.</p><p><b>Care-pathway model.</b> Back-off sequence model of member journeys: next service given previous service, time gap, inside-inpatient-stay and after-coverage-end context. Counts are leave-provider-out, so a ring billing the same odd pattern cannot make it look normal.</p></div>
     <div><b class="sm">Ranking power per detector (synthetic labels, AUC)</b>${barsH(Object.entries(ev.detector_auc || {}).map(([k, v]) => ({ label: k, value: v, color: k.startsWith("Sentinel") ? "#55595F" : k === "Combined risk" ? "#1E2024" : "#A0A4AB" })), { fmt: v => v.toFixed(3), max: 1 })}<div class="sm mut">The synthetic scenarios were written with rules in mind, so rules look near-perfect here. Sentinel's value is that it reaches 0.84 without knowing any rule — it is the detector most likely to generalise to schemes nobody wrote a rule for.</div></div></div></div>
     <div class="card" style="margin-top:14px"><h3>Rule catalogue <small>${g.run.ruleset}</small></h3><div style="overflow:auto"><table><tr><th>Rule</th><th>What it detects</th><th>Benign explanations considered</th><th>Check that distinguishes</th></tr>${g.rules.map(r => `<tr><td><b>${r.name}</b><div class="mono mut">${r.key}</div></td><td class="sm">${esc(r.desc)}</td><td class="sm">${r.benign.map(esc).join("<br>")}</td><td class="sm">${esc(r.check)}</td></tr>`).join("")}</table></div></div>
@@ -1232,6 +1270,7 @@ document.addEventListener("click", async e => {
   const t = e.target;
   const lpa = t.closest("#lpsign,#lpsign2,#lpwk,#lpwk2"); if (lpa) { e.preventDefault(); const tg = lpa.id.startsWith("lpsign") ? "#signin" : "#lpwork"; $(tg)?.scrollIntoView({ behavior: "smooth", block: "center" }); if (tg === "#signin") setTimeout(() => $("#lu")?.focus(), 350); return; }
   if (!t.closest(".gsearch")) { const b = $("#gres"); if (b) b.innerHTML = ""; }
+  if (t.closest("#verifychain")) { toast("Re-verifying the audit chain…"); return render(); }
   if (t.closest("#sbtog")) { UI.sb = !UI.sb; localStorage.setItem("spotzi.sb", UI.sb ? "1" : "0"); $("#app").classList.toggle("sb-min", UI.sb); $("#sbtog").innerHTML = ico(UI.sb ? "chevr" : "chevl", 15); return; }
   const cx = t.closest("[data-ctx]"); if (cx) { UI.ctx[S.view] = cx.dataset.ctx === "1"; localStorage.setItem("spotzi.ctx", JSON.stringify(UI.ctx)); return render(); }
   if (t.closest("#newcase")) return newCaseModal();

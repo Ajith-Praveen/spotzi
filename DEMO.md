@@ -1,11 +1,13 @@
 # ClaimShield Nexus (SpotZⁱ) — 6-minute demo script
 
+**Latest click-by-click guide with screenshots: `docs/SpotZi-Demo-Guide.pdf` (sign in as `vipul`).**
+
 One path, one case, one story: **5,577 unexplained alerts → 13 ranked, evidence-backed cases → a human decision.**
 Everything else in the product is for Q&A, not the demo.
 
 ## Before you go on stage (T-10 min)
 
-- [ ] `cd spotzi && ./start.sh` — open http://localhost:8000 (landing page) → **Open the app** (or go straight to http://localhost:8000/app), sign in as `admin` (password in `spotzi/data/seed_users.json`).
+- [ ] `cd spotzi && ./start.sh` — open http://localhost:8000 (landing page) → **Open the app** (or go straight to http://localhost:8000/app), sign in as `vipul` (investigator); use `reshika` (supervisor) in a private window to show second-person approval. Passwords are in `spotzi/data/seed_users.json`.
 - [ ] Browser zoom 110–125% so the back row can read numbers. Full screen, notifications off.
 - [ ] Open these tabs in order, so a slow network never stalls you:
   1. `#/overview`
@@ -64,6 +66,8 @@ Screen: **Challenge lab** tab.
 Screen: **Decision** tab.
 - Show the outcome list and the required rationale. "The system recommends; a person decides. Referral needs a **second** person, a supervisor, to approve: four-eyes. Every action is audited."
 - (Optional) Record "Request more information" with a one-line rationale.
+- To show the readiness gate: open **CS-0093 → Decision**, choose **Recommend referral**, type a reason, **Record decision** → pop-up "readiness 50% (bar 70%)" → click **Cancel** (nothing is saved). CS-0107 is now 75% ready, so it no longer triggers the gate.
+- To show tampering detected: **Governance → Tamper-evident audit chain → Verify now**, or run `python3 -m scripts.audit_tamper_demo`.
 
 ### 5:30 – 6:00 · Proof it works, and its limits
 Screen: **Governance** (or one slide).

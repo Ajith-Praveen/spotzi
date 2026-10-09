@@ -64,6 +64,39 @@ All 8 fraud types are caught on every world:
 | High (top 5%) | 100% | 44% |
 | Review (top 15%) | 75% | 94% |
 
+## Performance by provider type (all three worlds)
+| Provider type | Providers | Fraud caught | False positives | p_fraud AUC (min–max) |
+|---|---|---|---|---|
+| Ambulance | 24 | 3 / 3 | 0 / 21 | 1.00 |
+| Behavioral health | 42 | 3 / 3 | 0 / 39 | 1.00 |
+| **DME** | 42 | 9 / 9 | 0 / 33 | **0.82–0.97** |
+| Facility | 30 | 3 / 3 | 0 / 27 | 1.00 |
+| Home health | 36 | 6 / 6 | 0 / 30 | 1.00 |
+| Laboratory | 42 | 6 / 6 | 0 / 36 | 1.00 |
+| Pharmacy | 42 | 6 / 6 | 0 / 36 | 1.00 |
+| Professional | 138 | 12 / 12 | 0 / 126 | 0.98–0.99 |
+
+Every fraudulent provider is caught in every type with no false positives, but each type has only 1–4 fraudulent providers per world, so per-type figures are noisy. The weakest ranking is **DME**: some legitimate equipment suppliers score close to fraudulent ones (AUC as low as 0.82), so DME cases lean most on the evidence checks. Shown live in *Governance → Model validation*.
+
+## Forecast vs a simple baseline (temporal holdout)
+The 30/60/90-day forecast is trained only on anchors before a cutoff, purged 90 days, and tested on a later, untouched window (768 provider-snapshots). It is compared with **recent-flag persistence** (the share of a provider's last-90-day lines flagged by rules at the forecast date). Intervals are 95% provider-cluster bootstrap intervals (200 resamples). Results are shown live in *Governance → Forecast vs recent-flag baseline*.
+
+| Horizon | Model ROC-AUC | Baseline ROC-AUC | Model PR-AUC | Baseline PR-AUC | PR-AUC gain (95% CI) | Precision@10 model / baseline |
+|---|---|---|---|---|---|---|
+| 30 d | 0.955 [0.91–0.99] | 0.933 | 0.860 [0.69–0.95] | 0.810 | −0.07 to +0.20 | 0.87 / 0.85 |
+| 60 d | 0.956 [0.91–0.99] | 0.936 | 0.880 [0.72–0.97] | 0.828 | −0.07 to +0.21 | 0.88 / 0.87 |
+| 90 d | 0.953 [0.89–0.99] | 0.936 | 0.873 [0.71–0.97] | 0.828 | −0.07 to +0.20 | 0.90 / 0.87 |
+
+**New-onset vs persistent risk.** For providers with no rule flags at the forecast date (605 snapshots, 9 positives) the forecast has weak signal: ROC-AUC 0.62–0.67, PR-AUC 0.04–0.09 against a base rate of 0.015. For already-flagged providers (163 snapshots) ROC-AUC is 0.93–0.95.
+
+**Honest reading.** The forecast scores above the baseline at every horizon, but the confidence interval of the gain includes zero, so the edge is not proven on this data, and new-onset prediction is weak. The forecast is therefore used as one secondary priority signal (15% weight); the detectors and cited evidence carry each case.
+
+## Governance controls (tested)
+- **Hashed policy:** the enforced policy (rules, priority weights, gates) is hashed; its version (e.g. `policy-0ada76ede879`) is recorded on every audit entry and decision (`/api/policy`).
+- **Tamper-evident audit:** every audit entry is sealed into a SHA-256 hash chain; `/api/audit/verify` recomputes it and names the first altered, deleted or inserted entry. `python3 -m scripts.audit_tamper_demo` alters a live entry inside a transaction, shows it caught, then rolls back.
+- **Refused actions logged:** an analyst attempting a decision gets 403 and the attempt is written to the audit chain.
+- Tests: `test_altered_audit_record_is_detected`, `test_unauthorised_decision_is_rejected_and_logged`, `test_policy_is_versioned_and_hashed`, `test_forecast_beats_or_matches_baseline_and_reports_new_onset`.
+
 ## Model validation
 **Counterfactual tests** (change one thing, check the score moves the right way): **79 / 79 pass.**
 - Removing a scheme's lines lowers risk.

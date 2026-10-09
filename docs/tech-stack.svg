@@ -81,8 +81,8 @@
 <text x="40.0" y="554" font-size="11.5" fill="#4A4E55">local cluster · SCRAM auth · 127.0.0.1 only</text>
 <text x="40.0" y="580" font-size="13" font-weight="600" fill="#1E2024">psycopg 3</text>
 <text x="40.0" y="598" font-size="11.5" fill="#4A4E55">PostgreSQL driver</text>
-<text x="40.0" y="624" font-size="13" font-weight="600" fill="#1E2024">SQLite</text>
-<text x="40.0" y="642" font-size="11.5" fill="#4A4E55">zero-setup fallback via infra/dbcompat.py</text>
+<text x="40.0" y="624" font-size="13" font-weight="600" fill="#1E2024">Audit &amp; replay tables</text>
+<text x="40.0" y="642" font-size="11.5" fill="#4A4E55">decisions · approvals · prediction log</text>
 <text x="40.0" y="668" font-size="13" font-weight="600" fill="#1E2024">Files</text>
 <text x="40.0" y="686" font-size="11.5" fill="#4A4E55">CSV tables · X12 837 · documents with SHA-256</text>
 <rect x="369.6" y="456" width="329.6" height="292" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
@@ -116,7 +116,7 @@
 <text x="1076.8" y="502" font-size="16" font-weight="600" fill="#1E2024">Testing &amp; DevOps</text>
 <line x1="1076.8" y1="514" x2="1374.4" y2="514" stroke="#D3D6DB"/>
 <text x="1076.8" y="536" font-size="13" font-weight="600" fill="#1E2024">unittest</text>
-<text x="1076.8" y="554" font-size="11.5" fill="#4A4E55">50 tests · SQLite and PostgreSQL</text>
+<text x="1076.8" y="554" font-size="11.5" fill="#4A4E55">50 automated tests · CI</text>
 <text x="1076.8" y="580" font-size="13" font-weight="600" fill="#1E2024">Ruff</text>
 <text x="1076.8" y="598" font-size="11.5" fill="#4A4E55">lint + format, 0 findings</text>
 <text x="1076.8" y="624" font-size="13" font-weight="600" fill="#1E2024">GitHub Actions</text>

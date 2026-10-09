@@ -111,6 +111,25 @@ class PipelineTests(unittest.TestCase):
         ) in mill:  # the visit-level-shift view (added for mimicry) now sees part of it; the case must open either way
             self.assertIn(p, in_cases, "the held-out recruitment scheme should be opened as a case")
 
+    def test_engine_reports_performance_by_provider_type(self):
+        from evaluation import engine
+
+        t = engine.truth_metrics(run_once(), "demo world")["by_provider_type"]
+        self.assertEqual(sum(v["providers"] for v in t.values()), len(run_once()["PT"]))
+        for v in t.values():
+            self.assertLessEqual(v["caught"], v["fraudulent"])
+            self.assertLessEqual(v["false_positives"], v["legitimate"])
+
+    def test_forecast_beats_or_matches_baseline_and_reports_new_onset(self):
+        """Temporal holdout reports a recent-flag baseline, precision at capacity, bootstrap CIs and new-onset risk."""
+        m = run_once()["fc"]["metrics"][30]
+        for k in ("baseline", "ci95", "p_at_k", "new_onset", "persistent"):
+            self.assertIn(k, m)
+        self.assertEqual(m["new_onset"]["rows"] + m["persistent"]["rows"], m["test_rows"])
+        self.assertTrue(0 <= m["p_at_k"] <= 1 and 0 <= m["baseline"]["p_at_k"] <= 1)
+        lo, hi = m["ci95"]["auc"]
+        self.assertTrue(lo <= m["auc"] <= hi)
+
     def test_detection_does_not_use_hidden_labels(self):
         """Same cases whether or not the evaluation labels are present."""
         S = run_once()
@@ -270,6 +289,40 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(sam.post("/api/cases/CS-0004/assign", json={"assignee": "jordan"}).status_code, 200)
         jordan = self.login("jordan")
         self.assertIn("CS-0004", [r["case_id"] for r in jordan.get("/api/my").json()["mine"]])
+
+    # ---- governance: hashed policy, refused actions logged, tamper-evident audit chain
+    def test_policy_is_versioned_and_hashed(self):
+        pol = self.login("alex").get("/api/policy").json()
+        self.assertTrue(pol["version"].startswith("policy-"))
+        self.assertEqual(len(pol["sha256"]), 64)
+        self.assertEqual(pol["document"]["gates"]["referral_readiness_bar"], 70)
+
+    def test_unauthorised_decision_is_rejected_and_logged(self):
+        dana = self.login("dana")
+        r = dana.post(
+            "/api/cases/CS-0005/decision", json={"outcome": "Monitor", "reason": "analyst attempting a decision"}
+        )
+        self.assertEqual(r.status_code, 403)
+        rows = dana.get("/api/audit?limit=20").json()["audit"]
+        self.assertTrue(any(x["action"] == "denied:decide" and x["actor"] == "Dana Lee" for x in rows))
+        self.assertTrue(dana.get("/api/audit/verify").json()["ok"])
+
+    def test_altered_audit_record_is_detected(self):
+        alex = self.login("alex")
+        alex.post("/api/cases/CS-0004/notes", json={"text": "chain test note"})
+        self.assertTrue(alex.get("/api/audit/verify").json()["ok"])
+        c = self.server.db()
+        row = dict(c.execute("SELECT id, detail FROM audit ORDER BY id DESC LIMIT 1").fetchone())
+        c.execute("UPDATE audit SET detail=? WHERE id=?", ("tampered after the fact", row["id"]))
+        c.commit()
+        v = alex.get("/api/audit/verify").json()
+        self.assertFalse(v["ok"])
+        self.assertEqual(v["first_bad"]["audit_id"], row["id"])
+        self.assertIn("altered", v["first_bad"]["reason"])
+        c.execute("UPDATE audit SET detail=? WHERE id=?", (row["detail"], row["id"]))  # restore for other tests
+        c.commit()
+        c.close()
+        self.assertTrue(alex.get("/api/audit/verify").json()["ok"])
 
 
 if __name__ == "__main__":

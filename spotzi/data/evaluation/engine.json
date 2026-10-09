@@ -194,6 +194,88 @@
      "cases": 1,
      "precision": 1.0
     }
+   },
+   "by_provider_type": {
+    "AMB": {
+     "providers": 8,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 7,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "BH": {
+     "providers": 14,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 13,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "DME": {
+     "providers": 14,
+     "fraudulent": 3,
+     "caught": 3,
+     "recall": 1.0,
+     "legitimate": 11,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 0.833
+    },
+    "FAC": {
+     "providers": 10,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 9,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "HH": {
+     "providers": 12,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 10,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "LAB": {
+     "providers": 14,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 12,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "PHARM": {
+     "providers": 14,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 12,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "PRO": {
+     "providers": 46,
+     "fraudulent": 4,
+     "caught": 4,
+     "recall": 1.0,
+     "legitimate": 42,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 0.991
+    }
    }
   },
   {
@@ -388,6 +470,88 @@
     "Low": {
      "cases": 1,
      "precision": 1.0
+    }
+   },
+   "by_provider_type": {
+    "AMB": {
+     "providers": 8,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 7,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "BH": {
+     "providers": 14,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 13,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "DME": {
+     "providers": 14,
+     "fraudulent": 3,
+     "caught": 3,
+     "recall": 1.0,
+     "legitimate": 11,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 0.97
+    },
+    "FAC": {
+     "providers": 10,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 9,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "HH": {
+     "providers": 12,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 10,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "LAB": {
+     "providers": 14,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 12,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "PHARM": {
+     "providers": 14,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 12,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "PRO": {
+     "providers": 46,
+     "fraudulent": 4,
+     "caught": 4,
+     "recall": 1.0,
+     "legitimate": 42,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 0.994
     }
    }
   },
@@ -588,6 +752,88 @@
     "Low": {
      "cases": 1,
      "precision": 1.0
+    }
+   },
+   "by_provider_type": {
+    "AMB": {
+     "providers": 8,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 7,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "BH": {
+     "providers": 14,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 13,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "DME": {
+     "providers": 14,
+     "fraudulent": 3,
+     "caught": 3,
+     "recall": 1.0,
+     "legitimate": 11,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 0.818
+    },
+    "FAC": {
+     "providers": 10,
+     "fraudulent": 1,
+     "caught": 1,
+     "recall": 1.0,
+     "legitimate": 9,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "HH": {
+     "providers": 12,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 10,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "LAB": {
+     "providers": 14,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 12,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "PHARM": {
+     "providers": 14,
+     "fraudulent": 2,
+     "caught": 2,
+     "recall": 1.0,
+     "legitimate": 12,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 1.0
+    },
+    "PRO": {
+     "providers": 46,
+     "fraudulent": 4,
+     "caught": 4,
+     "recall": 1.0,
+     "legitimate": 42,
+     "false_positives": 0,
+     "precision": 1.0,
+     "auc": 0.982
     }
    }
   }
@@ -1002,7 +1248,7 @@
   "dq_dropped": true,
   "legit_risk_inflated": 0
  },
- "generated": "2026-10-09 06:25:11",
+ "generated": "2026-10-09 10:41:55",
  "gap": {
   "reference_providers": 738,
   "datasets": {

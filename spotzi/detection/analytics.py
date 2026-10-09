@@ -180,6 +180,72 @@ def _ece(y, p, bins=5):
     return float((d.n * (d.y - d.p).abs()).sum() / d.n.sum()), d
 
 
+CAPACITY_K = 10  # providers an SIU team can open per review cycle: the basis of precision-at-capacity
+
+
+def _p_at_k(y, s, groups, k=CAPACITY_K):
+    """Mean precision of the top-k scores inside each evaluation anchor (one review cycle each)."""
+    out = []
+    for g in np.unique(groups):
+        m = groups == g
+        top = np.argsort(-s[m], kind="stable")[:k]
+        out.append(y[m][top].mean())
+    return float(np.mean(out)) if out else None
+
+
+def _forecast_extras(y, p, base, pids, anchors, n_boot=200, seed=0):
+    """Temporal-holdout extras: recent-flag-persistence baseline, precision at capacity, provider-cluster
+    bootstrap 95% CIs (model, baseline and model-minus-baseline) and a new-onset vs persistent split."""
+    from sklearn.metrics import average_precision_score, roc_auc_score
+
+    def auc(yy, ss):
+        return float(roc_auc_score(yy, ss)) if len(set(yy)) > 1 else None
+
+    def ap(yy, ss):
+        return float(average_precision_score(yy, ss)) if yy.sum() > 0 else None
+
+    out = dict(
+        capacity_k=CAPACITY_K,
+        p_at_k=_p_at_k(y, p, anchors),
+        baseline=dict(
+            name="recent-flag persistence", auc=auc(y, base), ap=ap(y, base), p_at_k=_p_at_k(y, base, anchors)
+        ),
+    )
+    rng = np.random.default_rng(seed)
+    upid = np.unique(pids)
+    rows_by = {q: np.where(pids == q)[0] for q in upid}
+    bs = {k: [] for k in ("auc", "ap", "baseline_auc", "baseline_ap", "delta_auc", "delta_ap")}
+    for _ in range(n_boot):
+        ix = np.concatenate([rows_by[q] for q in rng.choice(upid, len(upid), replace=True)])
+        yy = y[ix]
+        if len(set(yy)) < 2:
+            continue
+        a, ab = roc_auc_score(yy, p[ix]), roc_auc_score(yy, base[ix])
+        r, rb = average_precision_score(yy, p[ix]), average_precision_score(yy, base[ix])
+        for k, v in (
+            ("auc", a),
+            ("baseline_auc", ab),
+            ("ap", r),
+            ("baseline_ap", rb),
+            ("delta_auc", a - ab),
+            ("delta_ap", r - rb),
+        ):
+            bs[k].append(v)
+    out["ci95"] = {k: [float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))] for k, v in bs.items() if v}
+    out["bootstrap"] = dict(resamples=n_boot, unit="provider")
+    for name, mask in (("new_onset", base <= 0), ("persistent", base > 0)):
+        yy, pp = y[mask], p[mask]
+        out[name] = dict(
+            rows=int(mask.sum()),
+            positives=int(yy.sum()),
+            base_rate=float(yy.mean()) if mask.any() else None,
+            auc=auc(yy, pp) if mask.any() else None,
+            ap=ap(yy, pp) if mask.any() else None,
+            p_at_k=_p_at_k(yy, pp, anchors[mask]) if mask.any() else None,
+        )
+    return out
+
+
 def train_forecasts(panel, prov_family, truth_lines, end, groups=None):
     """Discrete-time hazard model (doc 10). Intervals (0,30],(30,60],(60,90]; covariates frozen at the anchor;
     P30=h1, P60=1-(1-h1)(1-h2), P90=1-(1-h1)(1-h2)(1-h3) so horizons can never contradict each other.
@@ -322,6 +388,9 @@ def train_forecasts(panel, prov_family, truth_lines, end, groups=None):
             met["baseline_auc_flag_share"] = float(roc_auc_score(y, flag))
             ch = met[chosen]
             met.update(auc=ch["auc"], ap=ch["ap"], brier=ch["brier"], ece=ch["ece"], chosen=chosen)
+            met.update(
+                _forecast_extras(y, P[chosen][:, j], flag, panel.provider_id.values[idx], panel.snap.values[idx])
+            )
             res["metrics"][H] = met
             _, d = _ece(y, P[chosen][:, j])
             res["calibration"][H] = [

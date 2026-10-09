@@ -117,6 +117,13 @@ def me(req: Request):
 def need(req: Request, perm: str):
     u = me(req)
     if not auth.can(u, perm):
+        audit(
+            u["name"] if u else "anonymous",
+            u["role"] if u else "none",
+            "denied:" + perm,
+            req.url.path,
+            "permission refused",
+        )
         raise HTTPException(403, f"Your role ({u['role'] if u else 'none'}) cannot do this.")
     return u
 
@@ -233,15 +240,25 @@ def _schema(c):
     CREATE TABLE IF NOT EXISTS case_notes(id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT, author TEXT, role TEXT, ts TEXT, text TEXT);
     CREATE TABLE IF NOT EXISTS notifications(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, ts TEXT, kind TEXT, text TEXT, link TEXT, read INTEGER DEFAULT 0);
     """)
+    from infra import ledger
+
+    ledger.schema(c)
+    with ledger.LOCK:
+        ledger.seal(c)  # chain any audit rows written before the ledger existed
 
 
 def audit(actor, role, action, target, detail=""):
+    """Append to the audit log and seal the row into the tamper-evident chain in the same transaction."""
+    from infra import ledger
+
     c = db()
-    c.execute(
-        "INSERT INTO audit(ts,actor,role,action,target,detail) VALUES(?,?,?,?,?,?)",
-        (time.strftime("%Y-%m-%d %H:%M:%S"), actor, role, action, target, detail),
-    )
-    c.commit()
+    with ledger.LOCK:
+        c.execute(
+            "INSERT INTO audit(ts,actor,role,action,target,detail) VALUES(?,?,?,?,?,?)",
+            (time.strftime("%Y-%m-%d %H:%M:%S"), actor, role, action, target, detail),
+        )
+        ledger.seal(c)
+        c.commit()
     c.close()
 
 
@@ -785,7 +802,16 @@ async def decide(cid: str, req: Request):
     )
     c.commit()
     c.close()
-    audit(reviewer, role, "decision:" + outcome, cid, reason[:200])
+    from infra import ledger
+
+    audit(
+        reviewer,
+        role,
+        "decision:" + outcome,
+        cid,
+        f"{reason[:200]} [run {s['run']['run_id']} · evidence {round(case['evidence'])} · confidence {d['confidence']['label']}"
+        f" · {ledger.policy()['version']}]",
+    )
     if outcome == "Recommend referral":
         cn = db()
         sups = [
@@ -805,6 +831,26 @@ async def decide(cid: str, req: Request):
     cx.commit()
     cx.close()
     return J(dict(ok=True, status=briefs.STATUS_FROM_OUTCOME[outcome], wiki_proposals=n))
+
+
+@app.get("/api/audit/verify")
+def audit_verify():
+    """Recompute the tamper-evident audit chain; names the first altered, deleted or inserted entry."""
+    from infra import ledger
+
+    c = db()
+    r = ledger.verify(c)
+    c.close()
+    pol = ledger.policy()
+    return J(dict(r, policy=dict(version=pol["version"], sha256=pol["sha256"])))
+
+
+@app.get("/api/policy")
+def policy_doc():
+    """The investigation policy enforced by the code, with its version and SHA-256."""
+    from infra import ledger
+
+    return J(ledger.policy())
 
 
 @app.get("/api/audit")

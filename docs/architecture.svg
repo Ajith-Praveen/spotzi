@@ -296,7 +296,7 @@
 <text x="1118" y="980" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">STATE</text>
 <text x="1118" y="998" font-size="14" font-weight="600" fill="#1E2024">Storage</text>
 <circle cx="1121" cy="1015" r="2" fill="#6E727A"/>
-<text x="1130" y="1019" font-size="11.5" fill="#4A4E55">PostgreSQL 16 (SQLite fallback via infra/dbcompat.py)</text>
+<text x="1130" y="1019" font-size="11.5" fill="#4A4E55">PostgreSQL 16 · local cluster · SCRAM auth · 127.0.0.1 only</text>
 <circle cx="1121" cy="1031.5" r="2" fill="#6E727A"/>
 <text x="1130" y="1035.5" font-size="11.5" fill="#4A4E55">users · sessions · MFA · decisions · approvals · audit · notes · assignments ·</text>
 <text x="1130" y="1052.0" font-size="11.5" fill="#4A4E55">wiki + history · outbox · tips · documents · recoveries · custom rules ·</text>
@@ -305,7 +305,7 @@
 <text x="1130" y="1085.0" font-size="11.5" fill="#4A4E55">Files: synthetic CSVs · model artifacts · uploaded documents</text>
 </g>
 <path d="M1636,1030 L1680,1030 L1680,400 L1638,400" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#as)"/>
-<text x="1692" y="715" font-size="11.5" fill="#4A4E55" font-style="italic" transform="rotate(-90 1692 715)" text-anchor="middle">SQL · PostgreSQL / SQLite</text>
+<text x="1692" y="715" font-size="11.5" fill="#4A4E55" font-style="italic" transform="rotate(-90 1692 715)" text-anchor="middle">SQL · PostgreSQL 16</text>
 <path d="M500,958 L500,804" fill="none" stroke="#4A4E55" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#a)"/>
 <rect x="460.45" y="902" width="79.1" height="17" rx="8" fill="#C1C4C9" fill-opacity=".95"/>
 <text x="500" y="914" font-size="11" fill="#4A4E55" text-anchor="middle" font-style="italic">task models</text>

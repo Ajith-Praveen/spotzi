@@ -18,7 +18,9 @@ spotzi/data/models/encoders/
 spotzi/data/*.sqlite
 spotzi/data/*.sqlite.bak*
 idea
-
+docs
 __pycache__/
 *.pyc
 .ruff_cache/
+.deck-condense
+output

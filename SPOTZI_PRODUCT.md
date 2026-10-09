@@ -26,12 +26,12 @@ cd spotzi && pip install -r requirements.txt
 ./start.sh                            # starts local PostgreSQL (port 5544) + SpotZⁱ → http://localhost:8000
 ./stop.sh                                  # stops both
 ```
-**Storage.** SpotZⁱ runs on **PostgreSQL 16** (project-local cluster in `spotzi/data/pg`, SCRAM-SHA-256 password auth, listening on 127.0.0.1 only). Connection settings live in `spotzi/data/db.env` (owner-readable, git-ignored); point `SPOTZI_DB_URL` at any managed Postgres to move it. Without `SPOTZI_DB_URL` it falls back to a single SQLite file for laptops and quick demos. `migrate_to_postgres.py` copies an existing SQLite database into Postgres.
-On first start SpotZⁱ creates five local demo accounts (2 investigators, 1 supervisor, 1 analyst, 1 admin) with random passwords, written only to `spotzi/data/seed_users.json` (owner-readable). Sign in with one of them; change or remove them for any shared deployment.
+**Storage.** SpotZⁱ runs on **PostgreSQL 16** (project-local cluster in `spotzi/data/pg`, SCRAM-SHA-256 password auth, listening on 127.0.0.1 only). Connection settings live in `spotzi/data/db.env` (owner-readable, git-ignored); point `SPOTZI_DB_URL` at any managed Postgres to move it. `migrate_to_postgres.py` copies an older local database into PostgreSQL.
+Accounts are listed in `spotzi/data/seed_users.json` (owner-readable): the team accounts **vipul** and **amith** (investigators), **reshika** (supervisor), **raveena** (analyst) and **ajith** (admin). On a brand-new database these are created automatically. After editing the file, run `python3 -m scripts.sync_users` to load it: listed accounts are created or updated (name, role, password) and accounts not in the file are disabled, never deleted (`--keep-others` keeps them). Change or remove them for any shared deployment.
 
 ### Test it
 ```bash
-cd spotzi && python3 -m unittest discover -s tests -v                               # SQLite, ~2 min
+cd spotzi && python3 -m unittest discover -s tests -v                               # throwaway test database, ~2 min
 cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests -v  # PostgreSQL (separate spotzi_test database)
 ```
 
@@ -55,7 +55,7 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 
 ## 3. Access, roles and case management
 
-**Sign-in and roles.** Local accounts with PBKDF2-hashed passwords (200,000 rounds) and HttpOnly, SameSite-strict session cookies (12-hour expiry). Every `/api` call requires a session. The server stamps the signed-in user's name and role on every action — a client cannot act as someone else.
+**Sign-in and roles.** Local accounts with PBKDF2-hashed passwords (200,000 rounds, minimum 8 characters as in NIST SP 800-63B) and HttpOnly, SameSite-strict session cookies (12-hour expiry). Every `/api` call requires a session. The server stamps the signed-in user's name and role on every action — a client cannot act as someone else.
 
 | Permission | Investigator | Supervisor | Analyst | Admin |
 |---|:-:|:-:|:-:|:-:|
@@ -89,7 +89,7 @@ cd spotzi && SPOTZI_TEST_BACKEND=postgres python3 -m unittest discover -s tests 
 
 | Capability | What it does |
 |---|---|
-| **Claim check (pre-payment)** | Scores a claim *before* it is paid in ~2 ms: eligibility and death, inpatient-stay overlap, excluded providers, duplicates against paid history, repeat intervals, unbundling, daily unit limits, impossible hours, excessive visits, level-5 patterns, and whether the provider is already under review. Recommends **Pay**, **Pay + monitor** or **Pend for human review** with reasons — it never denies. Reviewers release, adjust or deny pended claims with a written reason; avoided amounts feed Outcomes. API: `POST /api/prepay/score`. |
+| **Claim check (pre-payment)** | Scores a claim *before* it is paid in about 0.1–0.3 s (measured median 0.27 s per API call): eligibility and death, inpatient-stay overlap, excluded providers, duplicates against paid history, repeat intervals, unbundling, daily unit limits, impossible hours, excessive visits, level-5 patterns, and whether the provider is already under review. Recommends **Pay**, **Pay + monitor** or **Pend for human review** with reasons — it never denies. Reviewers release, adjust or deny pended claims with a written reason; avoided amounts feed Outcomes. API: `POST /api/prepay/score`. |
 | **Unit-limit edits** | New rule: more units of a service per member per day than is medically plausible (per-code limit table, illustrative values to tune with coding experts). |
 | **Excluded-provider screening** | New rule: claims on or after a provider's exclusion date. Loads `exclusions.csv` (synthetic list in the demo; same columns as an official list export). |
 | **Rule studio** | Analysts build rules from conditions (code, family, place of service, units, paid, weekday, provider/member lines per day, member age…), preview exactly what would be flagged (lines, providers, paid, overlap with existing rules, share already in cases, warning if too broad), save as draft, activate, and re-run. Active rules flow into cases, the Brain and briefs. |
@@ -181,6 +181,8 @@ Detector weights start at expert priors and update from every recorded decision 
 - Sigmoid calibration cross-fitted by provider group on the training period only; temporal holdout with a 90-day purge.
 - Held-out results: AUC 0.955 / 0.956 / 0.953 · Brier 0.050 / 0.032 / 0.027 · calibration error 0.063 / 0.034 / 0.014 (30 / 60 / 90 days). Probabilities capped at 1–97 %.
 - Local drivers shown per provider.
+- **Compared with a simple baseline** (recent-flag persistence) on the same temporal holdout, with precision at investigator capacity (top 10) and 95% provider-cluster bootstrap intervals. The forecast scores above the baseline at every horizon (30-day AUC 0.955 vs 0.933, PR-AUC 0.860 vs 0.810), but the interval of the gain includes zero, so the edge is not proven.
+- **New-onset risk is reported separately:** for providers with no rule flags at the forecast date the signal is weak (AUC 0.62–0.67, 9 positives in 605). The forecast is therefore one secondary priority signal; detection evidence carries each case. Shown in *Governance → Forecast vs recent-flag baseline*.
 
 ### Task models (trained per SIU process) — `spotzi/ai/models/`
 Each model is trained by `python3 -m ai.models.train_all` on synthetic data only, saved as a versioned artifact with a model card (`data/models/*.json`), shown in **Governance → Task models**, and tested on data it never saw. Training: synthetic generator worlds (seeds 101–106). Tests: the demo world (seed 7) and held-out worlds (seeds 201–202) never used in training.
@@ -360,6 +362,10 @@ Hover highlights neighbours; click opens the same inspector or panel; path findi
 - **Fail safe:** failed validation or model steps keep the previous analysis live; optional AI layers degrade to deterministic output.
 - Work is keyed to a data fingerprint, so it survives restarts.
 - Every protected action is checked on the server by role; identity comes from the session, never from the request.
+- **Hashed policy:** the investigation policy actually enforced (rules, priority weights, gates such as the 70% readiness bar and four-eyes) is hashed into a version such as `policy-0ada76ede879` (`/api/policy`), recorded on every audit entry and decision.
+- **Tamper-evident audit chain:** every audit entry is sealed into a SHA-256 hash chain covering the previous hash, the row and the policy version (`infra/ledger.py`). *Governance → Tamper-evident audit chain → Verify now* (or `/api/audit/verify`) recomputes it and names the first altered, deleted or inserted entry. `python3 -m scripts.audit_tamper_demo` alters a live entry inside a transaction, shows it caught, then rolls back.
+- **Refused actions are logged:** a user without the right permission (e.g. an analyst attempting a decision) gets 403 and the attempt is written to the audit chain. Decision entries also record the run, evidence score and confidence.
+- **Performance by provider type** is reported for all eight service families (*Governance → Model validation*); the weakest ranking is DME (AUC 0.82–0.97).
 
 ---
 
@@ -410,13 +416,13 @@ synthdata/gen.py ──► data/synthetic/*.csv ──► detection/pipeline.py
 api/app.py (FastAPI) ─┬─ intelligence/  briefs · lab · precedents · knowledge
                       ├─ ai/            llm (provider + switches) · llm_detect (chart review, tips, rule drafting) · charts (record system)
                       ├─ operations/    ops (pre-payment, recoveries, documents, tips) · scope · notify · x12
-                      ├─ infra/         auth (sessions, roles, TOTP, OIDC) · dbcompat (PostgreSQL / SQLite)
+                      ├─ infra/         auth (sessions, roles, TOTP, OIDC) · dbcompat (database connection) · ledger (audit chain + hashed policy)
                       └─ PostgreSQL     users, sessions, decisions, audit, assignments, notes, outbox, scope, tips + AI triage,
                                         documents, chart reviews, custom rules, pre-payment log, recoveries, wiki, settings
-static/  vanilla JS PWA, no build step  ·  tests/test_spotzi.py  50 tests  ·  evaluation/  accuracy scripts
+static/  vanilla JS PWA, no build step  ·  tests/test_spotzi.py  55 tests  ·  evaluation/  accuracy scripts
 ```
 
-**Main API groups:** `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/llm/status`.
+**Main API groups:** `/api/audit/verify` · `/api/policy` · `/api/login` · `/api/login/mfa` · `/api/mfa/*` · `/api/sso/*` · `/api/security` · `/api/outbox` · `/api/me/prefs` · `/api/cases/{id}/merge` · `/api/cases/{id}/split` · `/api/data/sample.837` · `/api/me` · `/api/users` · `/api/my` · `/api/cases/{id}/assign` · `/api/cases/{id}/notes` · `/api/data/upload` · `/api/overview` · `/api/queue` · `/api/cases/{id}` (+ `/brief.md`, `/decision`, `/lab`, `/lab/reveal`, `/precedents`, `/blueprint`, `/chain`) · `/api/brain` · `/api/wiki` (+ `/page`, `/search`, `/proposals`) · `/api/providers` · `/api/claims` · `/api/members/{id}` · `/api/network` · `/api/governance` · `/api/data` · `/api/run` · `/api/audit` · `/api/llm/status`.
 
 ---
 

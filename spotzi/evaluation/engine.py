@@ -154,6 +154,27 @@ def truth_metrics(S, name):
                 cons_prec[lab] = dict(
                     cases=len(cs), precision=round(float(np.mean([bool(set(c["primary"]) & fraud) for c in cs])), 3)
                 )
+    # performance by provider type (service family): recall, false positives, precision and ranking power
+    fam = S["T"]["providers"].set_index("provider_id")["family"]
+    esc_a = in_cases(S, ESCALATED_ACTION)
+    by_type = {}
+    for f in sorted(fam.dropna().unique()):
+        ids = [p for p in fam.index[fam == f] if p in E.index]
+        fr = [p for p in ids if E.at[p, "true_state"] == "fraudulent"]
+        ok = [p for p in ids if E.at[p, "true_state"] != "fraudulent"]
+        tp, fp = sum(p in esc_a for p in fr), sum(p in esc_a for p in ok)
+        yy = np.array([int(p in fr) for p in ids if p in PT.index])
+        sc = PT.loc[[p for p in ids if p in PT.index], "p_fraud"] if "p_fraud" in PT else None
+        by_type[f] = dict(
+            providers=len(ids),
+            fraudulent=len(fr),
+            caught=int(sum(p in esc for p in fr)),
+            recall=round(sum(p in esc for p in fr) / len(fr), 3) if fr else None,
+            legitimate=len(ok),
+            false_positives=int(fp),
+            precision=round(tp / (tp + fp), 3) if tp + fp else None,
+            auc=round(float(roc_auc_score(yy, sc.fillna(0))), 3) if sc is not None and 0 < yy.sum() < len(yy) else None,
+        )
     ev = S["run"]["evaluation"]
     out = dict(
         dataset=name,
@@ -167,6 +188,7 @@ def truth_metrics(S, name):
         fraud_types=types,
         by_true_state=by_state,
         case_precision_by_consensus=cons_prec,
+        by_provider_type=by_type,
     )
     log("truth", name, "AUC/AP p_fraud", det.get("p_fraud"), "queue", out["queue"]["@10"])
     return out

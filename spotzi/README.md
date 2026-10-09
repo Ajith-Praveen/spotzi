@@ -7,11 +7,11 @@ Healthcare payer FWA (fraud, waste, abuse) intelligence for Special Investigatio
 ```bash
 cd spotzi
 pip install -r requirements.txt
-./start.sh                         # web app → http://localhost:8000 (uses PostgreSQL in data/pg if present, else SQLite)
+./start.sh                         # PostgreSQL 16 (data/pg) + web app → http://localhost:8000
 ./stop.sh
 ```
-A fresh clone needs no database setup: without `data/pg` or `SPOTZI_DB_URL`, the app runs on SQLite.
-Demo accounts and passwords: `cat data/seed_users.json` (owner-readable only).
+The app runs on PostgreSQL 16: a local cluster in `data/pg`, connection settings in `data/db.env` (git-ignored). Point `SPOTZI_DB_URL` at a managed PostgreSQL to move it.
+Accounts: `data/seed_users.json` (owner-readable only) lists vipul and amith (investigators), reshika (supervisor), raveena (analyst) and ajith (admin). After editing it, run `python3 -m scripts.sync_users`.
 
 ## Project layout
 
@@ -49,17 +49,18 @@ spotzi/
 │   ├── notify.py             notifications + email/Slack/webhook outbox
 │   └── x12.py                837P / 837I import & export
 ├── infra/                    platform
-│   ├── auth.py               PBKDF2 passwords, sessions, TOTP MFA, OIDC SSO
-│   └── dbcompat.py           PostgreSQL / SQLite compatibility layer
+│   ├── auth.py               PBKDF2 passwords, sessions, TOTP MFA, OIDC SSO, roles & permissions
+│   ├── ledger.py             tamper-evident audit chain (SHA-256) + hashed investigation policy
+│   └── dbcompat.py           database connection layer
 ├── synthdata/                synthetic data
 │   ├── gen.py                realistic synthetic claims world (conditions, seasonality, cost-share, schemes, legit anomalies)
 │   └── truth.py              hidden entity-level ground truth (evaluation only)
 ├── evaluation/               measurement
 │   ├── engine.py             model validation: truth, calibration, delay, counterfactual, adversarial, ablation, gap, quality
 │   └── evaluate_llm.py       chart-review reviewer comparison
-├── scripts/migrate_to_postgres.py
+├── scripts/                  migrate_to_postgres.py · sync_users.py (load seed_users.json) · audit_tamper_demo.py
 ├── static/                   web app (PWA): index.html, app.js, styles.css, sw.js
-├── tests/test_spotzi.py      50 tests (run on PostgreSQL and SQLite)
+├── tests/test_spotzi.py      55 tests
 └── data/                     runtime data (mostly git-ignored)
     ├── synthetic/ · hidden/  demo claims world · its hidden labels (evaluation only)
     ├── pg/ · db.env          PostgreSQL cluster · connection string
@@ -72,7 +73,7 @@ spotzi/
 ```
 
 ## Database
-PostgreSQL 16 holds application state: users, sessions, MFA, decisions, four-eyes approvals, audit log, assignments, notes, notifications/outbox, case scope (split/merge), tips and AI triage, case documents metadata, chart reviews, custom rules, pre-payment log, recoveries, knowledge wiki and settings. Claims are loaded from CSV / X12 files into memory for each analysis run. SQLite is a zero-setup fallback (`SPOTZI_DB_URL` unset).
+PostgreSQL 16 holds application state: users, sessions, MFA, decisions, four-eyes approvals, audit log, assignments, notes, notifications/outbox, case scope (split/merge), tips and AI triage, case documents metadata, chart reviews, custom rules, pre-payment log, recoveries, knowledge wiki and settings, plus the tamper-evident audit chain (`audit_chain`). Claims are loaded from CSV / X12 files into memory for each analysis run. The automated tests create their own throwaway database, so they need no setup.
 
 ## Common tasks
 ```bash
@@ -80,6 +81,8 @@ python3 -m pytest -q tests                      # or: python3 -m unittest tests.
 python3 -m ai.models.train_all                  # retrain all task models (~6 min)
 python3 -m evaluation.engine                     # full model validation (synthetic worlds)
 python3 -m evaluation.evaluate_llm [--llm]      # chart reviewers (LLM needs a key)
+python3 -m scripts.sync_users                  # load accounts from data/seed_users.json
+python3 -m scripts.audit_tamper_demo           # show a tampered audit entry being detected (rolled back)
 ```
 
 ## LLM (optional)

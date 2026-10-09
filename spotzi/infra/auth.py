@@ -17,6 +17,7 @@ from pathlib import Path
 ROLES = ["investigator", "supervisor", "analyst", "admin"]
 COOKIE = "spotzi_session"
 SESSION_HOURS = 12
+MIN_PASSWORD = 8  # NIST SP 800-63B minimum for user-chosen passwords
 PERMS = {
     "decide": {"investigator", "supervisor", "admin"},
     "approve_referral": {"supervisor", "admin"},
@@ -50,8 +51,8 @@ def create_user(c, username, name, role, password):
         raise ValueError("name is required")
     if role not in ROLES:
         raise ValueError("unknown role")
-    if len(password) < 10:
-        raise ValueError("password must be at least 10 characters")
+    if len(password) < MIN_PASSWORD:
+        raise ValueError(f"password must be at least {MIN_PASSWORD} characters")
     if c.execute("SELECT 1 FROM users WHERE username=?", (username,)).fetchone():
         raise ValueError(f"username '{username}' is already taken")
     salt = secrets.token_hex(16)
@@ -62,8 +63,8 @@ def create_user(c, username, name, role, password):
 
 
 def set_password(c, uid, password):
-    if len(password) < 10:
-        raise ValueError("password must be at least 10 characters")
+    if len(password) < MIN_PASSWORD:
+        raise ValueError(f"password must be at least {MIN_PASSWORD} characters")
     salt = secrets.token_hex(16)
     c.execute("UPDATE users SET salt=?, pw_hash=? WHERE id=?", (salt, _hash(password, salt), uid))
     c.execute("DELETE FROM sessions WHERE user_id=?", (uid,))
