@@ -22,8 +22,8 @@ SpotZⁱ turns thousands of unexplained claim alerts into a short, ranked list o
 
 ### Run it
 ```bash
-pip install fastapi uvicorn pandas numpy scikit-learn networkx scipy python-multipart "psycopg[binary]"
-cd spotzi && ./start.sh               # starts local PostgreSQL (port 5544) + SpotZⁱ → http://localhost:8000
+cd spotzi && pip install -r requirements.txt
+./start.sh                            # starts local PostgreSQL (port 5544) + SpotZⁱ → http://localhost:8000
 ./stop.sh                                  # stops both
 ```
 **Storage.** SpotZⁱ runs on **PostgreSQL 16** (project-local cluster in `spotzi/data/pg`, SCRAM-SHA-256 password auth, listening on 127.0.0.1 only). Connection settings live in `spotzi/data/db.env` (owner-readable, git-ignored); point `SPOTZI_DB_URL` at any managed Postgres to move it. Without `SPOTZI_DB_URL` it falls back to a single SQLite file for laptops and quick demos. `migrate_to_postgres.py` copies an existing SQLite database into Postgres.

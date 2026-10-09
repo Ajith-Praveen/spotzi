@@ -1,4 +1,4 @@
-/* Spotzi landing page.
+/* SpotZⁱ (ClaimShield Nexus) landing page.
    - Hero: mounts the Network-Brain canvas animation (brain-network.js).
    - Light slides: scroll-reveal + stat count-up.
    External file because the app's CSP is script-src 'self' (no inline JS). */

@@ -9,19 +9,41 @@ The application writes portable SQL with `?` placeholders. For PostgreSQL this m
   PRAGMA table_info(t)               -> information_schema.columns
 and returns rows that support both row["col"] and row[0].
 Select the backend with SPOTZI_DB_URL=postgresql://user:pass@host:port/db (otherwise SQLite at SPOTZI_DB)."""
+
 from __future__ import annotations
 
 import re
 import sqlite3
 
 UPSERT_KEYS = {"wiki_pages": "slug", "precedent_quality": "case_id", "case_assign": "case_id", "settings": "key"}
-SERIAL_TABLES = {"decisions", "audit", "lab_events", "blueprints", "blueprint_items", "wiki_history", "wiki_proposals", "case_notes",
-                 "notifications", "outbox", "case_scope", "users", "prepay_log", "recoveries", "custom_rules", "case_documents", "tips", "chart_reviews", "prediction_log", "dev_inbox"}
+SERIAL_TABLES = {
+    "decisions",
+    "audit",
+    "lab_events",
+    "blueprints",
+    "blueprint_items",
+    "wiki_history",
+    "wiki_proposals",
+    "case_notes",
+    "notifications",
+    "outbox",
+    "case_scope",
+    "users",
+    "prepay_log",
+    "recoveries",
+    "custom_rules",
+    "case_documents",
+    "tips",
+    "chart_reviews",
+    "prediction_log",
+    "dev_inbox",
+}
 
 
 class Row(dict):
     def __init__(self, names, values):
-        super().__init__(zip(names, values)); self._v = tuple(values)
+        super().__init__(zip(names, values))
+        self._v = tuple(values)
 
     def __getitem__(self, k):
         return self._v[k] if isinstance(k, int) else dict.__getitem__(self, k)
@@ -57,7 +79,8 @@ def translate(sql: str) -> str:
     # ? -> %s outside quoted literals
     out, quote = [], False
     for ch in q:
-        if ch == "'": quote = not quote
+        if ch == "'":
+            quote = not quote
         out.append("%s" if ch == "?" and not quote else ch)
     return "".join(out)
 
@@ -81,32 +104,47 @@ class PGConnection:
 
     def __init__(self, url):
         import psycopg
+
         self._c = psycopg.connect(url, row_factory=_row_factory)
 
     def execute(self, sql, params=()):
         q = translate(sql)
         m = _INSERT.match(q)
-        returning = bool(m and m.group(1).lower() in SERIAL_TABLES and "RETURNING" not in q.upper() and "ON CONFLICT" not in q.upper())
-        if returning: q = q.rstrip().rstrip(";") + " RETURNING id"
+        returning = bool(
+            m
+            and m.group(1).lower() in SERIAL_TABLES
+            and "RETURNING" not in q.upper()
+            and "ON CONFLICT" not in q.upper()
+        )
+        if returning:
+            q = q.rstrip().rstrip(";") + " RETURNING id"
         cur = self._c.execute(q, tuple(params) if params else None)
         rid = None
         if returning:
-            r = cur.fetchone(); rid = r[0] if r else None
+            r = cur.fetchone()
+            rid = r[0] if r else None
         return _Cursor(cur, rid)
 
     def executescript(self, script):
         for stmt in [s.strip() for s in script.split(";") if s.strip()]:
             self._c.execute(translate(stmt))
 
-    def commit(self): self._c.commit()
-    def rollback(self): self._c.rollback()
-    def close(self): self._c.close()
+    def commit(self):
+        self._c.commit()
+
+    def rollback(self):
+        self._c.rollback()
+
+    def close(self):
+        self._c.close()
 
     @property
-    def row_factory(self): return None
+    def row_factory(self):
+        return None
 
     @row_factory.setter
-    def row_factory(self, _): pass
+    def row_factory(self, _):
+        pass
 
 
 def connect(url=None, path=None):

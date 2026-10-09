@@ -17,3 +17,8 @@ spotzi/data/secrets/
 spotzi/data/models/encoders/
 spotzi/data/*.sqlite
 spotzi/data/*.sqlite.bak*
+idea
+
+__pycache__/
+*.pyc
+.ruff_cache/

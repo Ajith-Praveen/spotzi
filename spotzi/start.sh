@@ -3,7 +3,8 @@
 cd "$(dirname "$0")"
 export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 PORT="${SPOTZI_PORT:-8000}"
-if lsof -ti:"$PORT" >/dev/null 2>&1; then
+# only a process LISTENING on the port counts; a browser still holding a client connection must not block start-up
+if lsof -ti tcp:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
   if curl -s -o /dev/null "http://127.0.0.1:$PORT/manifest.webmanifest"; then
     echo "SpotZⁱ is already running at http://localhost:$PORT (use ./stop.sh to stop it)."
   else

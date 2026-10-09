@@ -9,6 +9,7 @@ networkx>=3.2
 joblib>=1.3
 cryptography>=42
 httpx>=0.27
+python-multipart>=0.0.9   # FastAPI file uploads (data, documents)
 
 # PostgreSQL backend (optional; SQLite is used when SPOTZI_DB_URL / data/db.env is absent)
 psycopg[binary]>=3.1
