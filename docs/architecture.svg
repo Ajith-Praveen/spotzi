@@ -1,0 +1,323 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1760 1284" width="1760" height="1284" font-family="IBM Plex Serif, Source Serif 4, Georgia, serif"><title>SpotZⁱ — ClaimShield Nexus system architecture</title><defs>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#F4F5F7"/><stop offset="1" stop-color="#EEF0F3"/></linearGradient>
+<linearGradient id="dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3E45"/><stop offset=".55" stop-color="#23262B"/><stop offset="1" stop-color="#16181B"/></linearGradient>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D3D6DA"/><stop offset="1" stop-color="#C1C4C9"/></linearGradient>
+<filter id="sh" x="-5%" y="-5%" width="110%" height="120%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#1E2124" flood-opacity=".16"/></filter>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4E55"/></marker><marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A4E55"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4423C"/></marker><marker id="rs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4423C"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1E6B4B"/></marker><marker id="gs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1E6B4B"/></marker><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6E727A"/></marker><marker id="ms" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6E727A"/></marker></defs><rect width="1760" height="1284" fill="url(#bg)"/><image x="40" y="22" width="40" height="40" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABY2lDQ1BrQ0dDb2xvclNwYWNlRGlzcGxheVAzAAAokX2QsUvDUBDGv1aloHUQHRwcMolDlJIKuji0FURxCFXB6pS+pqmQxkeSIgU3/4GC/4EKzm4Whzo6OAiik+jm5KTgouV5L4mkInqP435877vjOCA5bnBu9wOoO75bXMorm6UtJfWMBL0gDObxnK6vSv6uP+P9PvTeTstZv///jcGK6TGqn5QZxl0fSKjE+p7PJe8Tj7m0FHFLshXyieRyyOeBZ71YIL4mVljNqBC/EKvlHt3q4brdYNEOcvu06WysyTmUE1jEDjxw2DDQhAId2T/8s4G/gF1yN+FSn4UafOrJkSInmMTLcMAwA5VYQ4ZSk3eO7ncX3U+NtYMnYKEjhLiItZUOcDZHJ2vH2tQ8MDIEXLW54RqB1EeZrFaB11NguASM3lDPtlfNauH26Tww8CjE2ySQOgS6LSE+joToHlPzA3DpfAEDp2ITpJYOWwAAAARjSUNQDA0AAW4D4+8AAADSZVhJZk1NACoAAAAIAAcBBgADAAAAAQACAAABDQACAAAAEQAAAGIBEgADAAAAAQABAAABGgAFAAAAAQAAAHQBGwAFAAAAAQAAAHwBKAADAAAAAQACAACHaQAEAAAAAQAAAIQAAAAAVW50aXRsZWQgQXJ0d29yawAAAAAAhAAAAAEAAACEAAAAAQAGkAAABwAAAAQwMjIxkQEABwAAAAQBAgMAoAAABwAAAAQwMTAwoAIABAAAAAEAAABAoAMABAAAAAEAAABApAYAAwAAAAEAAAAAAAAAAI2B0ucAAAAJcEhZcwAAFE0AABRNAZTKjS8AAAZ4aVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgICAgICAgICB4bWxuczpJcHRjNHhtcEV4dD0iaHR0cDovL2lwdGMub3JnL3N0ZC9JcHRjNHhtcEV4dC8yMDA4LTAyLTI5LyI+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MjA0ODwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlNjZW5lQ2FwdHVyZVR5cGU+MDwvZXhpZjpTY2VuZUNhcHR1cmVUeXBlPgogICAgICAgICA8ZXhpZjpFeGlmVmVyc2lvbj4wMjIxPC9leGlmOkV4aWZWZXJzaW9uPgogICAgICAgICA8ZXhpZjpGbGFzaFBpeFZlcnNpb24+MDEwMDwvZXhpZjpGbGFzaFBpeFZlcnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4yMDQ4PC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6Q29tcG9uZW50c0NvbmZpZ3VyYXRpb24+CiAgICAgICAgICAgIDxyZGY6U2VxPgogICAgICAgICAgICAgICA8cmRmOmxpPjE8L3JkZjpsaT4KICAgICAgICAgICAgICAgPHJkZjpsaT4yPC9yZGY6bGk+CiAgICAgICAgICAgICAgIDxyZGY6bGk+MzwvcmRmOmxpPgogICAgICAgICAgICAgICA8cmRmOmxpPjA8L3JkZjpsaT4KICAgICAgICAgICAgPC9yZGY6U2VxPgogICAgICAgICA8L2V4aWY6Q29tcG9uZW50c0NvbmZpZ3VyYXRpb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90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"/><rect x="40" y="22" width="40" height="40" rx="9" fill="none" stroke="#FFFFFF" stroke-opacity=".6"/><text x="92" y="52" font-size="26" font-weight="600" fill="#1E2024">SpotZ<tspan font-size="15" dy="-10" fill="#4A4E55">i</tspan><tspan dy="10"> — ClaimShield Nexus · System architecture</tspan></text>
+<text x="92" y="76" font-size="13" fill="#4A4E55">Evidence-first FWA intelligence for SIU review. Synthetic data only · a named human decides every outcome · LLM optional, never scores or decides.</text>
+<rect x="24" y="96" width="1632" height="196" rx="18" fill="#FFFFFF" fill-opacity=".22" stroke="#FFFFFF" stroke-opacity=".7"/>
+<text x="42" y="120" font-size="11.5" letter-spacing="1.6" font-weight="700" fill="#1E2024">USERS &amp; CLIENTS</text>
+<g><rect x="44" y="130" width="250" height="146" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="58" y="152" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">PEOPLE</text>
+<text x="58" y="170" font-size="14" font-weight="600" fill="#1E2024">SIU users</text>
+<circle cx="61" cy="187" r="2" fill="#6E727A"/>
+<text x="70" y="191" font-size="12" fill="#4A4E55">Investigator · Supervisor</text>
+<circle cx="61" cy="204" r="2" fill="#6E727A"/>
+<text x="70" y="208" font-size="12" fill="#4A4E55">Analyst · Admin</text>
+<circle cx="61" cy="221" r="2" fill="#6E727A"/>
+<text x="70" y="225" font-size="12" fill="#4A4E55">Server-checked roles (RBAC)</text>
+<circle cx="61" cy="238" r="2" fill="#6E727A"/>
+<text x="70" y="242" font-size="12" fill="#4A4E55">Four-eyes on referrals</text>
+</g>
+<g><rect x="318" y="130" width="250" height="146" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="332" y="152" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">PUBLIC</text>
+<text x="332" y="170" font-size="14" font-weight="600" fill="#1E2024">Landing page  /</text>
+<circle cx="335" cy="187" r="2" fill="#6E727A"/>
+<text x="344" y="191" font-size="12" fill="#4A4E55">Static page · canvas hero</text>
+<circle cx="335" cy="204" r="2" fill="#6E727A"/>
+<text x="344" y="208" font-size="12" fill="#4A4E55">Problem, solution, network</text>
+<circle cx="335" cy="221" r="2" fill="#6E727A"/>
+<text x="344" y="225" font-size="12" fill="#4A4E55">Every CTA opens /app</text>
+</g>
+<g><rect x="592" y="130" width="470" height="146" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="606" y="152" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">CLIENT</text>
+<text x="606" y="170" font-size="14" font-weight="600" fill="#1E2024">SpotZⁱ web app  /app  (PWA)</text>
+<circle cx="609" cy="187" r="2" fill="#6E727A"/>
+<text x="618" y="191" font-size="12" fill="#4A4E55">Vanilla JS, no build step · glass UI · IBM Plex Serif</text>
+<circle cx="609" cy="204" r="2" fill="#6E727A"/>
+<text x="618" y="208" font-size="12" fill="#4A4E55">SIU queue · case workspace · Nexus Brain · link analysis (2D +</text>
+<text x="618" y="225" font-size="12" fill="#4A4E55">three.js 3D)</text>
+<circle cx="609" cy="238" r="2" fill="#6E727A"/>
+<text x="618" y="242" font-size="12" fill="#4A4E55">Service worker caches the app shell only — offline is read-only,</text>
+<text x="618" y="259" font-size="12" fill="#4A4E55">nothing queued</text>
+</g>
+<g><rect x="1086" y="130" width="550" height="146" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="1100" y="152" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">INTEGRATIONS</text>
+<text x="1100" y="170" font-size="14" font-weight="600" fill="#1E2024">External services (all optional)</text>
+<circle cx="1103" cy="187" r="2" fill="#6E727A"/>
+<text x="1112" y="191" font-size="12" fill="#4A4E55">Identity provider — OpenID Connect SSO (PKCE, RS256)</text>
+<circle cx="1103" cy="204" r="2" fill="#6E727A"/>
+<text x="1112" y="208" font-size="12" fill="#4A4E55">SMTP e-mail · Slack-compatible webhook (IDs only, no PHI)</text>
+<circle cx="1103" cy="221" r="2" fill="#6E727A"/>
+<text x="1112" y="225" font-size="12" fill="#4A4E55">LLM provider — DeepSeek · z.ai · OpenAI-compatible · Anthropic · local</text>
+</g>
+<path d="M294,203 L318,203" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M568,203 L592,203" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="24" y="312" width="1632" height="156" rx="18" fill="#FFFFFF" fill-opacity=".22" stroke="#FFFFFF" stroke-opacity=".7"/>
+<text x="42" y="336" font-size="11.5" letter-spacing="1.6" font-weight="700" fill="#1E2024">API &amp; SECURITY LAYER</text>
+<text x="234.0" y="336" font-size="12" fill="#4A4E55" font-style="italic">api/app.py · FastAPI + uvicorn</text>
+<g><rect x="44" y="346" width="254" height="108" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="58" y="368" font-size="13" font-weight="600" fill="#1E2024">Auth &amp; sessions</text>
+<circle cx="61" cy="384" r="2" fill="#6E727A"/>
+<text x="70" y="388" font-size="11.5" fill="#4A4E55">PBKDF2 · HttpOnly cookie</text>
+<circle cx="61" cy="400.5" r="2" fill="#6E727A"/>
+<text x="70" y="404.5" font-size="11.5" fill="#4A4E55">TOTP MFA · OIDC SSO</text>
+<circle cx="61" cy="417.0" r="2" fill="#6E727A"/>
+<text x="70" y="421.0" font-size="10.5" fill="#4A4E55" font-family="JetBrains Mono, SF Mono, Menlo, monospace">infra/auth.py</text>
+</g>
+<g><rect x="312" y="346" width="254" height="108" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="326" y="368" font-size="13" font-weight="600" fill="#1E2024">Request guards</text>
+<circle cx="329" cy="384" r="2" fill="#6E727A"/>
+<text x="338" y="388" font-size="11.5" fill="#4A4E55">Origin check (CSRF)</text>
+<circle cx="329" cy="400.5" r="2" fill="#6E727A"/>
+<text x="338" y="404.5" font-size="11.5" fill="#4A4E55">Strict CSP · no framing</text>
+<circle cx="329" cy="417.0" r="2" fill="#6E727A"/>
+<text x="338" y="421.0" font-size="11.5" fill="#4A4E55">Contract version → refresh</text>
+</g>
+<g><rect x="580" y="346" width="254" height="108" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="594" y="368" font-size="13" font-weight="600" fill="#1E2024">Human-control gates</text>
+<circle cx="597" cy="384" r="2" fill="#6E727A"/>
+<text x="606" y="388" font-size="11.5" fill="#4A4E55">Rationale ≥ 15 chars</text>
+<circle cx="597" cy="400.5" r="2" fill="#6E727A"/>
+<text x="606" y="404.5" font-size="11.5" fill="#4A4E55">Referral needs 2nd person</text>
+<circle cx="597" cy="417.0" r="2" fill="#6E727A"/>
+<text x="606" y="421.0" font-size="11.5" fill="#4A4E55">Readiness gate &lt; 70%</text>
+</g>
+<g><rect x="848" y="346" width="254" height="108" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="862" y="368" font-size="13" font-weight="600" fill="#1E2024">REST  /api/*</text>
+<circle cx="865" cy="384" r="2" fill="#6E727A"/>
+<text x="874" y="388" font-size="11.5" fill="#4A4E55">queue · cases · brain</text>
+<circle cx="865" cy="400.5" r="2" fill="#6E727A"/>
+<text x="874" y="404.5" font-size="11.5" fill="#4A4E55">network · wiki · data</text>
+<circle cx="865" cy="417.0" r="2" fill="#6E727A"/>
+<text x="874" y="421.0" font-size="11.5" fill="#4A4E55">prepay · tips · reports</text>
+</g>
+<g><rect x="1116" y="346" width="254" height="108" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="1130" y="368" font-size="13" font-weight="600" fill="#1E2024">Background run</text>
+<circle cx="1133" cy="384" r="2" fill="#6E727A"/>
+<text x="1142" y="388" font-size="11.5" fill="#4A4E55">Pipeline in a thread</text>
+<circle cx="1133" cy="400.5" r="2" fill="#6E727A"/>
+<text x="1142" y="404.5" font-size="11.5" fill="#4A4E55">Previous run stays live</text>
+<circle cx="1133" cy="417.0" r="2" fill="#6E727A"/>
+<text x="1142" y="421.0" font-size="11.5" fill="#4A4E55">Status polling</text>
+</g>
+<g><rect x="1384" y="346" width="254" height="108" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="1398" y="368" font-size="13" font-weight="600" fill="#1E2024">Audit &amp; replay</text>
+<circle cx="1401" cy="384" r="2" fill="#6E727A"/>
+<text x="1410" y="388" font-size="11.5" fill="#4A4E55">Every action logged</text>
+<circle cx="1401" cy="400.5" r="2" fill="#6E727A"/>
+<text x="1410" y="404.5" font-size="11.5" fill="#4A4E55">prediction_log with</text>
+<circle cx="1401" cy="417.0" r="2" fill="#6E727A"/>
+<text x="1410" y="421.0" font-size="11.5" fill="#4A4E55">ruleset + model versions</text>
+</g>
+<path d="M827,276 L827,346" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#as)"/>
+<rect x="732.55" y="304" width="188.89999999999998" height="17" rx="8" fill="#C1C4C9" fill-opacity=".95"/>
+<text x="827" y="316" font-size="11" fill="#4A4E55" text-anchor="middle" font-style="italic">HTTPS · JSON · session cookie</text>
+<path d="M1361,276 L1361,346" fill="none" stroke="#4A4E55" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#a)" marker-start="url(#as)"/>
+<rect x="1281.8" y="304" width="158.39999999999998" height="17" rx="8" fill="#C1C4C9" fill-opacity=".95"/>
+<text x="1361" y="316" font-size="11" fill="#4A4E55" text-anchor="middle" font-style="italic">SSO · notify · LLM calls</text>
+<rect x="24" y="488" width="1632" height="416" rx="18" fill="#FFFFFF" fill-opacity=".22" stroke="#FFFFFF" stroke-opacity=".7"/>
+<text x="42" y="512" font-size="11.5" letter-spacing="1.6" font-weight="700" fill="#1E2024">ANALYSIS PIPELINE</text>
+<text x="207.3" y="512" font-size="12" fill="#4A4E55" font-style="italic">detection/pipeline.py · load → validate → detect → connect → forecast → rank</text>
+<g><rect x="44" y="524" width="196" height="280" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="58" y="546" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">1 · INGEST</text>
+<text x="58" y="564" font-size="14" font-weight="600" fill="#1E2024">Data in</text>
+<circle cx="61" cy="581" r="2" fill="#6E727A"/>
+<text x="70" y="585" font-size="11.5" fill="#4A4E55">Synthetic generator</text>
+<text x="70" y="601.5" font-size="11.5" fill="#4A4E55">synthdata/gen.py (seeded)</text>
+<circle cx="61" cy="614.0" r="2" fill="#6E727A"/>
+<text x="70" y="618.0" font-size="11.5" fill="#4A4E55">CSV upload</text>
+<circle cx="61" cy="630.5" r="2" fill="#6E727A"/>
+<text x="70" y="634.5" font-size="11.5" fill="#4A4E55">X12 837P / 837I</text>
+<text x="70" y="651.0" font-size="11.5" fill="#4A4E55">operations/x12.py</text>
+<circle cx="61" cy="663.5" r="2" fill="#6E727A"/>
+<text x="70" y="667.5" font-size="11.5" fill="#4A4E55">10 tables: claims,</text>
+<text x="70" y="684.0" font-size="11.5" fill="#4A4E55">providers, members,</text>
+<text x="70" y="700.5" font-size="11.5" fill="#4A4E55">facilities, stays,</text>
+<text x="70" y="717.0" font-size="11.5" fill="#4A4E55">referrals, relationships,</text>
+<text x="70" y="733.5" font-size="11.5" fill="#4A4E55">investigations,</text>
+<text x="70" y="750.0" font-size="11.5" fill="#4A4E55">exclusions, events</text>
+</g>
+<g><rect x="260" y="524" width="178" height="280" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="274" y="546" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">2 · QUALITY</text>
+<text x="274" y="564" font-size="14" font-weight="600" fill="#1E2024">Validate</text>
+<circle cx="277" cy="581" r="2" fill="#6E727A"/>
+<text x="286" y="585" font-size="11.5" fill="#4A4E55">Schema &amp; required</text>
+<text x="286" y="601.5" font-size="11.5" fill="#4A4E55">columns</text>
+<circle cx="277" cy="614.0" r="2" fill="#6E727A"/>
+<text x="286" y="618.0" font-size="11.5" fill="#4A4E55">Unique IDs, foreign</text>
+<text x="286" y="634.5" font-size="11.5" fill="#4A4E55">keys</text>
+<circle cx="277" cy="647.0" r="2" fill="#6E727A"/>
+<text x="286" y="651.0" font-size="11.5" fill="#4A4E55">Dates, amounts, paid-</text>
+<text x="286" y="667.5" font-size="11.5" fill="#4A4E55">after-service</text>
+<circle cx="277" cy="680.0" r="2" fill="#6E727A"/>
+<text x="286" y="684.0" font-size="11.5" fill="#4A4E55">Label isolation</text>
+<circle cx="277" cy="696.5" r="2" fill="#6E727A"/>
+<text x="286" y="700.5" font-size="11.5" fill="#4A4E55">Fail-safe: bad data</text>
+<text x="286" y="717.0" font-size="11.5" fill="#4A4E55">stops the run;</text>
+<text x="286" y="733.5" font-size="11.5" fill="#4A4E55">previous analysis</text>
+<text x="286" y="750.0" font-size="11.5" fill="#4A4E55">stays live</text>
+</g>
+<rect x="458" y="524" width="470" height="280" rx="12" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="472" y="546" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">3 · DETECT  —  9 COMPLEMENTARY DETECTORS</text>
+<rect x="470" y="558" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="480" y="577" font-size="12" font-weight="600" fill="#1E2024">Rules engine</text>
+<text x="480" y="593" font-size="10.5" fill="#6E727A">9 rules + analyst rules</text>
+<rect x="622" y="558" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="632" y="577" font-size="12" font-weight="600" fill="#1E2024">Isolation Forest</text>
+<text x="632" y="593" font-size="10.5" fill="#6E727A">peer-normalised</text>
+<rect x="774" y="558" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="784" y="577" font-size="12" font-weight="600" fill="#1E2024">Network graph</text>
+<text x="784" y="593" font-size="10.5" fill="#6E727A">owner · address · bank</text>
+<rect x="470" y="610" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="480" y="629" font-size="12" font-weight="600" fill="#1E2024">Case-mix twin</text>
+<text x="480" y="645" font-size="10.5" fill="#6E727A">gradient boosting</text>
+<rect x="622" y="610" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="632" y="629" font-size="12" font-weight="600" fill="#1E2024">Care pathway</text>
+<text x="632" y="645" font-size="10.5" fill="#6E727A">sequence model</text>
+<rect x="774" y="610" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="784" y="629" font-size="12" font-weight="600" fill="#1E2024">Change-point</text>
+<text x="784" y="645" font-size="10.5" fill="#6E727A">when behaviour shifted</text>
+<rect x="470" y="662" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="480" y="681" font-size="12" font-weight="600" fill="#1E2024">Code-mix divergence</text>
+<text x="480" y="697" font-size="10.5" fill="#6E727A">Jensen–Shannon</text>
+<rect x="622" y="662" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="632" y="681" font-size="12" font-weight="600" fill="#1E2024">Patient-panel shift</text>
+<text x="632" y="697" font-size="10.5" fill="#6E727A">recruitment signal</text>
+<rect x="774" y="662" width="146" height="46" rx="8" fill="#FFFFFF" stroke="#C9CCD1"/>
+<text x="784" y="681" font-size="12" font-weight="600" fill="#1E2024">Temporal evolution</text>
+<text x="784" y="697" font-size="10.5" fill="#6E727A">CUSUM · bursts · trend</text>
+<text x="472" y="728" font-size="10.5" fill="#4A4E55">Shared signals: peer baselines · consensus &amp; evidence diversity · data quality</text>
+<text x="472" y="743" font-size="10.5" fill="#4A4E55">· out-of-distribution check · drift (PSI) · business-context &amp; intensity</text>
+<g><rect x="948" y="524" width="222" height="176" rx="12" fill="url(#dark)" stroke="#0E0F11" stroke-width="1" filter="url(#sh)"/>
+<text x="962" y="546" font-size="10" letter-spacing="1.4" fill="#A9ADB4" font-weight="600">4 · FUSE</text>
+<text x="962" y="564" font-size="14" font-weight="600" fill="#FFFFFF">Nexus Brain</text>
+<circle cx="965" cy="581" r="2" fill="#A9ADB4"/>
+<text x="974" y="585" font-size="11.5" fill="#D5D8DD">One-sided fusion: a quiet</text>
+<text x="974" y="601.5" font-size="11.5" fill="#D5D8DD">detector adds nothing</text>
+<circle cx="965" cy="614.0" r="2" fill="#A9ADB4"/>
+<text x="974" y="618.0" font-size="11.5" fill="#D5D8DD">Isotonic calibration →</text>
+<text x="974" y="634.5" font-size="11.5" fill="#D5D8DD">p_fraud, stage, scheme type</text>
+<circle cx="965" cy="647.0" r="2" fill="#A9ADB4"/>
+<text x="974" y="651.0" font-size="11.5" fill="#D5D8DD">Weights learn from human</text>
+<text x="974" y="667.5" font-size="11.5" fill="#D5D8DD">decisions (MAP, strong prior)</text>
+</g>
+<g><rect x="948" y="714" width="222" height="90" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="962" y="736" font-size="13" font-weight="600" fill="#1E2024">Forecast 30 / 60 / 90 d</text>
+<circle cx="965" cy="752" r="2" fill="#6E727A"/>
+<text x="974" y="756" font-size="11.5" fill="#4A4E55">Discrete-time hazard ·</text>
+<text x="974" y="772.5" font-size="11.5" fill="#4A4E55">calibrated</text>
+</g>
+<g><rect x="1190" y="524" width="216" height="280" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="1204" y="546" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">5 · RANK</text>
+<text x="1204" y="564" font-size="14" font-weight="600" fill="#1E2024">Cases &amp; SIU queue</text>
+<circle cx="1207" cy="581" r="2" fill="#6E727A"/>
+<text x="1216" y="585" font-size="11.5" fill="#4A4E55">Entity resolution joins</text>
+<text x="1216" y="601.5" font-size="11.5" fill="#4A4E55">shared owner/address/bank</text>
+<text x="1216" y="618.0" font-size="11.5" fill="#4A4E55">identities</text>
+<circle cx="1207" cy="630.5" r="2" fill="#6E727A"/>
+<text x="1216" y="634.5" font-size="11.5" fill="#4A4E55">Network cases from</text>
+<text x="1216" y="651.0" font-size="11.5" fill="#4A4E55">suspicious ties</text>
+<circle cx="1207" cy="663.5" r="2" fill="#6E727A"/>
+<text x="1216" y="667.5" font-size="11.5" fill="#4A4E55">Lanes: Investigate · Needs</text>
+<text x="1216" y="684.0" font-size="11.5" fill="#4A4E55">more data · Validate context</text>
+<text x="1216" y="700.5" font-size="11.5" fill="#4A4E55">· Brain lead</text>
+<circle cx="1207" cy="713.0" r="2" fill="#6E727A"/>
+<text x="1216" y="717.0" font-size="11.5" fill="#4A4E55">Priority: risk · forecast ·</text>
+<text x="1216" y="733.5" font-size="11.5" fill="#4A4E55">$ · members · severity ·</text>
+<text x="1216" y="750.0" font-size="11.5" fill="#4A4E55">evidence</text>
+<circle cx="1207" cy="762.5" r="2" fill="#6E727A"/>
+<text x="1216" y="766.5" font-size="11.5" fill="#4A4E55">Capacity packing to review</text>
+<text x="1216" y="783.0" font-size="11.5" fill="#4A4E55">hours</text>
+</g>
+<g><rect x="1426" y="524" width="210" height="280" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="1440" y="546" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">6 · EXPLAIN</text>
+<text x="1440" y="564" font-size="14" font-weight="600" fill="#1E2024">Investigation</text>
+<text x="1440" y="583" font-size="14" font-weight="600" fill="#1E2024">intelligence</text>
+<circle cx="1443" cy="600" r="2" fill="#6E727A"/>
+<text x="1452" y="604" font-size="11.5" fill="#4A4E55">Brief: evidence, timeline,</text>
+<text x="1452" y="620.5" font-size="11.5" fill="#4A4E55">network, confidence,</text>
+<text x="1452" y="637.0" font-size="11.5" fill="#4A4E55">limits, action</text>
+<circle cx="1443" cy="649.5" r="2" fill="#6E727A"/>
+<text x="1452" y="653.5" font-size="11.5" fill="#4A4E55">Challenge Lab (info gain)</text>
+<circle cx="1443" cy="666.0" r="2" fill="#6E727A"/>
+<text x="1452" y="670.0" font-size="11.5" fill="#4A4E55">Precedents (differences</text>
+<text x="1452" y="686.5" font-size="11.5" fill="#4A4E55">first)</text>
+<circle cx="1443" cy="699.0" r="2" fill="#6E727A"/>
+<text x="1452" y="703.0" font-size="11.5" fill="#4A4E55">Readiness &amp; action plan</text>
+<circle cx="1443" cy="715.5" r="2" fill="#6E727A"/>
+<text x="1452" y="719.5" font-size="11.5" fill="#4A4E55">Knowledge wiki + decision</text>
+<text x="1452" y="736.0" font-size="11.5" fill="#4A4E55">chain</text>
+</g>
+<path d="M240,664 L260,664" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M438,664 L458,664" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M928,610 L948,610" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M928,759 L948,759" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1170,610 L1190,610" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1170,759 L1180,759 L1180,720 L1190,720" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1406,664 L1426,664" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M1531,524 L1531,454" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="1482.3" y="472" width="97.39999999999999" height="17" rx="8" fill="#C1C4C9" fill-opacity=".95"/>
+<text x="1531" y="484" font-size="11" fill="#4A4E55" text-anchor="middle" font-style="italic">case workspace</text>
+<path d="M1243,454 L1243,478 L142,478 L142,524" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="257.4" y="466" width="85.19999999999999" height="17" rx="8" fill="#C1C4C9" fill-opacity=".95"/>
+<text x="300" y="478" font-size="11" fill="#4A4E55" text-anchor="middle" font-style="italic">run / upload</text>
+<text x="1636" y="890" font-size="11.5" fill="#4A4E55" font-style="italic" text-anchor="end">Full run on 62,507 synthetic claim lines ≈ 18–22 s on a laptop · 5,577 flagged lines → 13 ranked cases · analysis held in memory per run, keyed to a data fingerprint</text>
+<rect x="24" y="924" width="1632" height="236" rx="18" fill="#FFFFFF" fill-opacity=".22" stroke="#FFFFFF" stroke-opacity=".7"/>
+<text x="42" y="948" font-size="11.5" letter-spacing="1.6" font-weight="700" fill="#1E2024">MODELS, OPERATIONS &amp; STORAGE</text>
+<text x="305.20000000000005" y="948" font-size="12" fill="#4A4E55" font-style="italic">used by the pipeline and served through the API</text>
+<g><rect x="44" y="958" width="520" height="186" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="58" y="980" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">AI/</text>
+<text x="58" y="998" font-size="14" font-weight="600" fill="#1E2024">AI layer</text>
+<circle cx="61" cy="1015" r="2" fill="#6E727A"/>
+<text x="70" y="1019" font-size="11.5" fill="#4A4E55">Trained task models ai/models/ (joblib + model cards): pre-payment line risk ·</text>
+<text x="70" y="1035.5" font-size="11.5" fill="#4A4E55">chart documentation · tip triage · case outcome · fraud type · calibrator</text>
+<circle cx="61" cy="1048.0" r="2" fill="#6E727A"/>
+<text x="70" y="1052.0" font-size="11.5" fill="#4A4E55">Optional LLM ai/llm.py · ai/llm_detect.py: chart review, tip structuring, rule</text>
+<text x="70" y="1068.5" font-size="11.5" fill="#4A4E55">drafting, copilot</text>
+<circle cx="61" cy="1081.0" r="2" fill="#6E727A"/>
+<text x="70" y="1085.0" font-size="11.5" fill="#4A4E55">Guardrails: verbatim-quote check, schema validation; LLM never scores, ranks,</text>
+<text x="70" y="1101.5" font-size="11.5" fill="#4A4E55">opens cases or decides</text>
+</g>
+<g><rect x="584" y="958" width="500" height="186" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="598" y="980" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">OPERATIONS/</text>
+<text x="598" y="998" font-size="14" font-weight="600" fill="#1E2024">Operations</text>
+<circle cx="601" cy="1015" r="2" fill="#6E727A"/>
+<text x="610" y="1019" font-size="11.5" fill="#4A4E55">Pre-payment claim check (~2 ms): Pay · Pay + monitor · Pend — never denies</text>
+<circle cx="601" cy="1031.5" r="2" fill="#6E727A"/>
+<text x="610" y="1035.5" font-size="11.5" fill="#4A4E55">Recoveries &amp; ROI · SIU report · tips intake · case documents (SHA-256)</text>
+<circle cx="601" cy="1048.0" r="2" fill="#6E727A"/>
+<text x="610" y="1052.0" font-size="11.5" fill="#4A4E55">Case split / merge (replayed each run) · notification outbox with retry</text>
+<text x="610" y="1068.5" font-size="11.5" fill="#4A4E55">back-off</text>
+<circle cx="601" cy="1081.0" r="2" fill="#6E727A"/>
+<text x="610" y="1085.0" font-size="11.5" fill="#4A4E55">Served through /api/prepay, /api/tips, /api/outcomes, /api/documents</text>
+</g>
+<g><rect x="1104" y="958" width="532" height="186" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="1118" y="980" font-size="10" letter-spacing="1.4" fill="#6E727A" font-weight="600">STATE</text>
+<text x="1118" y="998" font-size="14" font-weight="600" fill="#1E2024">Storage</text>
+<circle cx="1121" cy="1015" r="2" fill="#6E727A"/>
+<text x="1130" y="1019" font-size="11.5" fill="#4A4E55">PostgreSQL 16 (SQLite fallback via infra/dbcompat.py)</text>
+<circle cx="1121" cy="1031.5" r="2" fill="#6E727A"/>
+<text x="1130" y="1035.5" font-size="11.5" fill="#4A4E55">users · sessions · MFA · decisions · approvals · audit · notes · assignments ·</text>
+<text x="1130" y="1052.0" font-size="11.5" fill="#4A4E55">wiki + history · outbox · tips · documents · recoveries · custom rules ·</text>
+<text x="1130" y="1068.5" font-size="11.5" fill="#4A4E55">prediction_log</text>
+<circle cx="1121" cy="1081.0" r="2" fill="#6E727A"/>
+<text x="1130" y="1085.0" font-size="11.5" fill="#4A4E55">Files: synthetic CSVs · model artifacts · uploaded documents</text>
+</g>
+<path d="M1636,1030 L1680,1030 L1680,400 L1638,400" fill="none" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#as)"/>
+<text x="1692" y="715" font-size="11.5" fill="#4A4E55" font-style="italic" transform="rotate(-90 1692 715)" text-anchor="middle">SQL · PostgreSQL / SQLite</text>
+<path d="M500,958 L500,804" fill="none" stroke="#4A4E55" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#a)"/>
+<rect x="460.45" y="902" width="79.1" height="17" rx="8" fill="#C1C4C9" fill-opacity=".95"/>
+<text x="500" y="914" font-size="11" fill="#4A4E55" text-anchor="middle" font-style="italic">task models</text>
+<path d="M1636,1104 L1722,1104 L1722,506 L1059,506 L1059,524" fill="none" stroke="#B4423C" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#r)"/>
+<text x="1736" y="805" font-size="11.5" fill="#B4423C" font-style="italic" transform="rotate(-90 1736 805)" text-anchor="middle">human decisions → Brain weights · approved knowledge → next case</text>
+<rect x="24" y="1176" width="1632" height="92" rx="18" fill="#FFFFFF" fill-opacity=".22" stroke="#FFFFFF" stroke-opacity=".7"/>
+<text x="42" y="1200" font-size="11.5" letter-spacing="1.6" font-weight="700" fill="#1E2024">OFFLINE EVALUATION</text>
+<text x="216.20000000000002" y="1200" font-size="12" fill="#4A4E55" font-style="italic">evaluation/engine.py · never used for detection</text>
+<g><rect x="44" y="1206" width="1592" height="52" rx="12" fill="url(#gloss)" stroke="#A9ADB4" stroke-width="1" filter="url(#sh)"/>
+<text x="58" y="1228" font-size="1" font-weight="600" fill="#1E2024"></text>
+</g>
+<text x="60" y="1237" font-size="12" fill="#4A4E55">Hidden ground truth (claim · provider · ring · timing) → truth metrics · calibration · 79 counterfactual tests · adversarial evasion · ablation · detection delay · drift — held-out worlds 201 / 202 never trained on</text>
+<line x1="1150" y1="58" x2="1180" y2="58" stroke="#4A4E55" stroke-width="1.6" marker-end="url(#a)"/><text x="1188" y="62" font-size="11" fill="#4A4E55">data / request flow</text>
+<line x1="1315" y1="58" x2="1345" y2="58" stroke="#4A4E55" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#a)"/><text x="1353" y="62" font-size="11" fill="#4A4E55">optional</text>
+<line x1="1425" y1="58" x2="1455" y2="58" stroke="#B4423C" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#r)"/><text x="1463" y="62" font-size="11" fill="#B4423C">human feedback</text></svg>

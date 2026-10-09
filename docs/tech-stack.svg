@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1760 858" width="1760" height="858" font-family="IBM Plex Serif, Source Serif 4, Georgia, serif"><title>SpotZⁱ — ClaimShield Nexus tech stack</title><defs><linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#F4F5F7"/><stop offset="1" stop-color="#EEF0F3"/></linearGradient>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D3D6DA"/><stop offset="1" stop-color="#C1C4C9"/></linearGradient>
+<filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#1E2124" flood-opacity=".16"/></filter></defs><rect width="1760" height="858" fill="url(#bg)"/><image x="40" y="22" width="40" height="40" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABY2lDQ1BrQ0dDb2xvclNwYWNlRGlzcGxheVAzAAAokX2QsUvDUBDGv1aloHUQHRwcMolDlJIKuji0FURxCFXB6pS+pqmQxkeSIgU3/4GC/4EKzm4Whzo6OAiik+jm5KTgouV5L4mkInqP435877vjOCA5bnBu9wOoO75bXMorm6UtJfWMBL0gDObxnK6vSv6uP+P9PvTeTstZv///jcGK6TGqn5QZxl0fSKjE+p7PJe8Tj7m0FHFLshXyieRyyOeBZ71YIL4mVljNqBC/EKvlHt3q4brdYNEOcvu06WysyTmUE1jEDjxw2DDQhAId2T/8s4G/gF1yN+FSn4UafOrJkSInmMTLcMAwA5VYQ4ZSk3eO7ncX3U+NtYMnYKEjhLiItZUOcDZHJ2vH2tQ8MDIEXLW54RqB1EeZrFaB11NguASM3lDPtlfNauH26Tww8CjE2ySQOgS6LSE+joToHlPzA3DpfAEDp2ITpJYOWwAAAARjSUNQDA0AAW4D4+8AAADSZVhJZk1NACoAAAAIAAcBBgADAAAAAQACAAABDQACAAAAEQAAAGIBEgADAAAAAQABAAABGgAFAAAAAQAAAHQBGwAFAAAAAQAAAHwBKAADAAAAAQACAACHaQAEAAAAAQAAAIQAAAAAVW50aXRsZWQgQXJ0d29yawAAAAAAhAAAAAEAAACEAAAAAQAGkAAABwAAAAQwMjIxkQEABwAAAAQBAgMAoAAABwAAAAQwMTAwoAIABAAAAAEAAABAoAMABAAAAAEAAABApAYAAwAAAAEAAAAAAAAAAI2B0ucAAAAJcEhZcwAAFE0AABRNAZTKjS8AAAZ4aVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgICAgICAgICB4bWxuczpJcHRjNHhtcEV4dD0iaHR0cDovL2lwdGMub3JnL3N0ZC9JcHRjNHhtcEV4dC8yMDA4LTAyLTI5LyI+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MjA0ODwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlNjZW5lQ2FwdHVyZVR5cGU+MDwvZXhpZjpTY2VuZUNhcHR1cmVUeXBlPgogICAgICAgICA8ZXhpZjpFeGlmVmVyc2lvbj4wMjIxPC9leGlmOkV4aWZWZXJzaW9uPgogICAgICAgICA8ZXhpZjpGbGFzaFBpeFZlcnNpb24+MDEwMDwvZXhpZjpGbGFzaFBpeFZlcnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4yMDQ4PC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6Q29tcG9uZW50c0NvbmZpZ3VyYXRpb24+CiAgICAgICAgICAgIDxyZGY6U2VxPgogICAgICAgICAgICAgICA8cmRmOmxpPjE8L3JkZjpsaT4KICAgICAgICAgICAgICAgPHJkZjpsaT4yPC9yZGY6bGk+CiAgICAgICAgICAgICAgIDxyZGY6bGk+MzwvcmRmOmxpPgogICAgICAgICAgICAgICA8cmRmOmxpPjA8L3JkZjpsaT4KICAgICAgICAgICAgPC9yZGY6U2VxPgogICAgICAgICA8L2V4aWY6Q29tcG9uZW50c0NvbmZpZ3VyYXRpb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90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"/><rect x="40" y="22" width="40" height="40" rx="9" fill="none" stroke="#FFFFFF" stroke-opacity=".6"/><text x="92" y="52" font-size="26" font-weight="600" fill="#1E2024">SpotZ<tspan font-size="15" dy="-10" fill="#4A4E55">i</tspan><tspan dy="10"> — ClaimShield Nexus · Tech stack</tspan></text>
+<text x="92" y="76" font-size="13" fill="#4A4E55">Open-source, runs on one laptop, no external AI required. Versions are the ones the shipped models were trained and tested with.</text>
+<rect x="24.0" y="104" width="329.6" height="336" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="40.0" y="128" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">FRONTEND</text>
+<text x="40.0" y="150" font-size="16" font-weight="600" fill="#1E2024">Web app (PWA)</text>
+<line x1="40.0" y1="162" x2="337.6" y2="162" stroke="#D3D6DB"/>
+<text x="40.0" y="184" font-size="13" font-weight="600" fill="#1E2024">Vanilla JavaScript</text>
+<text x="40.0" y="202" font-size="11.5" fill="#4A4E55">ES2020 modules, no framework, no build step</text>
+<text x="40.0" y="228" font-size="13" font-weight="600" fill="#1E2024">HTML5 + CSS3</text>
+<text x="40.0" y="246" font-size="11.5" fill="#4A4E55">glossy glass theme, responsive grid, print layout</text>
+<text x="40.0" y="272" font-size="13" font-weight="600" fill="#1E2024">three.js r186</text>
+<text x="40.0" y="290" font-size="11.5" fill="#4A4E55">vendored · 3D link analysis, height = risk</text>
+<text x="40.0" y="316" font-size="13" font-weight="600" fill="#1E2024">Canvas 2D</text>
+<text x="40.0" y="334" font-size="11.5" fill="#4A4E55">landing-page network → brain animation</text>
+<text x="40.0" y="360" font-size="13" font-weight="600" fill="#1E2024">Service Worker + Manifest</text>
+<text x="40.0" y="378" font-size="11.5" fill="#4A4E55">installable · shell-only cache · read-only offline</text>
+<text x="40.0" y="404" font-size="13" font-weight="600" fill="#1E2024">IBM Plex Serif · JetBrains Mono</text>
+<text x="40.0" y="422" font-size="11.5" fill="#4A4E55">Google Fonts · self-hosted mono numerals</text>
+<rect x="369.6" y="104" width="329.6" height="336" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="385.6" y="128" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">BACKEND</text>
+<text x="385.6" y="150" font-size="16" font-weight="600" fill="#1E2024">API server</text>
+<line x1="385.6" y1="162" x2="683.2" y2="162" stroke="#D3D6DB"/>
+<text x="385.6" y="184" font-size="13" font-weight="600" fill="#1E2024">Python 3.14</text>
+<text x="385.6" y="202" font-size="11.5" fill="#4A4E55">requires ≥ 3.11</text>
+<text x="385.6" y="228" font-size="13" font-weight="600" fill="#1E2024">FastAPI 0.141</text>
+<text x="385.6" y="246" font-size="11.5" fill="#4A4E55">REST API, middleware, static files</text>
+<text x="385.6" y="272" font-size="13" font-weight="600" fill="#1E2024">Uvicorn 0.53</text>
+<text x="385.6" y="290" font-size="11.5" fill="#4A4E55">ASGI server</text>
+<text x="385.6" y="316" font-size="13" font-weight="600" fill="#1E2024">python-multipart</text>
+<text x="385.6" y="334" font-size="11.5" fill="#4A4E55">CSV, X12 and document uploads</text>
+<text x="385.6" y="360" font-size="13" font-weight="600" fill="#1E2024">threading</text>
+<text x="385.6" y="378" font-size="11.5" fill="#4A4E55">background pipeline run, status polling</text>
+<rect x="715.2" y="104" width="329.6" height="336" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="731.2" y="128" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">DATA</text>
+<text x="731.2" y="150" font-size="16" font-weight="600" fill="#1E2024">Data &amp; analytics</text>
+<line x1="731.2" y1="162" x2="1028.8" y2="162" stroke="#D3D6DB"/>
+<text x="731.2" y="184" font-size="13" font-weight="600" fill="#1E2024">pandas 3.0</text>
+<text x="731.2" y="202" font-size="11.5" fill="#4A4E55">claims tables, features, aggregation</text>
+<text x="731.2" y="228" font-size="13" font-weight="600" fill="#1E2024">NumPy 2.5</text>
+<text x="731.2" y="246" font-size="11.5" fill="#4A4E55">vectorised scoring</text>
+<text x="731.2" y="272" font-size="13" font-weight="600" fill="#1E2024">SciPy 1.18</text>
+<text x="731.2" y="290" font-size="11.5" fill="#4A4E55">statistics, sparse matrices, divergence</text>
+<text x="731.2" y="316" font-size="13" font-weight="600" fill="#1E2024">NetworkX 3.6</text>
+<text x="731.2" y="334" font-size="11.5" fill="#4A4E55">provider graph · Louvain communities</text>
+<rect x="1060.8" y="104" width="329.6" height="336" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="1076.8" y="128" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">MACHINE LEARNING</text>
+<text x="1076.8" y="150" font-size="16" font-weight="600" fill="#1E2024">Models</text>
+<line x1="1076.8" y1="162" x2="1374.4" y2="162" stroke="#D3D6DB"/>
+<text x="1076.8" y="184" font-size="13" font-weight="600" fill="#1E2024">scikit-learn 1.9</text>
+<text x="1076.8" y="202" font-size="11.5" fill="#4A4E55">IsolationForest · HistGradientBoosting ·</text>
+<text x="1076.8" y="219" font-size="11.5" fill="#4A4E55">LogisticRegression</text>
+<text x="1076.8" y="245" font-size="13" font-weight="600" fill="#1E2024">Calibration</text>
+<text x="1076.8" y="263" font-size="11.5" fill="#4A4E55">CalibratedClassifierCV (sigmoid) ·</text>
+<text x="1076.8" y="280" font-size="11.5" fill="#4A4E55">IsotonicRegression</text>
+<text x="1076.8" y="306" font-size="13" font-weight="600" fill="#1E2024">Text models</text>
+<text x="1076.8" y="324" font-size="11.5" fill="#4A4E55">TF-IDF word + char n-grams → logistic regression</text>
+<text x="1076.8" y="350" font-size="13" font-weight="600" fill="#1E2024">Validation</text>
+<text x="1076.8" y="368" font-size="11.5" fill="#4A4E55">GroupKFold cross-fitting by provider</text>
+<text x="1076.8" y="394" font-size="13" font-weight="600" fill="#1E2024">joblib</text>
+<text x="1076.8" y="412" font-size="11.5" fill="#4A4E55">versioned artifacts + JSON model cards</text>
+<rect x="1406.4" y="104" width="329.6" height="336" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="1422.4" y="128" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">OPTIONAL AI</text>
+<text x="1422.4" y="150" font-size="16" font-weight="600" fill="#1E2024">NLP &amp; LLM</text>
+<line x1="1422.4" y1="162" x2="1720.0" y2="162" stroke="#D3D6DB"/>
+<text x="1422.4" y="184" font-size="13" font-weight="600" fill="#1E2024">PyTorch + Transformers</text>
+<text x="1422.4" y="202" font-size="11.5" fill="#4A4E55">bge-small-en-v1.5 sentence encoder, runs locally</text>
+<text x="1422.4" y="228" font-size="13" font-weight="600" fill="#1E2024">httpx</text>
+<text x="1422.4" y="246" font-size="11.5" fill="#4A4E55">DeepSeek · z.ai · OpenAI-compatible · local server</text>
+<text x="1422.4" y="272" font-size="13" font-weight="600" fill="#1E2024">Anthropic SDK</text>
+<text x="1422.4" y="290" font-size="11.5" fill="#4A4E55">Claude provider</text>
+<text x="1422.4" y="316" font-size="13" font-weight="600" fill="#1E2024">Guardrails</text>
+<text x="1422.4" y="334" font-size="11.5" fill="#4A4E55">schema validation · verbatim-quote check · LLM</text>
+<text x="1422.4" y="351" font-size="11.5" fill="#4A4E55">never decides</text>
+<rect x="24.0" y="456" width="329.6" height="292" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="40.0" y="480" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">STORAGE</text>
+<text x="40.0" y="502" font-size="16" font-weight="600" fill="#1E2024">Database &amp; files</text>
+<line x1="40.0" y1="514" x2="337.6" y2="514" stroke="#D3D6DB"/>
+<text x="40.0" y="536" font-size="13" font-weight="600" fill="#1E2024">PostgreSQL 16</text>
+<text x="40.0" y="554" font-size="11.5" fill="#4A4E55">local cluster · SCRAM auth · 127.0.0.1 only</text>
+<text x="40.0" y="580" font-size="13" font-weight="600" fill="#1E2024">psycopg 3</text>
+<text x="40.0" y="598" font-size="11.5" fill="#4A4E55">PostgreSQL driver</text>
+<text x="40.0" y="624" font-size="13" font-weight="600" fill="#1E2024">SQLite</text>
+<text x="40.0" y="642" font-size="11.5" fill="#4A4E55">zero-setup fallback via infra/dbcompat.py</text>
+<text x="40.0" y="668" font-size="13" font-weight="600" fill="#1E2024">Files</text>
+<text x="40.0" y="686" font-size="11.5" fill="#4A4E55">CSV tables · X12 837 · documents with SHA-256</text>
+<rect x="369.6" y="456" width="329.6" height="292" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="385.6" y="480" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">SECURITY</text>
+<text x="385.6" y="502" font-size="16" font-weight="600" fill="#1E2024">Identity &amp; protection</text>
+<line x1="385.6" y1="514" x2="683.2" y2="514" stroke="#D3D6DB"/>
+<text x="385.6" y="536" font-size="13" font-weight="600" fill="#1E2024">PBKDF2-HMAC-SHA256</text>
+<text x="385.6" y="554" font-size="11.5" fill="#4A4E55">200,000 rounds · hashlib</text>
+<text x="385.6" y="580" font-size="13" font-weight="600" fill="#1E2024">TOTP (RFC 6238)</text>
+<text x="385.6" y="598" font-size="11.5" fill="#4A4E55">two-factor sign-in · recovery codes</text>
+<text x="385.6" y="624" font-size="13" font-weight="600" fill="#1E2024">OpenID Connect + PKCE</text>
+<text x="385.6" y="642" font-size="11.5" fill="#4A4E55">RS256 ID-token check · cryptography</text>
+<text x="385.6" y="668" font-size="13" font-weight="600" fill="#1E2024">Sessions &amp; headers</text>
+<text x="385.6" y="686" font-size="11.5" fill="#4A4E55">HttpOnly SameSite cookies · CSP · origin check</text>
+<text x="385.6" y="712" font-size="13" font-weight="600" fill="#1E2024">RBAC + audit log</text>
+<text x="385.6" y="730" font-size="11.5" fill="#4A4E55">4 roles · four-eyes approvals</text>
+<rect x="715.2" y="456" width="329.6" height="292" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="731.2" y="480" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">INTEGRATIONS</text>
+<text x="731.2" y="502" font-size="16" font-weight="600" fill="#1E2024">Interfaces</text>
+<line x1="731.2" y1="514" x2="1028.8" y2="514" stroke="#D3D6DB"/>
+<text x="731.2" y="536" font-size="13" font-weight="600" fill="#1E2024">X12 837P / 837I</text>
+<text x="731.2" y="554" font-size="11.5" fill="#4A4E55">claim file import and export</text>
+<text x="731.2" y="580" font-size="13" font-weight="600" fill="#1E2024">SMTP (smtplib)</text>
+<text x="731.2" y="598" font-size="11.5" fill="#4A4E55">e-mail notifications with retry outbox</text>
+<text x="731.2" y="624" font-size="13" font-weight="600" fill="#1E2024">Slack-compatible webhook</text>
+<text x="731.2" y="642" font-size="11.5" fill="#4A4E55">IDs only, never member data</text>
+<text x="731.2" y="668" font-size="13" font-weight="600" fill="#1E2024">CSV upload</text>
+<text x="731.2" y="686" font-size="11.5" fill="#4A4E55">bring your own claims data</text>
+<rect x="1060.8" y="456" width="329.6" height="292" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="1076.8" y="480" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">QUALITY</text>
+<text x="1076.8" y="502" font-size="16" font-weight="600" fill="#1E2024">Testing &amp; DevOps</text>
+<line x1="1076.8" y1="514" x2="1374.4" y2="514" stroke="#D3D6DB"/>
+<text x="1076.8" y="536" font-size="13" font-weight="600" fill="#1E2024">unittest</text>
+<text x="1076.8" y="554" font-size="11.5" fill="#4A4E55">50 tests · SQLite and PostgreSQL</text>
+<text x="1076.8" y="580" font-size="13" font-weight="600" fill="#1E2024">Ruff</text>
+<text x="1076.8" y="598" font-size="11.5" fill="#4A4E55">lint + format, 0 findings</text>
+<text x="1076.8" y="624" font-size="13" font-weight="600" fill="#1E2024">GitHub Actions</text>
+<text x="1076.8" y="642" font-size="11.5" fill="#4A4E55">CI on every push · pinned constraints.txt</text>
+<text x="1076.8" y="668" font-size="13" font-weight="600" fill="#1E2024">Shell scripts</text>
+<text x="1076.8" y="686" font-size="11.5" fill="#4A4E55">start.sh / stop.sh · pg_ctl</text>
+<text x="1076.8" y="712" font-size="13" font-weight="600" fill="#1E2024">Git</text>
+<text x="1076.8" y="730" font-size="11.5" fill="#4A4E55">version control</text>
+<rect x="1406.4" y="456" width="329.6" height="292" rx="14" fill="url(#gloss)" stroke="#A9ADB4" filter="url(#sh)"/>
+<text x="1422.4" y="480" font-size="10" letter-spacing="1.4" font-weight="600" fill="#6E727A">DATA SCIENCE</text>
+<text x="1422.4" y="502" font-size="16" font-weight="600" fill="#1E2024">Synthetic data &amp; evaluation</text>
+<line x1="1422.4" y1="514" x2="1720.0" y2="514" stroke="#D3D6DB"/>
+<text x="1422.4" y="536" font-size="13" font-weight="600" fill="#1E2024">Seeded generator</text>
+<text x="1422.4" y="554" font-size="11.5" fill="#4A4E55">62,507 claim lines · 9 schemes · decoys</text>
+<text x="1422.4" y="580" font-size="13" font-weight="600" fill="#1E2024">Hidden ground truth</text>
+<text x="1422.4" y="598" font-size="11.5" fill="#4A4E55">evaluation only, never used for detection</text>
+<text x="1422.4" y="624" font-size="13" font-weight="600" fill="#1E2024">Evaluation engine</text>
+<text x="1422.4" y="642" font-size="11.5" fill="#4A4E55">counterfactual · adversarial · ablation ·</text>
+<text x="1422.4" y="659" font-size="11.5" fill="#4A4E55">calibration</text>
+<text x="1422.4" y="685" font-size="13" font-weight="600" fill="#1E2024">Held-out worlds</text>
+<text x="1422.4" y="703" font-size="11.5" fill="#4A4E55">seeds 201 / 202 never trained on</text>
+<rect x="24" y="778" width="1712" height="64" rx="14" fill="#FFFFFF" fill-opacity=".35" stroke="#FFFFFF" stroke-opacity=".8"/>
+<text x="42" y="804" font-size="12.5" fill="#4A4E55"><tspan font-weight="600" fill="#1E2024">Algorithms  </tspan>rules engine (9 rules + analyst rules) · Isolation Forest · graph analytics &amp; Louvain communities · gradient-boosted case-mix twin · care-pathway sequence model</text>
+<text x="132" y="824" font-size="12.5" fill="#4A4E55">change-point detection · Jensen–Shannon code-mix divergence · CUSUM temporal evolution · discrete-time hazard forecast · one-sided logistic fusion · MAP learning from decisions</text></svg>
